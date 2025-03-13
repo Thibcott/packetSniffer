@@ -76,8 +76,8 @@ function moveCursorToEnd() {
  * @returns {Promise<void>} A promise that resolves when the network interfaces have been successfully retrieved and the select element updated.
  */
 async function getNetworkInterfaces() {
-    let info = await Neutralino.os.execCommand('wmic nic get name');
-    // let info = await Neutralino.os.execCommand('ls /sys/class/net');
+    //let info = await Neutralino.os.execCommand('wmic nic get name');
+    let info = await Neutralino.os.execCommand('ls /sys/class/net');
     console.log(info.stdOut);
     let interfaces = info.stdOut.split('\n').filter(line => line.trim() !== '' && line.trim() !== 'Name').map((iface) => {
         return `<option value="${iface.trim()}">${iface.trim()}</option>`;
@@ -344,7 +344,8 @@ async function getFileFromBackupFolder() {
     console.warn('Backup files:', fileList);
 
     let historyTable = document.getElementById('historyTable');
-
+    let tbody = document.getElementById('historyTable').getElementsByTagName('tbody')[0];
+    tbody.innerHTML = "";
     fileList.forEach(file => {
         let date = file.split('_')[1].split('.')[0];
         let name = file.split('_')[0];
@@ -398,14 +399,15 @@ async function copyFileToUserFolder(file) {
  * @returns {Promise<void>} A promise that resolves when the file is removed.
  * @throws Will throw an error if the file removal fails.
  */
-async function removefile(file) {
+async function removeFile(file) {
     try {
-        await Neutralino.filesystem.remove(`../backup/${file}`);
+        await Neutralino.os.execCommand('sudo rm ../backup/' + file)
         console.log(`File ${file} removed`);
-        getFileFromBackupFolder();
+        await getFileFromBackupFolder();
     } catch (error) {
         console.error("Error removing file:", error);
     }
+    
 }
 
 //==========================================
