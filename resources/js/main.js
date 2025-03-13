@@ -1,9 +1,11 @@
+// variables for the filter
 let protocol = "";
 let port = "";
 let ipSource = "";
 let ipDestination = "";
 let direction = "";
 let filter = "";
+
 
 // for the setup of the bridge
 /**
@@ -350,10 +352,14 @@ async function getFileFromBackupFolder() {
         let cell1 = row.insertCell(0);
         let cell2 = row.insertCell(1);
         let cell3 = row.insertCell(2);
+        let cell4 = row.insertCell(3);
+
         cell1.innerHTML = date;
         cell2.innerHTML = name;
-        let save = `<button onclick="copyFileToUserFolder('${file}')">Save</button>`;
+        let save = `<button onclick="copyFileToUserFolder('${file}')"><img src="icons/save.png" alt="More" style="width: 18px; height: 18px;"></button>`;
         cell3.innerHTML = save;
+        let remove = `<button onclick="removeFile('${file}')"><img src="icons/delete.png" alt="More" style="width: 18px; height: 18px;"></button>`;
+        cell4.innerHTML = remove;
     });
 }
 
@@ -381,6 +387,24 @@ async function copyFileToUserFolder(file) {
         }
     } else {
         console.error("No destination folder selected.");
+    }
+}
+
+
+/**
+ * Asynchronously removes a file from the backup directory.
+ *
+ * @param {string} file - The name of the file to be removed.
+ * @returns {Promise<void>} A promise that resolves when the file is removed.
+ * @throws Will throw an error if the file removal fails.
+ */
+async function removefile(file) {
+    try {
+        await Neutralino.filesystem.remove(`../backup/${file}`);
+        console.log(`File ${file} removed`);
+        getFileFromBackupFolder();
+    } catch (error) {
+        console.error("Error removing file:", error);
     }
 }
 

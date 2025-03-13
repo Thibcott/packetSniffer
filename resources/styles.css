@@ -64,20 +64,19 @@ table td:nth-child(2) {
         padding: 4px;
     }
 
-    button {
-        border: none;
-        background-color: #f1f1f1;
-        padding: 4px;
-        border-radius: 5px;
-        cursor: pointer;
-       
-    }
-
-    button:hover {
-        background-color: #e1e1e1;
-    }
+   
 }
-
+button {
+    border: none;
+    background-color: #cecece;
+    padding: 4px;
+    border-radius: 5px;
+    cursor: pointer;
+   
+}
+button:hover {
+    background-color: #e1e1e1;
+}
 #chooseParams, #historyPageContent,
 #helpPageContent, #filterPageContent {
     width:100%;
@@ -127,10 +126,16 @@ table td:nth-child(2) {
         padding: 5px;
     }
     button{
-        border: none;
-        background-color: #f1f1f1;
-        padding: 4px;
-        border-radius: 5px;
-        cursor: pointer;
+        
+        padding: 3px 8px;
+       
+    }
+    td:nth-child(3){
+        text-align: center;
+    }
+    td:nth-child(4){
+        text-align: center;
+        
     }
 }
+
