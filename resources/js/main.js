@@ -266,18 +266,11 @@ async function startTcpdump() {
     console.log(`Capture file will be saved as capture_${timestamp}.pcap`);
 
     let command = '';
-    /*
-    if (filter) {
-        command = 'sudo tcpdump -i ' + iface + ' -w - ' + filter + '| sudo tee ../backup/capture_' + timestamp + '.pcap | sudo tee ' + output + '/capture_' + iface + '_' + timestamp + '.pcap | sudo tcpdump -r -';
-    } else {
-        command = 'sudo tcpdump -i ' + iface + ' -w - | sudo tee ../backup/capture_' + timestamp + '.pcap | sudo tee ' + output + '/capture_' + iface + '_' + timestamp + '.pcap | sudo tcpdump -r -';
-    }
-    */
 
     if (filter) {
-        command = 'sudo tcpdump -i ' + iface + ' -C 1000 -w - ' + filter + ' | sudo tee ../backup/capture_' + timestamp + '.pcap | sudo tee ' + output + '/capture_'+ iface +'_'+ timestamp + '.pcap | sudo tcpdump -r -';
+        command = 'sudo tcpdump -i ' + iface + ' -w - ' + filter + ' | sudo tee ../backup/capture_' + timestamp + '.pcap | sudo tee ' + output + '/capture_'+ iface +'_'+ timestamp + '.pcap | sudo tcpdump -C 1000 -r -';
     } else {
-        command = 'sudo tcpdump -i ' + iface + ' -C 1000 -w - | sudo tee ../backup/capture_' + timestamp + '.pcap | sudo tee ' + output + '/capture_'+ iface +'_' + timestamp + '.pcap | sudo tcpdump -r -';
+        command = 'sudo tcpdump -i ' + iface + ' -w - | sudo tee ../backup/capture_' + timestamp + '.pcap | sudo tee ' + output + '/capture_'+ iface +'_' + timestamp + '.pcap | sudo tcpdump -C 1000 -r -';
     }
     
     // Start the tcpdump process
