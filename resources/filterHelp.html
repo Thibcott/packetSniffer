@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>NeutralinoJs sample app</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+
+<body>
+    <div id="navbar">
+        <ul>
+            <li>
+              <a href="index.html">Packet recording</a>
+            </li>
+            <li>
+              <a href="history.html">History</a>
+            </li>
+            <li>
+              <a href="doc.html">Help</a>
+            </li>
+            <li style="float:right" id="ipNavBar">
+              <label id="ipDevice1">ip</label>
+              <br>
+              <label id="ipDevice2">ip</label>
+            </li>
+        </ul>
+    </div>
+
+    <div id="filterPageContent">
+        <h3>Filter edit</h3>
+        <form id="filterForm">
+            <table>
+                <tr>
+                    <td><label for="protocol">Protocol :</label></td>
+                    <td>
+                        <select id="protocol" name="protocol" onchange="updateFilter()">
+                            <option value="">Select Protocol</option>
+                            <option value="tcp">TCP</option>
+                            <option value="udp">UDP</option>
+                            <option value="icmp">ICMP</option>
+                            <option value="arp">ARP</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td><label for="port">Port Number :</label></td>
+                    <td><input type="number" id="port" name="port" placeholder="Port Number" min="1" max="65535"
+                            onchange="updateFilter()"></td>
+                </tr>
+                <tr>
+                    <td><label for="ipSource">Source IP Address :</label></td>
+                    <td><input type="text" id="ipSource" name="ipSource" placeholder="Source IP Address"
+                            onchange="updateFilter()"></td>
+                </tr>
+                <tr>
+                    <td><label for="ipDestination">Destination IP Address :</label></td>
+                    <td><input type="text" id="ipDestination" name="ipDestination" placeholder="Destination IP Address"
+                            onchange="updateFilter()"></td>
+                </tr>
+                <tr>
+                    <td><label for="direction">Direction:</label></td>
+                    <td>
+                        <select id="direction" name="direction" onchange="updateFilter()">
+                            <option value="">Select Direction</option>
+                            <option value="src">Source</option>
+                            <option value="dst">Destination</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="1">
+                        <label for="">Result :</label>
+                        <!-- <button type="button" onclick="applyFilter()">Apply Filter</button>-->
+                    </td>
+                    <td>
+                        <input type="" id="filter" name="filter">
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2"><button type="button" id="returnMainPageBtn" onclick="saveFilterAndReturn()">Return
+                            to packet recording page</button></td>
+                </tr>
+            </table>
+        </form>
+    </div>
+
+    <script src="/js/neutralino.js"></script>
+    <!-- Your app's source files -->
+    <script src="/js/main.js"></script>
+    <script>
+        function saveFilterAndReturn() {
+            const filterValue = document.getElementById('filter').value;
+            localStorage.setItem('tcpdumpFilter', filterValue);
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+
+</html>

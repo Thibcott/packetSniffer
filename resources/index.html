@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>NeutralinoJs sample app</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+
+<body>
+  <div id="navbar">
+    <ul>
+      <li>
+        <a class="active" href="index.html">Packet recording</a>
+      </li>
+      <li>
+        <a href="history.html">History</a>
+      </li>
+      <li>
+        <a href="doc.html">Help</a>
+      </li>
+      <li style="float:right" id="ipNavBar">
+        <label id="ipDevice1">ip</label>
+        <br>
+        <label id="ipDevice2">ip</label>
+      </li>
+    </ul>
+</div>
+  <div id="chooseParams">
+    <form id="tcpdumpForm">
+      <table>
+        <tr>
+          <td><label for="interface">Interface :</label></td>
+            <td>
+            <select id="interface" name="interface">
+             
+            </select>
+            
+            
+          <td rowspan="1" id="ipDevice1"></td>
+        </tr>
+        <tr>
+          <td><label for="output">Output folder :</label></td>
+          <td>
+            <input type="text" id="output" name="output" style="width: 78%;" value="/home/user/app/capture">
+            <button type="button" style="width: 17%;" onclick="chooseOutputFile()">
+              <img src="icons/browse-folder-30.png" alt="More" style="width: 18px; height: 14px;">
+            </button>
+          <td rowspan="1" id="ipDevice2"></td>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <label for="filter">Filter:</label>
+          </td>
+          <td>
+            <input type="text" id="filter" name="filter" style="width: 78%;" placeholder="e.g., tcp port 80">
+            <button type="button" style="width: 17%; " onclick="window.location.href='filterHelp.html';">
+              <img src="icons/edit-24.png" alt="More" style="width: 18px; height: 14px;">
+            </button>
+          </td>
+          <!--<td rowspan="2" id="cmdPreview" style="font-size:xx-small;"></td>-->
+        </tr>
+        <tr>
+          <td colspan="2">
+            <button type="button" id="tcpdumpButton" onclick="startTcpdump()">Start recording</button>
+          </td>
+        </tr>
+      </table>
+    </form>
+  </div>
+
+  <div id="outputDiv">
+    <label>Output | </label>
+    <label  id="cmdPreview" style="font-size:xx-small;" ></label>
+    <textarea name="outPutTextArea" id="outPutTextArea" readonly></textarea>
+  </div>
+
+  <script src="/js/neutralino.js"></script>
+  <!-- Your app's source files -->
+  <script src="/js/main.js"></script>
+
+  <script>
+    
+    // load filter from local storage
+    function loadFilter() {
+      const filterValue = localStorage.getItem('tcpdumpFilter');
+      if (filterValue) {
+        console.warn(filterValue)
+        document.getElementById('filter').value = filterValue;
+      }
+    }
+
+    // load function when page is loaded
+    window.onload = function() {
+      loadFilter();
+      getConnectedDevices();
+      getNetworkInterfaces();
+      setupBridge();
+    };
+    
+  </script>
+
+</body>
+
+</html>

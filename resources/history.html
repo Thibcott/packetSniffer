@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>NeutralinoJs sample app</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+
+<body>
+    <div id="navbar">
+        <ul>
+          <li>
+            <a href="index.html">Packet recording</a>
+          </li>
+          <li>
+            <a class="active" href="history.html">History</a>
+          </li>
+          <li>
+            <a href="doc.html">Help</a>
+          </li>
+          <li style="float:right" id="ipNavBar">
+            <label id="ipDevice1">ip</label>
+            <br>
+            <label id="ipDevice2">ip</label>
+          </li>
+        </ul>
+    </div>
+    <div id="historyPageContent" onload="getFileFromBackupFolder()">
+        <h3>History</h3>
+        <table id="historyTable">
+            <tr>
+                <th style="width: 50%;">Time</th>
+                <th>Name</th>
+                <th></th>
+            </tr>
+        </table>
+    </div>
+
+
+  <script src="/js/neutralino.js"></script>
+  <!-- Your app's source files -->
+  <script src="/js/main.js"></script>
+  <script>
+    window.onload = getConnectedDevices();
+    window.onload = getFileFromBackupFolder();
+  </script>
+</body>
+
+</html>

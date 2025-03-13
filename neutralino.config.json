@@ -1,0 +1,86 @@
+{
+  "$schema": "https://raw.githubusercontent.com/neutralinojs/neutralinojs/main/schemas/neutralino.config.schema.json",
+  "applicationId": "js.neutralino.sample",
+  "version": "1.0.0",
+  "defaultMode": "window",
+  "port": 0,
+  "documentRoot": "/resources/",
+  "url": "/",
+  "enableServer": true,
+  "enableNativeAPI": true,
+  "tokenSecurity": "one-time",
+  "logging": {
+    "enabled": true,
+    "writeToLogFile": true
+  },
+  "nativeAllowList": [
+    "app.*",
+    "os.*",
+    "debug.log",
+    "filesystem.readDirectory",
+    "filesystem.copy"
+
+  ],
+  "globalVariables": {
+    "TEST1": "Hello",
+    "TEST2": [
+      2,
+      4,
+      5
+    ],
+    "TEST3": {
+      "value1": 10,
+      "value2": {}
+    }
+  },
+  "modes": {
+    "window": {
+      "title": "Packet Sniffer",
+      "width": 500,
+      "height": 350,
+      "minWidth": 500,
+      "minHeight": 350,
+      "center": true,
+      "fullScreen": false,
+      "alwaysOnTop": false,
+      "icon": "/resources/icons/appIcon.png",
+      "enableInspector": true,
+      "borderless": false,
+      "maximize": false,
+      "hidden": false,
+      "resizable": true,
+      "exitProcessOnClose": false
+    },
+    "browser": {
+      "globalVariables": {
+        "TEST": "Test value browser"
+      },
+      "nativeBlockList": [
+        "filesystem.*"
+      ]
+    },
+    "cloud": {
+      "url": "/resources/#cloud",
+      "nativeAllowList": [
+        "app.*"
+      ]
+    },
+    "chrome": {
+      "width": 500,
+      "height": 350,
+      "args": "--user-agent=\"Neutralinojs chrome mode\"",
+      "nativeBlockList": [
+        "filesystem.*",
+        "os.*"
+      ]
+    }
+  },
+  "cli": {
+    "binaryName": "packetSniffer",
+    "resourcesPath": "/resources/",
+    "extensionsPath": "/extensions/",
+    "clientLibrary": "/resources/js/neutralino.js",
+    "binaryVersion": "5.6.0",
+    "clientVersion": "5.6.0"
+  }
+}
