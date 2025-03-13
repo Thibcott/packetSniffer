@@ -1,5 +1,35 @@
+<!-- 
+This HTML file is main page of the Packet Sniffer Application. It provides the user interface for recording network packets, viewing history, and accessing help documentation.
+
+Sections:
+1. Head:
+  - Sets the character encoding to UTF-8.
+  - Sets the title of the page to "NeutralinoJs sample app".
+  - Includes a meta tag for responsive design.
+  - Links to an external stylesheet (styles.css).
+
+2. Body:
+  - Navbar:
+    - Contains navigation links for "Packet recording", "History", and "Help".
+    - Displays IP addresses of connected devices on the right side of the navbar.
+
+  - Choose Parameters:
+    - A form (tcpdumpForm) for selecting network interface, output folder, and filter for packet recording.
+    - Interface: Dropdown to select the network interface.
+    - Output folder: Text input to specify the output folder with a button to browse folders.
+    - Filter: Text input to specify a filter for packet recording with a button to access filter help.
+
+  - Output Div:
+    - Displays the command preview and output of the packet recording.
+
+3. Scripts:
+  - Includes Neutralino.js and main.js.
+  - JavaScript functions:
+    - loadFilter: Loads the filter value from local storage and sets it in the filter input field.
+    - window.onload: Executes functions to load filter, get connected devices, get network interfaces, and set up the bridge when the page loads.
+-->
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
   <meta charset="UTF-8">

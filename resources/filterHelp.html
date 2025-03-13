@@ -1,8 +1,32 @@
+<!-- 
+
+This HTML file represents a filter editing page for a packet sniffer application. It includes a form where users can specify various filter criteria such as protocol, port number, source IP address, destination IP address, and direction. The form also includes a result field where the generated filter string is displayed.
+
+Key Elements:
+- Navbar: Provides navigation links to different pages of the application.
+- Filter Form: Allows users to input filter criteria.
+    - Protocol: Dropdown to select the protocol (TCP, UDP, ICMP, ARP).
+    - Port Number: Input field for specifying the port number.
+    - Source IP Address: Input field for specifying the source IP address.
+    - Destination IP Address: Input field for specifying the destination IP address.
+    - Direction: Dropdown to select the direction (Source or Destination).
+    - Result: Input field to display the generated filter string.
+- Return Button: Button to save the filter and return to the packet recording page.
+
+JavaScript:
+- saveFilterAndReturn(): Function to save the filter string to local storage and navigate back to the packet recording page.
+
+External Resources:
+- /styles.css: External stylesheet for styling the page.
+- /js/neutralino.js: External JavaScript library for NeutralinoJs.
+- /js/main.js: Main JavaScript file for the application.
+-->
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NeutralinoJs sample app</title>
     <link rel="stylesheet" href="/styles.css">
 </head>
@@ -74,7 +98,7 @@
                         <!-- <button type="button" onclick="applyFilter()">Apply Filter</button>-->
                     </td>
                     <td>
-                        <input type="" id="filter" name="filter">
+                        <input type="" id="filter" name="filter" title="Filter" placeholder="Enter filter">
                     </td>
                 </tr>
                 <tr>
