@@ -6,6 +6,8 @@ let ipDestination = "";
 let direction = "";
 let filter = "";
 
+// bridge setup
+let bridge = false; // flag to check if the bridge is set up
 
 // for the setup of the bridge
 /**
@@ -37,6 +39,7 @@ async function setupBridge() {
             await Neutralino.os.execCommand('sudo ifconfig eth1 up');
             let info = await Neutralino.os.execCommand('sudo ifconfig br0 up');
             console.log(info.stdOut);
+            bridge = true; // set the bridge flag to true
         } catch (error) {
             console.error("Error setting up bridge:", error);
         }
@@ -327,6 +330,12 @@ async function stopTcpdump() {
         const button = document.getElementById('tcpdumpButton');
         button.textContent = 'Start Recording';
         console.warn('tcpdump process stopped');
+        if(bridge){
+            // remove the bridge if it was created
+            await Neutralino.os.execCommand('sudo brctl delbr br0');
+            console.warn('Bridge br0 removed');
+            bridge = false; // reset the bridge flag
+        }
     }
 }
 
