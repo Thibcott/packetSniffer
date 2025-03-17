@@ -273,9 +273,9 @@ async function startTcpdump() {
 
     let command = '';
     if (filter) {
-        command = 'sudo tcpdump -i ' + iface + ' -w - ' + filter + '| sudo tee ../backup/capture_' + timestamp + '.pcap | sudo tee ' + output + '/capture_'+ iface +'_'+ timestamp + '.pcap | sudo tcpdump -r -';
+        command = 'sudo tcpdump -i ' + iface + ' -C 1000 -w - ' + filter + '| sudo tee ../backup/capture_' + timestamp + '.pcap | sudo tee ' + output + '/capture_'+ iface +'_'+ timestamp + '.pcap | sudo tcpdump -r -';
     } else {
-        command = 'sudo tcpdump -i ' + iface + ' -w - | sudo tee ../backup/capture_' + timestamp + '.pcap | sudo tee ' + output + '/capture_'+ iface +'_' + timestamp + '.pcap | sudo tcpdump -r -';
+        command = 'sudo tcpdump -i ' + iface + ' -C 1000 -w - | sudo tee ../backup/capture_' + timestamp + '.pcap | sudo tee ' + output + '/capture_'+ iface +'_' + timestamp + '.pcap | sudo tcpdump -r -';
     }
     // Start the tcpdump process
     tcpdumpProcess = await Neutralino.os.spawnProcess(command);
@@ -569,6 +569,30 @@ async function accessTerminal() {
     } catch (err) {
         console.error(`Error opening terminal: ${err.message} (${err.name})`);
     } 
+}
+
+
+/**
+ * Prompts the user with a confirmation message to shut down the Raspberry Pi (RPI).
+ * If the user confirms, it executes the shutdown command.
+ * If the user cancels, the function returns without performing any action.
+ * 
+ * @async
+ * @function extractSD
+ * @returns {Promise<void>} A promise that resolves when the shutdown command is executed or the function returns.
+ * @throws {Error} Throws an error if there is an issue executing the shutdown command.
+ */
+async function extractSD() {
+    let result = await Neutralino.os.showMessageBox('Confirmation', 'Are you sure you want to shut down the RPI?', 'YES_NO');
+    if (result === 'NO') {
+        return;
+    }else {
+        try {
+            await Neutralino.os.execCommand('sudo shutdown -h now');
+        } catch (err) {
+            console.error(`Error extracting SD card: ${err.message} (${err.name})`);
+        } 
+    }
 }
 
 
