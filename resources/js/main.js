@@ -354,6 +354,20 @@ async function stopTcpdump() {
 }
 
 
+async function toggleFullScreen() {
+    try {
+        let isFullScreen = await Neutralino.window.isFullScreen();
+        if (isFullScreen) {
+            await Neutralino.window.exitFullScreen();
+        } else {
+            await Neutralino.window.setFullScreen();
+        }
+    } catch (err) {
+        console.error(`Error toggling full-screen mode: ${err.message} (${err.name})`);
+    }
+}
+
+
 /**
  * Asynchronously retrieves files from the backup folder, filters them to include only files,
  * and populates the history table with the file details.

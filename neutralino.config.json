@@ -19,7 +19,8 @@
     "debug.log",
     "filesystem.readDirectory",
     "filesystem.copy",
-    "filesystem.getStats"
+    "filesystem.getStats",
+    "window.*"
   ],
   "globalVariables": {
     "TEST1": "Hello",
