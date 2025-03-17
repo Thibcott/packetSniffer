@@ -260,14 +260,22 @@ async function startTcpdump() {
     const filter = form.elements['filter'].value;
     //let command = 'sudo tcpdump -i eth0 -w - | sudo tee capture.pcap | tcpdump -r -';
     //let command = 'sudo tcpdump -i eth0 -w - | sudo tee backup/capture1.pcap | sudo tee ../test/capture2.pcap | sudo tcpdump -r -';
-    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    let now = new Date();
+    let year = now.getFullYear();
+    let month = String(now.getMonth() + 1).padStart(2, '0');
+    let day = String(now.getDate()).padStart(2, '0');
+    let hours = String(now.getHours()).padStart(2, '0');
+    let minutes = String(now.getMinutes()).padStart(2, '0');
+    let seconds = String(now.getSeconds()).padStart(2, '0');
+    let timestamp = `${year}-${month}-${day}-${hours}-${minutes}-${seconds}`;
+
+    console.log(`Capture file will be saved as capture_${timestamp}.pcap`);
 
     let command = '';
-    console.log(output);
     if (filter) {
-        command = 'sudo tcpdump -i ' + iface + ' -w - ' + filter + '| sudo tee ../backup/capture_' + timestamp + '.pcap | sudo tee ' + output + '/capture_' + timestamp + '.pcap | sudo tcpdump -r -';
+        command = 'sudo tcpdump -i ' + iface + ' -w - ' + filter + '| sudo tee ../backup/capture_' + timestamp + '.pcap | sudo tee ' + output + '/capture_'+ iface +'_'+ timestamp + '.pcap | sudo tcpdump -r -';
     } else {
-        command = 'sudo tcpdump -i ' + iface + ' -w - | sudo tee ../backup/capture_' + timestamp + '.pcap | sudo tee ' + output + '/capture_' + timestamp + '.pcap | sudo tcpdump -r -';
+        command = 'sudo tcpdump -i ' + iface + ' -w - | sudo tee ../backup/capture_' + timestamp + '.pcap | sudo tee ' + output + '/capture_'+ iface +'_' + timestamp + '.pcap | sudo tcpdump -r -';
     }
     // Start the tcpdump process
     tcpdumpProcess = await Neutralino.os.spawnProcess(command);
@@ -277,7 +285,7 @@ async function startTcpdump() {
     const button = document.getElementById('tcpdumpButton');
     button.textContent = 'Stop';
 
-    // show command preview TODO 
+    //  TODO show command preview  
     document.getElementById('cmdPreview').innerHTML = `${command}`;
 
     // show packet
@@ -359,29 +367,39 @@ async function stopTcpdump() {
  * @returns {Promise<void>} A promise that resolves when the operation is complete.
  */
 async function getFileFromBackupFolder() {
-    let backupFolder = '../backup'; //
+    let backupFolder = '../backup';
     let files = await Neutralino.filesystem.readDirectory(backupFolder);
 
     let fileList = files.filter(file => file.type === 'FILE').map(file => file.entry);
     console.warn('Backup files:', fileList);
 
+    // Get file details including creation/modification date
+    let fileDetails = await Promise.all(fileList.map(async (file) => {
+        let stats = await Neutralino.filesystem.getStats(`${backupFolder}/${file}`);
+        return {
+            name: file,
+            date: new Date(stats.modifiedAt).toLocaleString()
+        };
+    }));
+
+    // Sort files by date (most recent first)
+    fileDetails.sort((a, b) => new Date(b.date) - new Date(a.date));
+
     let historyTable = document.getElementById('historyTable');
     let tbody = document.getElementById('historyTable').getElementsByTagName('tbody')[0];
     tbody.innerHTML = "";
-    fileList.forEach(file => {
-        let date = file.split('_')[1].split('.')[0];
-        let name = file.split('_')[0];
+    fileDetails.forEach(file => {
         let row = historyTable.insertRow();
         let cell1 = row.insertCell(0);
         let cell2 = row.insertCell(1);
         let cell3 = row.insertCell(2);
         let cell4 = row.insertCell(3);
 
-        cell1.innerHTML = date;
-        cell2.innerHTML = name;
-        let save = `<button onclick="copyFileToUserFolder('${file}')"><img src="icons/save.png" alt="More" style="width: 18px; height: 18px;"></button>`;
+        cell1.innerHTML = file.date;
+        cell2.innerHTML = file.name.split('_')[0];
+        let save = `<button onclick="copyFileToUserFolder('${file.name}')"><img src="icons/save.png" alt="More" style="width: 18px; height: 18px;"></button>`;
         cell3.innerHTML = save;
-        let remove = `<button onclick="removeFile('${file}')"><img src="icons/delete.png" alt="More" style="width: 18px; height: 18px;"></button>`;
+        let remove = `<button onclick="removeFile('${file.name}')"><img src="icons/delete.png" alt="More" style="width: 18px; height: 18px;"></button>`;
         cell4.innerHTML = remove;
     });
 }
@@ -495,7 +513,7 @@ Neutralino.events.on("trayMenuItemClicked", onTrayMenuItemClicked);
 Neutralino.events.on("windowClose", onWindowClose);
 
 // Conditional initialization: Set up system tray if not running on macOS
-if (NL_OS != "Darwin") { // TODO: Fix https://github.com/neutralinojs/neutralinojs/issues/615
+if (NL_OS != "Darwin") { // : Fix https://github.com/neutralinojs/neutralinojs/issues/615
     setTray();
 }
 

@@ -91,6 +91,10 @@ button:hover {
     /* Change background color on hover for buttons */
 }
 
+select{
+    background-color: none;
+    border: none;
+}
 #chooseParams, #historyPageContent,
 #helpPageContent, #filterPageContent {
     width: 100%;

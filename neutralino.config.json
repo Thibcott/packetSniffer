@@ -18,8 +18,8 @@
     "os.*",
     "debug.log",
     "filesystem.readDirectory",
-    "filesystem.copy"
-
+    "filesystem.copy",
+    "filesystem.getStats"
   ],
   "globalVariables": {
     "TEST1": "Hello",
