@@ -3,7 +3,13 @@
 
 # Neutralinojs binaries and builds
 /dist
+/bin/.tmp
+# Neutralinojs config files
+/.tmp
+
 
 # Neutralinojs related files
 .storage
 *.log
+
+
