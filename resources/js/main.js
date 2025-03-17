@@ -87,7 +87,7 @@ async function getNetworkInterfaces() {
     });
     interfaces.push('<option value="bridge">bridge</option>');
     document.getElementById('interface').innerHTML = interfaces.join('');
-    
+
     document.getElementById('interface').addEventListener('change', async (event) => {
         if (event.target.value === 'bridge') {
             await setupBridge();
@@ -273,10 +273,17 @@ async function startTcpdump() {
 
     let command = '';
     if (filter) {
+        command = 'sudo tcpdump -i ' + iface + ' -w - ' + filter + '| sudo tee ../backup/capture_' + timestamp + '.pcap | sudo tee ' + output + '/capture_' + iface + '_' + timestamp + '.pcap | sudo tcpdump -r -';
+    } else {
+        command = 'sudo tcpdump -i ' + iface + ' -w - | sudo tee ../backup/capture_' + timestamp + '.pcap | sudo tee ' + output + '/capture_' + iface + '_' + timestamp + '.pcap | sudo tcpdump -r -';
+    }
+    /*
+    if (filter) {
         command = 'sudo tcpdump -i ' + iface + ' -C 1000 -w - ' + filter + '| sudo tee ../backup/capture_' + timestamp + '.pcap | sudo tee ' + output + '/capture_'+ iface +'_'+ timestamp + '.pcap | sudo tcpdump -r -';
     } else {
         command = 'sudo tcpdump -i ' + iface + ' -C 1000 -w - | sudo tee ../backup/capture_' + timestamp + '.pcap | sudo tee ' + output + '/capture_'+ iface +'_' + timestamp + '.pcap | sudo tcpdump -r -';
     }
+    */
     // Start the tcpdump process
     tcpdumpProcess = await Neutralino.os.spawnProcess(command);
     document.getElementById('outPutTextArea').value += command + '>>>> \n';
@@ -448,7 +455,7 @@ async function removeFile(file) {
     } catch (error) {
         console.error("Error removing file:", error);
     }
-    
+
 }
 
 
@@ -550,7 +557,7 @@ async function accessFileExplorer() {
         await Neutralino.os.execCommand('xdg-open ../backup');
     } catch (err) {
         console.error(`Error opening file explorer: ${err.message} (${err.name})`);
-    } 
+    }
 }
 
 
@@ -568,7 +575,7 @@ async function accessTerminal() {
         await Neutralino.os.execCommand('lxterminal');
     } catch (err) {
         console.error(`Error opening terminal: ${err.message} (${err.name})`);
-    } 
+    }
 }
 
 
@@ -586,12 +593,12 @@ async function extractSD() {
     let result = await Neutralino.os.showMessageBox('Confirmation', 'Are you sure you want to shut down the RPI?', 'YES_NO');
     if (result === 'NO') {
         return;
-    }else {
+    } else {
         try {
             await Neutralino.os.execCommand('sudo shutdown -h now');
         } catch (err) {
             console.error(`Error extracting SD card: ${err.message} (${err.name})`);
-        } 
+        }
     }
 }
 
