@@ -76,13 +76,20 @@ function moveCursorToEnd() {
  * @returns {Promise<void>} A promise that resolves when the network interfaces have been successfully retrieved and the select element updated.
  */
 async function getNetworkInterfaces() {
-    //let info = await Neutralino.os.execCommand('wmic nic get name');
     let info = await Neutralino.os.execCommand('ls /sys/class/net');
+    //let info = await Neutralino.os.execCommand('wmic nic get name');
     console.log(info.stdOut);
     let interfaces = info.stdOut.split('\n').filter(line => line.trim() !== '' && line.trim() !== 'Name').map((iface) => {
         return `<option value="${iface.trim()}">${iface.trim()}</option>`;
     });
+    interfaces.push('<option value="bridge">bridge</option>');
     document.getElementById('interface').innerHTML = interfaces.join('');
+    
+    document.getElementById('interface').addEventListener('change', async (event) => {
+        if (event.target.value === 'bridge') {
+            await setupBridge();
+        }
+    });
 }
 
 /**
