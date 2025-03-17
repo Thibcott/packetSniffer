@@ -263,6 +263,7 @@ async function startTcpdump() {
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
 
     let command = '';
+    console.log(output);
     if (filter) {
         command = 'sudo tcpdump -i ' + iface + ' -w - ' + filter + '| sudo tee ../backup/capture_' + timestamp + '.pcap | sudo tee ' + output + '/capture_' + timestamp + '.pcap | sudo tcpdump -r -';
     } else {
@@ -332,6 +333,7 @@ async function stopTcpdump() {
         console.warn('tcpdump process stopped');
         if(bridge){
             // remove the bridge if it was created
+            await Neutralino.os.execCommand('sudo ifconfig br0 down');
             await Neutralino.os.execCommand('sudo brctl delbr br0');
             console.warn('Bridge br0 removed');
             bridge = false; // reset the bridge flag
