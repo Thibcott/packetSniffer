@@ -331,12 +331,16 @@ async function stopTcpdump() {
         const button = document.getElementById('tcpdumpButton');
         button.textContent = 'Start Recording';
         console.warn('tcpdump process stopped');
-        if(bridge){
+        if (bridge) {
             // remove the bridge if it was created
-            await Neutralino.os.execCommand('sudo ifconfig br0 down');
-            await Neutralino.os.execCommand('sudo brctl delbr br0');
-            console.warn('Bridge br0 removed');
-            bridge = false; // reset the bridge flag
+            try {
+                await Neutralino.os.execCommand('sudo ifconfig br0 down');
+                await Neutralino.os.execCommand('sudo brctl delbr br0');
+                console.warn('Bridge br0 removed');
+                bridge = false; // reset the bridge flag
+            } catch (error) {
+                console.error("Error removing bridge:", error);
+            }
         }
     }
 }
