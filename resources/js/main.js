@@ -354,19 +354,6 @@ async function stopTcpdump() {
 }
 
 
-async function toggleFullScreen() {
-    try {
-        let isFullScreen = await Neutralino.window.isFullScreen();
-        if (isFullScreen) {
-            await Neutralino.window.exitFullScreen();
-        } else {
-            await Neutralino.window.setFullScreen();
-        }
-    } catch (err) {
-        console.error(`Error toggling full-screen mode: ${err.message} (${err.name})`);
-    }
-}
-
 
 /**
  * Asynchronously retrieves files from the backup folder, filters them to include only files,
@@ -463,6 +450,127 @@ async function removeFile(file) {
     }
     
 }
+
+
+// More options
+/**
+ * Toggles the full-screen mode of the application window.
+ * 
+ * This function checks the current full-screen status of the window using
+ * `Neutralino.window.isFullScreen()`. If the window is in full-screen mode,
+ * it exits full-screen mode using `Neutralino.window.exitFullScreen()`.
+ * Otherwise, it sets the window to full-screen mode using `Neutralino.window.setFullScreen()`.
+ * 
+ * @async
+ * @function toggleFullScreen
+ * @returns {Promise<void>} A promise that resolves when the full-screen mode is toggled.
+ * @throws {Error} Throws an error if there is an issue toggling the full-screen mode.
+ */
+async function toggleFullScreen() {
+    try {
+        let isFullScreen = await Neutralino.window.isFullScreen();
+        if (isFullScreen) {
+            await Neutralino.window.exitFullScreen();
+        } else {
+            await Neutralino.window.setFullScreen();
+        }
+    } catch (err) {
+        console.error(`Error toggling full-screen mode: ${err.message} (${err.name})`);
+    }
+}
+
+/**
+ * Reboots the Raspberry Pi (RPI) by executing the 'sudo reboot' command.
+ * 
+ * This function uses the Neutralino library to execute the reboot command.
+ * If an error occurs during the execution, it logs the error message to the console.
+ * 
+ * @async
+ * @function rebootRPI
+ * @returns {Promise<void>} A promise that resolves when the command execution is complete.
+ * @throws Will log an error message to the console if the command execution fails.
+ */
+async function rebootRPI() {
+    try {
+        await Neutralino.os.execCommand('sudo reboot');
+    } catch (err) {
+        console.error(`Error rebooting RPI: ${err.message} (${err.name})`);
+    }
+}
+
+/**
+ * Asynchronously turns off the Raspberry Pi by executing the 'sudo poweroff' command.
+ * 
+ * @async
+ * @function turnOffRPI
+ * @returns {Promise<void>} A promise that resolves when the command is executed.
+ * @throws {Error} If there is an error executing the command.
+ */
+async function turnOffRPI() {
+    try {
+        await Neutralino.os.execCommand('sudo poweroff');
+    } catch (err) {
+        console.error(`Error turning off RPI: ${err.message} (${err.name})`);
+    }
+}
+
+/**
+ * Asynchronously restarts the application.
+ * 
+ * This function attempts to restart the application using the Neutralino framework.
+ * If an error occurs during the restart process, it logs the error message to the console.
+ * 
+ * @async
+ * @function restartApp
+ * @returns {Promise<void>} A promise that resolves when the application has been restarted.
+ * @throws {Error} If there is an issue with restarting the application.
+ */
+async function restartApp() {
+    try {
+        await Neutralino.app.restartProcess({ args: '--restarted' });
+    } catch (err) {
+        console.error(`Error restarting app: ${err.message} (${err.name})`);
+    }
+}
+
+/**
+ * Asynchronously opens the file explorer to the specified directory.
+ * 
+ * This function attempts to execute the command to open the file explorer
+ * to the '../backup' directory. If an error occurs during the execution
+ * of the command, it logs the error message to the console.
+ * 
+ * @async
+ * @function accessFileExplorer
+ * @returns {Promise<void>} A promise that resolves when the command execution is complete.
+ * @throws {Error} If there is an issue executing the command to open the file explorer.
+ */
+async function accessFileExplorer() {
+    try {
+        await Neutralino.os.execCommand('xdg-open ../backup');
+    } catch (err) {
+        console.error(`Error opening file explorer: ${err.message} (${err.name})`);
+    } 
+}
+
+
+/**
+ * Opens a terminal using the Neutralino OS execCommand.
+ * If an error occurs while attempting to open the terminal, it logs the error message to the console.
+ * 
+ * @async
+ * @function accessTerminal
+ * @returns {Promise<void>} A promise that resolves when the terminal is successfully opened.
+ * @throws {Error} Throws an error if there is an issue opening the terminal.
+ */
+async function accessTerminal() {
+    try {
+        await Neutralino.os.execCommand('lxterminal');
+    } catch (err) {
+        console.error(`Error opening terminal: ${err.message} (${err.name})`);
+    } 
+}
+
 
 //==========================================
 // Neutralino setup

@@ -95,6 +95,7 @@ select{
     background-color: none;
     border: none;
 }
+
 #chooseParams, #historyPageContent,
 #helpPageContent, #filterPageContent {
     width: 100%;
@@ -168,3 +169,13 @@ select{
     }
 }
 
+#moreOption {
+   
+    padding: 4px;
+    /* Style for the more options section */
+    button {
+        padding: 8px 12px;
+        margin: 4px;
+        /* Style buttons inside the more options section */
+    }
+}
