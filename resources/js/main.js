@@ -47,9 +47,10 @@ async function setupBridge() {
 }
 
 
+
 /**
  * Moves the cursor to the end of the text in the textarea with the id 'outPutTextArea'.
- * If the element is not found, logs an error message to the console.
+ * If the element is not found, logs an error to the console.
  */
 function moveCursorToEnd() {
     const input = document.getElementById('outPutTextArea');
@@ -93,6 +94,36 @@ async function getNetworkInterfaces() {
             await setupBridge();
         }
     });
+}
+
+
+async function getConnectedDevices() {
+    let interfacesInfo = await Neutralino.os.execCommand('ip -o -4 addr list | awk \'{print $2, $4}\'');
+    console.log(interfacesInfo.stdOut);
+    let ip = interfacesInfo.stdOut.split('\n')
+
+    document.getElementById("ipDevice1").innerHTML = "";
+    document.getElementById("ipDevice2").innerHTML = "";
+    if (ip[1]) {
+        document.getElementById("ipDevice1").innerHTML =   ip[1];
+    }
+    if (ip[2]) {
+        document.getElementById("ipDevice2").innerHTML =   ip[2];
+    }
+    if (ip[3]) {
+        document.getElementById("ipDevice1").innerHTML =   ip[3];
+    }
+    /*
+    document.getElementById("ipDevice1").innerHTML = "IP device 1 : No device connected";
+    document.getElementById("ipDevice2").innerHTML = "IP device 2 : No device connected";
+    if (ip[0]) {
+        document.getElementById("ipDevice1").innerHTML = "IP device 1 : " + ip[0];
+    }
+    if (ip[1]) {
+        document.getElementById("ipDevice2").innerHTML = "IP device 2 : " + ip[1];
+    }
+    */
+    //console.log(`Your connected devices: ${info.stdOut}`);
 }
 
 /**
@@ -179,32 +210,6 @@ function applyFilter() {
     document.getElementById('filterP').value = filter;
     document.getElementById('filter').value = filter;
 
-}
-
-
-/**
- * Asynchronously retrieves the IP addresses of connected devices from the network interface
- * and updates the HTML elements with the IDs "ipDevice1" and "ipDevice2" with the IP addresses.
- * If no devices are connected, it sets the inner HTML to indicate no devices are connected.
- *
- * @async
- * @function getConnectedDevices
- * @returns {Promise<void>} A promise that resolves when the IP addresses have been retrieved and the HTML elements updated.
- */
-async function getConnectedDevices() {
-    //TODO : get from network interface we use 
-    let info = await Neutralino.os.execCommand(`ip route | grep default | awk '{print $9}'`);
-    let ip = info.stdOut.split('\n')
-
-    document.getElementById("ipDevice1").innerHTML = "IP device 1 : No device connected";
-    document.getElementById("ipDevice2").innerHTML = "IP device 2 : No device connected";
-    if (ip[0]) {
-        document.getElementById("ipDevice1").innerHTML = "IP device 1 : " + ip[0];
-    }
-    if (ip[1]) {
-        document.getElementById("ipDevice2").innerHTML = "IP device 2 : " + ip[1];
-    }
-    //console.log(`Your connected devices: ${info.stdOut}`);
 }
 
 
