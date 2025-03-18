@@ -97,18 +97,284 @@ async function getNetworkInterfaces() {
 }
 
 
+async function getConnectedDevices() {
+    let interfacesInfo = await Neutralino.os.execCommand('ip -o -4 addr list | awk \'{print $2, $4}\'');
+    console.log(interfacesInfo.stdOut);
+    let ip = interfacesInfo.stdOut.split('\n').filter(line => line.includes('eth0') || line.includes('eth1'));
+
+    document.getElementById("ipDevice1").innerHTML = "ETH0 : No device connected";
+    document.getElementById("ipDevice2").innerHTML = "ETH1 : No device connected";
+
+    ip.forEach((line) => {
+        if (line.includes('eth0')) {
+            document.getElementById("ipDevice1").innerHTML = line;
+        }
+        if (line.includes('eth1')) {
+            document.getElementById("ipDevice2").innerHTML = line;
+        }
+    });
+}
+
 /**
- * Asynchronously retrieves information about connected devices on network interfaces (eth0 and eth1)
- * and updates the HTML elements with the corresponding IP addresses.
+ * Updates the filter values based on the input fields in the document.
+ * Retrieves the values from the input fields with IDs 'protocol', 'port', 'ipSource', 'ipDestination', and 'direction',
+ * and then calls the buildFilter function to apply the updated filter.
+ */
+function updateFilter() {
+    protocol = document.getElementById('protocol').value;
+    port = document.getElementById('port').value;
+    ipSource = document.getElementById('ipSource').value;
+    ipDestination = document.getElementById('ipDestination').value;
+    direction = document.getElementById('direction').value;
+
+    buildFilter();
+}
+
+/**
+ * Builds a filter string based on the provided protocol, port, source IP, destination IP, and direction.
+ * The filter string is constructed in the following order:
+ * - Protocol
+ * - Port
+ * - Source IP
+ * - Destination IP
+ * - Direction (source or destination)
  * 
- * This function uses the Neutralino.os.execCommand to execute a shell command that lists the network
- * interfaces and their IP addresses. It then parses the output to find the IP addresses for eth0 and eth1
- * and updates the HTML elements with IDs "ipDevice1" and "ipDevice2" respectively.
+ * The resulting filter string is set to the value of the HTML element with the ID 'filter'.
  * 
- * If no device is connected to eth0 or eth1, the corresponding HTML element will display "No device connected".
+ * @global
+ * @function buildFilter
+ * @param {string} [protocol] - The protocol to be included in the filter (e.g., "tcp", "udp").
+ * @param {number} [port] - The port number to be included in the filter.
+ * @param {string} [ipSource] - The source IP address to be included in the filter.
+ * @param {string} [ipDestination] - The destination IP address to be included in the filter.
+ * @param {string} [direction] - The direction of the traffic to be included in the filter ("src" or "dst").
+ */
+function buildFilter() {
+    filter = "";
+
+    if (protocol) {
+        filter += protocol + " ";
+    }
+    if (port) {
+        filter += "port " + port + " ";
+    }
+    if (ipSource) {
+        filter += "src host " + ipSource + " ";
+    }
+    if (ipDestination) {
+        filter += "dst host " + ipDestination + " ";
+    }
+
+    // Ensure direction is added correctly
+    if (direction) {
+        if (direction === "src" && ipSource) {
+            filter += "and src ";
+        } else if (direction === "dst" && ipDestination) {
+            filter += "and dst ";
+        }
+    }
+
+    // Remove any trailing "and src" or "and dst"
+    filter = filter.trim();
+    if (filter.endsWith("and src") || filter.endsWith("and dst")) {
+        filter = filter.substring(0, filter.lastIndexOf("and")).trim();
+    }
+
+    //console.log("Filter: " + filter);
+
+    document.getElementById('filter').value = filter;
+}
+
+/**
+ * Applies the current filter to the application.
  * 
+ * This function updates the filter, displays an alert with the applied filter,
+ * and sets the value of the HTML elements with IDs 'filterP' and 'filter' to the filter value.
+ * 
+ * @function
+ */
+function applyFilter() {
+    updateFilter();
+    alert("Filter applied: " + filter);
+    document.getElementById('filterP').value = filter;
+    document.getElementById('filter').value = filter;
+
+}
+
+
+/**
+ * Opens a folder dialog for the user to select an output file and sets the selected path
+ * to the value of the HTML element with the id 'output'.
+ *
+ * @async
+ * @function chooseOutputFile
+ * @returns {Promise<void>} A promise that resolves when the folder dialog is closed and the path is set.
+ */
+async function chooseOutputFile() {
+    let entry = await Neutralino.os.showFolderDialog('Select output file', {
+        defaultPath: '/home/user/app/capture'
+    });
+    if (entry) {
+        document.getElementById('output').value = entry;
+    }
+}
+
+
+let tcpdumpProcess = null;
+
+/**
+ * Starts the tcpdump process to capture network packets.
+ * If a tcpdump process is already running, it stops the process first.
+ * 
+ * The command to start tcpdump is constructed based on the form inputs:
+ * - `output`: The directory where the capture file will be saved.
+ * - `interface`: The network interface to capture packets from.
+ * - `filter`: (Optional) A filter to apply to the tcpdump command.
+ * 
+ * The capture file is saved in two locations:
+ * - A backup directory (`../backup/`) with a timestamped filename.
+ * - The specified output directory with a timestamped filename.
+ * 
+ * The command is displayed in the `cmdPreview` element and the output is shown in the `outPutTextArea` element.
+ * The button label is updated to 'Stop' when the process starts and 'Start Recording' when the process stops.
+ * 
+ * @async
+ * @function startTcpdump
+ * @returns {Promise<void>} A promise that resolves when the tcpdump process is started or stopped.
+ */
+async function startTcpdump() {
+    if (tcpdumpProcess) {
+        await stopTcpdump();
+        return;
+    }
+
+    const form = document.getElementById('tcpdumpForm');
+    const output = form.elements['output'].value;
+    const iface = form.elements['interface'].value;
+    const filter = form.elements['filter'].value;
+    //let command = 'sudo tcpdump -i eth0 -w - | sudo tee capture.pcap | tcpdump -r -';
+    //let command = 'sudo tcpdump -i eth0 -w - | sudo tee backup/capture1.pcap | sudo tee ../test/capture2.pcap | sudo tcpdump -r -';
+    let now = new Date();
+    let year = now.getFullYear();
+    let month = String(now.getMonth() + 1).padStart(2, '0');
+    let day = String(now.getDate()).padStart(2, '0');
+    let hours = String(now.getHours()).padStart(2, '0');
+    let minutes = String(now.getMinutes()).padStart(2, '0');
+    let seconds = String(now.getSeconds()).padStart(2, '0');
+    let timestamp = `${year}-${month}-${day}-${hours}-${minutes}-${seconds}`;
+
+    console.log(`Capture file will be saved as capture_${timestamp}.pcap`);
+
+    let command = '';
+    /*
+    if (filter) {
+        command = 'sudo tcpdump -i ' + iface + ' -w - ' + filter + '| sudo tee ../backup/capture_' + timestamp + '.pcap | sudo tee ' + output + '/capture_' + iface + '_' + timestamp + '.pcap | sudo tcpdump -r -';
+    } else {
+        command = 'sudo tcpdump -i ' + iface + ' -w - | sudo tee ../backup/capture_' + timestamp + '.pcap | sudo tee ' + output + '/capture_' + iface + '_' + timestamp + '.pcap | sudo tcpdump -r -';
+    }
+    */
+
+    if (filter) {
+        command = 'sudo tcpdump -i ' + iface + ' -C 1000 -w - ' + filter + ' | sudo tee ../backup/capture_' + timestamp + '.pcap | sudo tee ' + output + '/capture_'+ iface +'_'+ timestamp + '.pcap | sudo tcpdump -r -';
+    } else {
+        command = 'sudo tcpdump -i ' + iface + ' -C 1000 -w - | sudo tee ../backup/capture_' + timestamp + '.pcap | sudo tee ' + output + '/capture_'+ iface +'_' + timestamp + '.pcap | sudo tcpdump -r -';
+    }
+    
+    // Start the tcpdump process
+    tcpdumpProcess = await Neutralino.os.spawnProcess(command);
+    document.getElementById('outPutTextArea').value += command + '>>>> \n';
+
+    // set the button label to stop
+    const button = document.getElementById('tcpdumpButton');
+    button.textContent = 'Stop';
+
+    //  TODO show command preview  
+    document.getElementById('cmdPreview').innerHTML = `${command}`;
+
+    // show packet
+    Neutralino.events.on('spawnedProcess', (evt) => {
+        if (tcpdumpProcess && tcpdumpProcess.id === evt.detail.id) {
+            let outputLength = document.getElementById('outPutTextArea').value.length;
+            if (outputLength > 1024) {
+                document.getElementById('outPutTextArea').value = "";
+            }
+
+            switch (evt.detail.action) {
+                case 'stdOut':
+                    //console.log(evt.detail.data);
+                    document.getElementById('outPutTextArea').value += evt.detail.data;
+                    break;
+                case 'stdErr':
+                    //console.error(evt.detail.data);
+                    document.getElementById('outPutTextArea').value += evt.detail.data;
+                    break;
+                case 'exit':
+                    console.warn(`command exit code: ${evt.detail.data}`);
+                    document.getElementById('outPutTextArea').value += evt.detail.data;
+                    tcpdumpProcess = null;
+
+                    //set button in start
+                    button.textContent = 'Start Recording';
+                    break;
+            }
+            moveCursorToEnd();
+        }
+    });
+}
+
+
+/**
+ * Stops the tcpdump process if it is running.
+ * 
+ * This function checks if the `tcpdumpProcess` is defined. If it is, it sends a kill command to stop the process,
+ * sets `tcpdumpProcess` to null, updates the button text to 'Start Recording', and logs a warning message indicating
+ * that the tcpdump process has been stopped.
+ * 
+ * @async
+ * @function stopTcpdump
+ * @returns {Promise<void>} A promise that resolves when the tcpdump process has been stopped.
+ */
+async function stopTcpdump() {
+    if (tcpdumpProcess) {
+        console.warn('stop')
+        await Neutralino.os.execCommand(`kill ${tcpdumpProcess.pid}`);
+        tcpdumpProcess = null;
+        const button = document.getElementById('tcpdumpButton');
+        button.textContent = 'Start Recording';
+        console.warn('tcpdump process stopped');
+        if (bridge) {
+            // remove the bridge if it was created
+            try {
+                await Neutralino.os.execCommand('sudo ifconfig br0 down');
+                await Neutralino.os.execCommand('sudo brctl delbr br0');
+                console.warn('Bridge br0 removed');
+                bridge = false; // reset the bridge flag
+            } catch (error) {
+                console.error("Error removing bridge:", error);
+            }
+        }
+    }
+}
+
+
+
+/**
+ * Asynchronously retrieves files from the backup folder, filters them to include only files,
+ * and populates the history table with the file details.
+ * 
+ * The function reads the directory contents of the backup folder, filters out directories,
+ * and then extracts the date and name from each file's name. It then creates a new row in the
+ * history table for each file, displaying the date, name, and a button to save the file.
+ * 
+ * @async
+ * @function getFileFromBackupFolder
  * @returns {Promise<void>} A promise that resolves when the operation is complete.
  */
+async function getFileFromBackupFolder() {
+    let backupFolder = '../backup';
+    let files = await Neutralino.filesystem.readDirectory(backupFolder);
+
+    let fileList = files.filter(file => file.type === 'FILE').map(file => file.entry);
     console.warn('Backup files:', fileList);
 
     // Get file details including creation/modification date
