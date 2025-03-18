@@ -102,8 +102,8 @@ async function getConnectedDevices() {
     console.log(interfacesInfo.stdOut);
     let ip = interfacesInfo.stdOut.split('\n').filter(line => line.includes('eth0') || line.includes('eth1'));
 
-    document.getElementById("ipDevice1").innerHTML = "ETH0 : No device connected";
-    document.getElementById("ipDevice2").innerHTML = "ETH1 : No device connected";
+    document.getElementById("ipDevice1").innerHTML = "eth0 : No device connected";
+    document.getElementById("ipDevice2").innerHTML = "eth1 : No device connected";
 
     ip.forEach((line) => {
         if (line.includes('eth0')) {
