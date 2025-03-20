@@ -98,13 +98,21 @@ async function getNetworkInterfaces() {
 
 
 async function getConnectedDevices() {
+    // get the connected devices and their IP addresses
+    // using the command 'ip -o -4 addr list | awk '{print $2, $4}''   
+    // this command lists the network interfaces and their IPv4 addresses
+    // we filter the output to get only eth0 and eth1
     let interfacesInfo = await Neutralino.os.execCommand('ip -o -4 addr list | awk \'{print $2, $4}\'');
     console.log(interfacesInfo.stdOut);
     let ip = interfacesInfo.stdOut.split('\n').filter(line => line.includes('eth0') || line.includes('eth1'));
 
+
+    // update the HTML elements with the IP addresses of eth0 and eth1
+    // if no device is connected, set the innerHTML to "No device connected"
     document.getElementById("ipDevice1").innerHTML = "eth0 : No device connected";
     document.getElementById("ipDevice2").innerHTML = "eth1 : No device connected";
 
+    // loop through the IP addresses and update the innerHTML of the corresponding elements
     ip.forEach((line) => {
         if (line.includes('eth0')) {
             document.getElementById("ipDevice1").innerHTML = line;
@@ -268,12 +276,12 @@ async function startTcpdump() {
     let command = '';
 
     if (filter) {
-        command = 'sudo tcpdump -i ' + iface + ' -w - ' + filter + ' | sudo tee ../backup/capture_' + timestamp + '.pcap | sudo tee ' + output + '/capture_'+ iface +'_'+ timestamp + '.pcap | sudo tcpdump -C 1000 -r -';
+        command = 'sudo tcpdump -i ' + iface + ' -w - ' + filter + ' | sudo tee ../backup/capture_' + timestamp + '.pcap | sudo tee ' + output + '/capture_' + iface + '_' + timestamp + '.pcap | sudo tcpdump -C 1000 -r -';
     } else {
-        command = 'sudo tcpdump -i ' + iface + ' -w - | sudo tee ../backup/capture_' + timestamp + '.pcap | sudo tee ' + output + '/capture_'+ iface +'_' + timestamp + '.pcap | sudo tcpdump -C 1000 -r -';
+        command = 'sudo tcpdump -i ' + iface + ' -w - | sudo tee ../backup/capture_' + timestamp + '.pcap | sudo tee ' + output + '/capture_' + iface + '_' + timestamp + '.pcap | sudo tcpdump -C 1000 -r -';
     }
- 
-    
+
+
     // Start the tcpdump process
     tcpdumpProcess = await Neutralino.os.spawnProcess(command);
     document.getElementById('outPutTextArea').value += command + '>>>> \n';
@@ -430,26 +438,34 @@ async function copyFileToUserFolder(file) {
 }
 
 
+
 /**
- * Asynchronously removes a file from the backup directory.
+ * Asynchronously removes a specified file after user confirmation.
  *
  * @param {string} file - The name of the file to be removed.
- * @returns {Promise<void>} A promise that resolves when the file is removed.
- * @throws Will throw an error if the file removal fails.
+ * @returns {Promise<void>} - A promise that resolves when the file is removed or the operation is cancelled.
+ * @throws {Error} - Throws an error if the file removal fails.
  */
 async function removeFile(file) {
-    try {
-        await Neutralino.os.execCommand('sudo rm ../backup/' + file)
-        console.log(`File ${file} removed`);
-        await getFileFromBackupFolder();
-    } catch (error) {
-        console.error("Error removing file:", error);
+    let result = await Neutralino.os.showMessageBox('Confirmation', `Are you sure you want to delete the file ${file}?`, 'YES_NO');
+    if (result === 'NO') {
+        return;
+    } else if (result === 'CANCEL') {
+        console.error("Operation cancelled by user.");
+        return;
+    } else if (result === 'YES') {
+        try {
+            await Neutralino.os.execCommand('sudo rm ../backup/' + file);
+            console.log(`File ${file} removed`);
+            await getFileFromBackupFolder();
+        } catch (error) {
+            console.error("Error removing file:", error);
+        }
     }
-
 }
 
 
-// More options
+// ---- More options ----
 /**
  * Toggles the full-screen mode of the application window.
  * 
