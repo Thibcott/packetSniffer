@@ -251,7 +251,7 @@ async function startTcpdump() {
     const form = document.getElementById('tcpdumpForm');
     const output = form.elements['output'].value;
     const iface = form.elements['interface'].value;
-    const filter = form.elements['filter'].value;
+    const filterValue = form.elements['filter'].value;
     //let command = 'sudo tcpdump -i eth0 -w - | sudo tee capture.pcap | tcpdump -r -';
     //let command = 'sudo tcpdump -i eth0 -w - | sudo tee backup/capture1.pcap | sudo tee ../test/capture2.pcap | sudo tcpdump -r -';
     let now = new Date();
@@ -266,19 +266,13 @@ async function startTcpdump() {
     console.log(`Capture file will be saved as capture_${timestamp}.pcap`);
 
     let command = '';
-    /*
-    if (filter) {
-        command = 'sudo tcpdump -i ' + iface + ' -w - ' + filter + '| sudo tee ../backup/capture_' + timestamp + '.pcap | sudo tee ' + output + '/capture_' + iface + '_' + timestamp + '.pcap | sudo tcpdump -r -';
-    } else {
-        command = 'sudo tcpdump -i ' + iface + ' -w - | sudo tee ../backup/capture_' + timestamp + '.pcap | sudo tee ' + output + '/capture_' + iface + '_' + timestamp + '.pcap | sudo tcpdump -r -';
-    }
-    */
 
     if (filter) {
-        command = 'sudo tcpdump -i ' + iface + ' -C 1000 -w - ' + filter + ' | sudo tee ../backup/capture_' + timestamp + '.pcap | sudo tee ' + output + '/capture_'+ iface +'_'+ timestamp + '.pcap | sudo tcpdump -r -';
+        command = 'sudo tcpdump -i ' + iface + ' -w - ' + filter + ' | sudo tee ../backup/capture_' + timestamp + '.pcap | sudo tee ' + output + '/capture_'+ iface +'_'+ timestamp + '.pcap | sudo tcpdump -C 1000 -r -';
     } else {
-        command = 'sudo tcpdump -i ' + iface + ' -C 1000 -w - | sudo tee ../backup/capture_' + timestamp + '.pcap | sudo tee ' + output + '/capture_'+ iface +'_' + timestamp + '.pcap | sudo tcpdump -r -';
+        command = 'sudo tcpdump -i ' + iface + ' -w - | sudo tee ../backup/capture_' + timestamp + '.pcap | sudo tee ' + output + '/capture_'+ iface +'_' + timestamp + '.pcap | sudo tcpdump -C 1000 -r -';
     }
+ 
     
     // Start the tcpdump process
     tcpdumpProcess = await Neutralino.os.spawnProcess(command);
@@ -533,6 +527,26 @@ async function restartApp() {
         await Neutralino.app.restartProcess({ args: '--restarted' });
     } catch (err) {
         console.error(`Error restarting app: ${err.message} (${err.name})`);
+    }
+}
+
+
+/**
+ * Asynchronously turn off the application.
+ * 
+ * This function attempts to trun off the application using the Neutralino framework.
+ * If an error occurs during the exit process, it logs the error message to the console.
+ * 
+ * @async
+ * @function turnOffApp
+ * @returns {Promise<void>} A promise that resolves when the application has been trun off.
+ * @throws {Error} If there is an issue with exit the application.
+ */
+async function turnOffApp() {
+    try {
+        await Neutralino.app.exit();
+    } catch (err) {
+        console.error(`Error turning off app: ${err.message} (${err.name})`);
     }
 }
 

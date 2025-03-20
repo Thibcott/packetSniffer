@@ -57,8 +57,11 @@ Key Elements:
   <!-- Your app's source files -->
   <script src="/js/main.js"></script>
   <script>
-    window.onload = getConnectedDevices();
-    window.onload = getFileFromBackupFolder();
+    
+    window.onload = function() {
+      getConnectedDevices();
+      getFileFromBackupFolder();
+    };
   </script>
 </body>
 
