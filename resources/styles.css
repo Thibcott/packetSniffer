@@ -144,9 +144,10 @@ select{
 }
 
 #historyTable {
-    width: 100%;
+    
+    width: 95%;
     border-collapse: collapse;
-    margin-top: 10px;
+    margin: 10px ;
     text-align: left;
     /* Style for the history table */
 
