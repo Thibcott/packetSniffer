@@ -103,7 +103,8 @@ select{
 
 #chooseParams, #historyPageContent,
 #helpPageContent, #filterPageContent {
-    width: 100%;
+    width: 99%;
+    padding: 4px;
     padding-top: 65px;
     /* Style for specific page content sections */
 }
@@ -150,10 +151,10 @@ select{
 
 #historyTable {
     
-    width: 95%;
+    width: 98%;
     border-collapse: collapse;
-    margin: 10px ;
     text-align: left;
+    margin: 3px;
     /* Style for the history table */
 
     td {

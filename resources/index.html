@@ -41,7 +41,6 @@ Sections:
 <body>
   <div id="navbar">
     <ul>
-
       <li>
         <a class="active" href="index.html">Packet recording</a>
       </li>
@@ -65,11 +64,8 @@ Sections:
           <td><label for="interface">Interface :</label></td>
             <td>
             <select id="interface" name="interface">
-             
             </select>
-            
-            
-          <td rowspan="1" ></td>
+          <td rowspan="2" id="packetCount">Packet count : </td>
         </tr>
         <tr>
           <td><label for="output">Output folder :</label></td>
@@ -78,7 +74,7 @@ Sections:
             <button type="button" style="width: 17%;" onclick="chooseOutputFile()">
               <img src="icons/browse-folder-30.png" alt="More" style="width: 18px; height: 14px;">
             </button>
-          <td rowspan="1"></td>
+          <td rowspan="1" ></td>
           </td>
         </tr>
         <tr>
@@ -91,7 +87,7 @@ Sections:
               <img src="icons/edit-24.png" alt="More" style="width: 18px; height: 14px;">
             </button>
           </td>
-          <!--<td rowspan="2" id="cmdPreview" style="font-size:xx-small;"></td>-->
+          <td rowspan="2" id="recordStartTime">Last record start at : </td>
         </tr>
         <tr>
           <td colspan="2">
@@ -113,7 +109,6 @@ Sections:
   <script src="/js/main.js"></script>
 
   <script>
-    
     // load filter from local storage
     function loadFilter() {
       const filterValue = localStorage.getItem('tcpdumpFilter');
@@ -129,9 +124,7 @@ Sections:
       getConnectedDevices();
       getNetworkInterfaces();
     };
-    
   </script>
-
 </body>
 
 </html>
