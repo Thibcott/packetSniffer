@@ -80,13 +80,20 @@ function moveCursorToEnd() {
  * @returns {Promise<void>} A promise that resolves when the network interfaces have been successfully retrieved and the select element updated.
  */
 async function getNetworkInterfaces() {
+    // get the network interfaces available on the system
     let info = await Neutralino.os.execCommand('ls /sys/class/net');
     //let info = await Neutralino.os.execCommand('wmic nic get name');
     console.log(info.stdOut);
+    // filter the output to get only the interface names
     let interfaces = info.stdOut.split('\n').filter(line => line.trim() !== '' && line.trim() !== 'Name').map((iface) => {
         return `<option value="${iface.trim()}">${iface.trim()}</option>`;
     });
-    interfaces.push('<option value="bridge">bridge</option>');
+    
+   
+    // add the bridge interface if it does not exist
+    if (!interfaces.includes('br0')) {
+        interfaces.push('<option value="br0">bridge</option>');
+    }
     document.getElementById('interface').innerHTML = interfaces.join('');
 
     document.getElementById('interface').addEventListener('change', async (event) => {

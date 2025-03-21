@@ -110,7 +110,7 @@ select{
 
 #outPutTextArea {
     width: 97%;
-    height: 230px;
+    height: 170px;
     /* Style for the output text area */
 }
 
@@ -176,15 +176,21 @@ select{
 }
 
 #moreOption {
+    
     padding: 4px;
     /* Style for the more options section */
     button {
         padding: 8px 12px;
-        margin: 4px;
         /* Style buttons inside the more options section */
     }
     
     div {
+        margin-left: 3px;
+        margin-right: 3px;
         text-align: center;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        grid-template-rows: repeat(2, auto);
+        gap: 5px;
     }
 }
