@@ -697,6 +697,16 @@ async function extractSD() {
 }
 
 
+/**
+ * Checks for updates by comparing the latest commit hash from the remote repository
+ * with the local repository. If an update is available, prompts the user to update
+ * and pulls the latest changes if the user agrees.
+ *
+ * @async
+ * @function updateApp
+ * @returns {Promise<void>} A promise that resolves when the update check is complete.
+ * @throws Will log an error message if there is an issue checking for updates.
+ */
 async function updateApp() {
     try {
         // Fetch the latest commit hash from the remote repository
