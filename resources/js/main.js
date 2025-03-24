@@ -88,8 +88,8 @@ async function getNetworkInterfaces() {
     let interfaces = info.stdOut.split('\n').filter(line => line.trim() !== '' && line.trim() !== 'Name').map((iface) => {
         return `<option value="${iface.trim()}">${iface.trim()}</option>`;
     });
-    
-   
+
+
     // add the bridge interface if it does not exist
     if (!interfaces.includes('br0')) {
         interfaces.push('<option value="br0">bridge</option>');
@@ -288,7 +288,7 @@ async function startTcpdump() {
     let minutes = String(now.getMinutes()).padStart(2, '0');
     let seconds = String(now.getSeconds()).padStart(2, '0');
     let timestamp = `${year}-${month}-${day}-${hours}-${minutes}-${seconds}`;
-    
+
     // set the output file name with the timestamp
     document.getElementById('recordStartTime').innerHTML = "Last record start at : <br>" + timestamp; // 
 
@@ -326,7 +326,7 @@ async function startTcpdump() {
             let outputLength = document.getElementById('outPutTextArea').value.length;
             if (outputLength > 1024) {
                 document.getElementById('outPutTextArea').value = "";
-                
+
             }
 
             // check if the output contains 'IP' to count packets
@@ -337,7 +337,7 @@ async function startTcpdump() {
                 //console.log(`Packet count: ${packetCount}`);
                 document.getElementById('packetCount').innerHTML = "Packet count : " + packetCount;
             }
-            
+
             // handle the output based on the action type
             switch (evt.detail.action) {
                 case 'stdOut':
@@ -422,7 +422,7 @@ async function isTcpdumpRun(link) {
             //console.warn('Stopping tcpdump...');
             // stop tcpdump and navigate to the link
             await stopTcpdump();
-            location.replace(link);    
+            location.replace(link);
         }
     }
 }
@@ -693,6 +693,32 @@ async function extractSD() {
         } catch (err) {
             console.error(`Error extracting SD card: ${err.message} (${err.name})`);
         }
+    }
+}
+
+
+async function updateApp() {
+    try {
+        // Fetch the latest commit hash from the remote repository
+        let remoteCommit = await Neutralino.os.execCommand('git ls-remote origin -h refs/heads/main');
+        let remoteHash = remoteCommit.stdOut.split('\t')[0];
+
+        // Fetch the latest commit hash from the local repository
+        let localCommit = await Neutralino.os.execCommand('git rev-parse HEAD');
+        let localHash = localCommit.stdOut.trim();
+
+        // Compare the hashes to determine if an update is needed
+        if (remoteHash !== localHash) {
+            let result = await Neutralino.os.showMessageBox('Update Available', 'A new update is available. Do you want to update now?', 'YES_NO');
+            if (result === 'YES') {
+                await Neutralino.os.execCommand('git pull origin main');
+                await restartApp();
+            }
+        } else {
+            await Neutralino.os.showMessageBox('Up to Date', 'The application is up to date.', 'OK');
+        }
+    } catch (err) {
+        console.error(`Error checking for updates: ${err.message} (${err.name})`);
     }
 }
 
