@@ -409,17 +409,17 @@ async function stopTcpdump() {
  * @returns {Promise<void>} - A promise that resolves when the navigation is complete.
  */
 async function isTcpdumpRun(link) {
-    console.log(link);
+    //console.log(link);
     if (isTcpdumpRunning == false) {
         // if tcpdump is not running, navigate to the link
         location.replace(link);
     } else {
         // if tcpdump is running, show a warning message and ask the user to stop tcpdump
         let messageBoxResult = await Neutralino.os.showMessageBox('Warning', 'Tcpdump is running. Are you sure do you want to stop the tcpdump process ?', 'OK_CANCEL');
-        if (messageBoxResult.result === 'CANCEL') {
-            return;
+        if (messageBoxResult == 'CANCEL') {
+            //console.log('Operation cancelled by user.');
         } else {
-            console.warn('Stopping tcpdump...');
+            //console.warn('Stopping tcpdump...');
             // stop tcpdump and navigate to the link
             await stopTcpdump();
             location.replace(link);    
