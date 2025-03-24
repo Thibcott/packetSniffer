@@ -165,8 +165,9 @@ function updateFilter() {
  * @param {string} [direction] - The direction of the traffic to be included in the filter ("src" or "dst").
  */
 function buildFilter() {
+    // Initialize the filter string
     filter = "";
-
+    // Add the protocol, port, source IP, and destination IP to the filter string
     if (protocol) {
         filter += protocol + " ";
     }
@@ -234,8 +235,12 @@ async function chooseOutputFile() {
     }
 }
 
-
+// tcpdump process
+// variable to store the tcpdump process
 let tcpdumpProcess = null;
+
+// flag to check if tcpdump is running
+let isTcpdumpRunning = false;
 
 /**
  * Starts the tcpdump process to capture network packets.
@@ -311,6 +316,9 @@ async function startTcpdump() {
     document.getElementById('cmdPreview').innerHTML = `${command}`;
 
     let packetCount = 0;
+    isTcpdumpRunning = true;
+    console.log("tcpdump is running : ", isTcpdumpRunning);
+
     // show packet
     Neutralino.events.on('spawnedProcess', (evt) => {
         // check if the event is from the tcpdump process
@@ -344,7 +352,8 @@ async function startTcpdump() {
                     console.warn(`command exit code: ${evt.detail.data}`);
                     document.getElementById('outPutTextArea').value += evt.detail.data;
                     tcpdumpProcess = null;
-
+                    isTcpdumpRunning = false;
+                    console.log("tcpdump is running : ", isTcpdumpRunning);
                     //set button in start
                     button.textContent = 'Start Recording';
                     break;
@@ -372,6 +381,8 @@ async function stopTcpdump() {
         console.warn('stop')
         await Neutralino.os.execCommand(`kill ${tcpdumpProcess.pid}`);
         tcpdumpProcess = null;
+        isTcpdumpRunning = false;
+        console.log("tcpdump is running : ", isTcpdumpRunning);
         const button = document.getElementById('tcpdumpButton');
         button.textContent = 'Start Recording';
         console.warn('tcpdump process stopped');
@@ -389,6 +400,32 @@ async function stopTcpdump() {
     }
 }
 
+
+/**
+ * Checks if tcpdump is running and navigates to the provided link accordingly.
+ * If tcpdump is running, shows a warning message and asks the user to stop tcpdump.
+ * 
+ * @param {string} link - The URL to navigate to if tcpdump is not running or after stopping tcpdump.
+ * @returns {Promise<void>} - A promise that resolves when the navigation is complete.
+ */
+async function isTcpdumpRun(link) {
+    console.log(link);
+    if (isTcpdumpRunning == false) {
+        // if tcpdump is not running, navigate to the link
+        location.replace(link);
+    } else {
+        // if tcpdump is running, show a warning message and ask the user to stop tcpdump
+        let messageBoxResult = await Neutralino.os.showMessageBox('Warning', 'Tcpdump is running. Are you sure do you want to stop the tcpdump process ?', 'OK_CANCEL');
+        if (messageBoxResult.result === 'CANCEL') {
+            return;
+        } else {
+            console.warn('Stopping tcpdump...');
+            // stop tcpdump and navigate to the link
+            await stopTcpdump();
+            location.replace(link);    
+        }
+    }
+}
 
 
 /**
