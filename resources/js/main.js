@@ -561,15 +561,13 @@ async function toggleFullScreen() {
 }
 
 /**
- * Reboots the Raspberry Pi (RPI) by executing the 'sudo reboot' command.
- * 
- * This function uses the Neutralino library to execute the reboot command.
- * If an error occurs during the execution, it logs the error message to the console.
+ * Logs out the user by locking the screen using the system's display manager tool.
+ * This function executes the 'dm-tool lock' command to lock the screen.
  * 
  * @async
- * @function rebootRPI
- * @returns {Promise<void>} A promise that resolves when the command execution is complete.
- * @throws Will log an error message to the console if the command execution fails.
+ * @function logout
+ * @throws {Error} If an error occurs while attempting to lock the screen, 
+ *         it will be logged to the console with the error message and name.
  */
 async function rebootRPI() {
     try {
