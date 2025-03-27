@@ -758,7 +758,7 @@ async function updateOS() {
 async function getVersions() {
     try {
         // Get App version
-        document.getElementById("appVersion").innerText = NL_APPID;
+        document.getElementById("appVersion").innerText = NL_VERSION;
 
         // Get tcpdump version
         let tcpdumpVersion = await Neutralino.os.execCommand('tcpdump --v');
