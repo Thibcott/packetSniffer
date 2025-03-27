@@ -732,6 +732,59 @@ async function updateApp() {
     }
 }
 
+async function updateOS() {
+    try {
+        let result = await Neutralino.os.showMessageBox('Update OS', 'Are you sure you want to update the OS?', 'YES_NO');
+        if (result === 'YES') {
+            await Neutralino.os.execCommand('sudo apt-get update && sudo apt-get upgrade -y');
+        }
+    } catch (err) {
+        console.error(`Error updating OS: ${err.message} (${err.name})`);
+    }
+}
+
+
+/**
+ * Asynchronously retrieves and displays various version information 
+ * (application, tcpdump, OS, NeutralinoJs, Node.js, and npm) in the 
+ * corresponding HTML elements by their IDs.
+ * 
+ * @async
+ * @function getVersions
+ * @returns {Promise<void>} Resolves when all version information is fetched 
+ *                          and displayed, or logs an error if any operation fails.
+ * 
+ * @throws {Error} Logs an error message to the console if any command execution 
+ *                 or DOM manipulation fails.
+ */
+async function getVersions() {
+    try {
+        // Get App version
+        document.getElementById("appVersion").innerText = NL_APPID;
+
+        // Get tcpdump version
+        let tcpdumpVersion = await Neutralino.os.execCommand('tcpdump --v');
+        document.getElementById("tcpdumpVersion").innerText = tcpdumpVersion.stdOut.split('\n')[0];
+
+        // Get OS version
+        let osVersion = await Neutralino.os.execCommand('uname -a');
+        document.getElementById("osVersion").innerText = osVersion.stdOut.trim();
+
+        // Get NeutralinoJs version
+        document.getElementById("neutralinoVersion").innerText = `v${NL_VERSION}`;
+
+        // Get Node.js version
+        let nodeVersion = await Neutralino.os.execCommand('node -v');
+        document.getElementById("nodeVersion").innerText = nodeVersion.stdOut.trim();
+
+        // Get npm version
+        let npmVersion = await Neutralino.os.execCommand('npm -v');
+        document.getElementById("npmVersion").innerText = npmVersion.stdOut.trim();
+    } catch (err) {
+        console.error(`Error fetching versions: ${err.message} (${err.name})`);
+    }
+}
+
 
 //==========================================
 // Neutralino setup

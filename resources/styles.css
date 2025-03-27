@@ -60,27 +60,29 @@ li a:hover {
     background-color: #3571b6;
     /* Change background color on hover for the active link */
 }
-
-table td:nth-child(2) {
-    width: 310px;
-    border: solid 1px #ccc;
-    border-radius: 5px;
-    padding-right: 5px;
-    /* Style the second column of table cells */
-
-    input {
-        width: 99%;
-        border: none;
-        padding: 4px;
-        /* Style input elements inside the second column */
-    }
-    select {
-        width: 99%;
-        border: none;
-        padding: 4px;
-        /* Style select elements inside the second column */
+#tcpdumpForm {
+    table td:nth-child(2) {
+        width: 310px;
+        border: solid 1px #ccc;
+        border-radius: 5px;
+        padding-right: 5px;
+        /* Style the second column of table cells */
+    
+        input {
+            width: 99%;
+            border: none;
+            padding: 4px;
+            /* Style input elements inside the second column */
+        }
+        select {
+            width: 99%;
+            border: none;
+            padding: 4px;
+            /* Style select elements inside the second column */
+        }
     }
 }
+
 
 button {
     border: none;
@@ -190,8 +192,22 @@ select{
         margin-right: 3px;
         text-align: center;
         display: grid;
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(5, 1fr);
         grid-template-rows: repeat(2, auto);
         gap: 5px;
     }
+    table{
+        border-collapse: collapse;
+        text-align: left;
+        margin: 3px;
+        /* Style for the history table */
+    
+        td {
+            border: solid 1px #ccc;
+            padding: 5px;
+            /* Style table cells */
+        }
+        /* Style for the table inside the more options section */
+    }
+  
 }
