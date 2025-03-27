@@ -179,7 +179,7 @@ select{
 }
 
 #moreOption {
-    
+    width: 98%;
     padding: 4px;
     /* Style for the more options section */
     button {
