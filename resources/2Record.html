@@ -1,0 +1,197 @@
+<!-- 
+This HTML file is main page of the Packet Sniffer Application. It provides the user interface for recording network packets, viewing history, and accessing help documentation.
+
+Sections:
+1. Head:
+  - Sets the character encoding to UTF-8.
+  - Sets the title of the page to "NeutralinoJs sample app".
+  - Includes a meta tag for responsive design.
+  - Links to an external stylesheet (styles.css).
+
+2. Body:
+  - Navbar:
+    - Contains navigation links for "Packet recording", "History", and "Help".
+    - Displays IP addresses of connected devices on the right side of the navbar.
+
+  - Choose Parameters:
+    - A form (tcpdumpForm) for selecting network interface, output folder, and filter for packet recording.
+    - Interface: Dropdown to select the network interface.
+    - Output folder: Text input to specify the output folder with a button to browse folders.
+    - Filter: Text input to specify a filter for packet recording with a button to access filter help.
+
+  - Output Div:
+    - Displays the command preview and output of the packet recording.
+
+3. Scripts:
+  - Includes Neutralino.js and main.js.
+  - JavaScript functions:
+    - loadFilter: Loads the filter value from local storage and sets it in the filter input field.
+    - window.onload: Executes functions to load filter, get connected devices, get network interfaces, and set up the bridge when the page loads.
+-->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>NeutralinoJs sample app</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/styles.css">
+</head>
+
+<body>
+    <div id="navbar">
+        <ul>
+            <li>
+                <a onclick="isTcpdumpRun('index.html')">Packet recording</a>
+            </li>
+            <li>
+                <a onclick="isTcpdumpRun('history.html')">History</a>
+            </li>
+            <li>
+                <a onclick="isTcpdumpRun('more.html')">More</a>
+            </li>
+            <li style="float:right" id="ipNavBar">
+                <label id="ipDevice1">ip</label>
+                <br>
+                <label id="ipDevice2">ip</label>
+            </li>
+        </ul>
+    </div>
+    <div id="chooseParams">
+        <h2>Record for 2 divce</h2>
+        <form id="tcpdumpForm">
+            <table class="deviceTable">
+                <tr>
+                    <td>
+                        <h5>Device 2</h5>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="interface">Interface :</label>
+                    </td>
+                    <td>
+                        <select id="interface" name="interface">
+                        </select>
+                    </td>
+
+                </tr>
+                <tr>
+                    <td><label for="output">Output folder :</label></td>
+                    <td>
+                        <input type="text" id="output" name="output" style="width: 78%;" value="/home/user/app/capture">
+                        <button type="button" style="width: 17%;" onclick="chooseOutputFile()">
+                            <img src="icons/browse-folder-30.png" alt="More" style="width: 18px; height: 14px;">
+                        </button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="filter">Filter:</label>
+                    </td>
+                    <td>
+                        <input type="text" id="filter" name="filter" style="width: 78%;"
+                            placeholder="e.g., tcp port 80">
+                        <button type="button" style="width: 17%; " onclick="isTcpdumpRun('filterHelp.html')">
+                            <img src="icons/edit-24.png" alt="More" style="width: 18px; height: 14px;">
+                        </button>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <button type="button" id="tcpdumpButton" onclick="startTcpdump()">Start recording</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">Output | <label id="cmdPreview" style="font-size:xx-small;"></label></td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <textarea style="width: 99%;" name="outPutTextArea" id="outPutTextArea" readonly title="Output Text Area"
+                            placeholder="Output will be displayed here"></textarea>
+                    </td>
+                </tr>
+            </table>
+            <table class="deviceTable">
+                <tr>
+                    <td>
+                        <h5>Device 2</h5>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="interface">Interface :</label>
+                    </td>
+                    <td>
+                        <select id="interface" name="interface">
+                        </select>
+                    </td>
+
+                </tr>
+                <tr>
+                    <td><label for="output">Output folder :</label></td>
+                    <td>
+                        <input type="text" id="output" name="output" style="width: 78%;" value="/home/user/app/capture">
+                        <button type="button" style="width: 17%;" onclick="chooseOutputFile()">
+                            <img src="icons/browse-folder-30.png" alt="More" style="width: 18px; height: 14px;">
+                        </button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="filter">Filter:</label>
+                    </td>
+                    <td>
+                        <input type="text" id="filter" name="filter" style="width: 78%;"
+                            placeholder="e.g., tcp port 80">
+                        <button type="button" style="width: 17%; " onclick="isTcpdumpRun('filterHelp.html')">
+                            <img src="icons/edit-24.png" alt="More" style="width: 18px; height: 14px;">
+                        </button>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <button type="button" id="tcpdumpButton" onclick="startTcpdump()">Start recording</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">Output | <label id="cmdPreview" style="font-size:xx-small;"></label></td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <textarea style="width: 99%;" name="outPutTextArea" id="outPutTextArea" readonly title="Output Text Area"
+                            placeholder="Output will be displayed here"></textarea>
+                    </td>
+                </tr>
+            </table>
+        </form>
+
+    </div>
+
+
+
+
+    <script src="/js/neutralino.js"></script>
+    <!-- Your app's source files -->
+    <script src="/js/main.js"></script>
+
+    <script>
+        // load filter from local storage
+        function loadFilter() {
+            const filterValue = localStorage.getItem('tcpdumpFilter');
+            if (filterValue) {
+                console.warn(filterValue)
+                document.getElementById('filter').value = filterValue;
+            }
+        }
+
+        // load function when page is loaded
+        window.onload = function () {
+            loadFilter();
+            getConnectedDevices();
+            getNetworkInterfaces();
+        };
+    </script>
+</body>
+
+</html>
