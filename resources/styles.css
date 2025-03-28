@@ -126,13 +126,15 @@ select {
     /* Style for specific page content sections */
 }
 
-#outPutTextArea {
+#outPutTextArea,
+#outPutTextArea2 {
     width: 97%;
     height: 150px;
     /* Style for the output text area */
 }
 
-#tcpdumpButton {
+#tcpdumpButton,
+#tcpdumpButton2 {
     width: 100%;
     border: none;
     padding: 4px;
@@ -141,7 +143,8 @@ select {
     /* Style for the tcpdump button */
 }
 
-#tcpdumpButton:hover {
+#tcpdumpButton:hover,
+#tcpdumpButton2:hover {
     background-color: #e1e1e1;
     /* Change background color on hover for the tcpdump button */
 }

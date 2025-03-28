@@ -63,8 +63,9 @@ Sections:
             <table class="deviceTable">
                 <tr>
                     <td>
-                        <h5>Device 2</h5>
+                        <h5>Device 1</h5>
                     </td>
+                    <th style="display: none;" id="recordStartTime"></th>
                 </tr>
                 <tr>
                     <td>
@@ -107,8 +108,8 @@ Sections:
                 </tr>
                 <tr>
                     <td colspan="2">
-                        <textarea style="width: 99%;" name="outPutTextArea" id="outPutTextArea" readonly title="Output Text Area"
-                            placeholder="Output will be displayed here"></textarea>
+                        <textarea style="width: 99%;" name="outPutTextArea" id="outPutTextArea" readonly
+                            title="Output Text Area" placeholder="Output will be displayed here"></textarea>
                     </td>
                 </tr>
             </table>
@@ -117,21 +118,22 @@ Sections:
                     <td>
                         <h5>Device 2</h5>
                     </td>
+                    <th style="display: none;" id="recordStartTime2"></th>
                 </tr>
                 <tr>
                     <td>
                         <label for="interface">Interface :</label>
                     </td>
                     <td>
-                        <select id="interface" name="interface">
+                        <select id="interface2" name="interface" title="Select network interface for Device 2">
                         </select>
                     </td>
 
                 </tr>
                 <tr>
-                    <td><label for="output">Output folder :</label></td>
+                    <td><label for="output2">Output folder :</label></td>
                     <td>
-                        <input type="text" id="output" name="output" style="width: 78%;" value="/home/user/app/capture">
+                        <input type="text" id="output2" name="output" style="width: 78%;" value="/home/user/app/capture">
                         <button type="button" style="width: 17%;" onclick="chooseOutputFile()">
                             <img src="icons/browse-folder-30.png" alt="More" style="width: 18px; height: 14px;">
                         </button>
@@ -142,7 +144,7 @@ Sections:
                         <label for="filter">Filter:</label>
                     </td>
                     <td>
-                        <input type="text" id="filter" name="filter" style="width: 78%;"
+                        <input type="text" id="filter2" name="filter" style="width: 78%;"
                             placeholder="e.g., tcp port 80">
                         <button type="button" style="width: 17%; " onclick="isTcpdumpRun('filterHelp.html')">
                             <img src="icons/edit-24.png" alt="More" style="width: 18px; height: 14px;">
@@ -151,16 +153,16 @@ Sections:
                 </tr>
                 <tr>
                     <td colspan="2">
-                        <button type="button" id="tcpdumpButton" onclick="startTcpdump()">Start recording</button>
+                        <button type="button" id="tcpdumpButton2" onclick="startTcpdump(2)">Start recording</button>
                     </td>
                 </tr>
                 <tr>
-                    <td colspan="2">Output | <label id="cmdPreview" style="font-size:xx-small;"></label></td>
+                    <td colspan="2">Output | <label id="cmdPreview2" style="font-size:xx-small;"></label></td>
                 </tr>
                 <tr>
                     <td colspan="2">
-                        <textarea style="width: 99%;" name="outPutTextArea" id="outPutTextArea" readonly title="Output Text Area"
-                            placeholder="Output will be displayed here"></textarea>
+                        <textarea style="width: 99%;" name="outPutTextArea" id="outPutTextArea2" readonly
+                            title="Output Text Area" placeholder="Output will be displayed here"></textarea>
                     </td>
                 </tr>
             </table>

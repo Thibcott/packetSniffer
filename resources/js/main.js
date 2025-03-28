@@ -95,8 +95,15 @@ async function getNetworkInterfaces() {
         interfaces.push('<option value="br0">bridge</option>');
     }
     document.getElementById('interface').innerHTML = interfaces.join('');
+    document.getElementById('interface2').innerHTML = interfaces.join('');
+
 
     document.getElementById('interface').addEventListener('change', async (event) => {
+        if (event.target.value === 'bridge') {
+            await setupBridge();
+        }
+    });
+    document.getElementById('interface2').addEventListener('change', async (event) => {
         if (event.target.value === 'bridge') {
             await setupBridge();
         }
@@ -238,6 +245,8 @@ async function chooseOutputFile() {
 // tcpdump process
 // variable to store the tcpdump process
 let tcpdumpProcess = null;
+let tcpdumpProcess2 = null;
+
 
 // flag to check if tcpdump is running
 let isTcpdumpRunning = false;
@@ -262,107 +271,225 @@ let isTcpdumpRunning = false;
  * @function startTcpdump
  * @returns {Promise<void>} A promise that resolves when the tcpdump process is started or stopped.
  */
-async function startTcpdump() {
-    // check if the tcpdump process is already running
-    if (tcpdumpProcess) {
-        await stopTcpdump();
-        return;
-    }
-
-    // check if the bridge is set up
-    const form = document.getElementById('tcpdumpForm');
-    const output = form.elements['output'].value;
-    const iface = form.elements['interface'].value;
-    const filter = form.elements['filter'].value;
-
-    //let command = 'sudo tcpdump -i eth0 -w - | sudo tee capture.pcap | tcpdump -r -';
-    //let command = 'sudo tcpdump -i eth0 -w - | sudo tee backup/capture1.pcap | sudo tee ../test/capture2.pcap | sudo tcpdump -r -';
-
-    // get the current date and time to use as a timestamp for the capture file name
-    // format the date and time as YYYY-MM-DD-HH-MM-SS
-    let now = new Date();
-    let year = now.getFullYear();
-    let month = String(now.getMonth() + 1).padStart(2, '0');
-    let day = String(now.getDate()).padStart(2, '0');
-    let hours = String(now.getHours()).padStart(2, '0');
-    let minutes = String(now.getMinutes()).padStart(2, '0');
-    let seconds = String(now.getSeconds()).padStart(2, '0');
-    let timestamp = `${year}-${month}-${day}-${hours}-${minutes}-${seconds}`;
-
-    // set the output file name with the timestamp
-    document.getElementById('recordStartTime').innerHTML = "Last record start at : <br>" + timestamp; // 
-
-    // set the backup file name with the timestamp
-    console.log(`Capture file will be saved as capture_${timestamp}.pcap`);
-
-    let command = '';
-    // check if the bridge is set up and use it if it is
-    if (filter) {
-        command = 'sudo tcpdump -i ' + iface + ' -w - ' + filter + ' | sudo tee ../backup/capture_' + timestamp + '.pcap | sudo tee ' + output + '/capture_' + iface + '_' + timestamp + '.pcap | sudo tcpdump -C 1000 -r -';
-    } else {
-        command = 'sudo tcpdump -i ' + iface + ' -w - | sudo tee ../backup/capture_' + timestamp + '.pcap | sudo tee ' + output + '/capture_' + iface + '_' + timestamp + '.pcap | sudo tcpdump -C 1000 -r -';
-    }
-
-
-    // Start the tcpdump process
-    tcpdumpProcess = await Neutralino.os.spawnProcess(command);
-    document.getElementById('outPutTextArea').value += command + '>>>> \n';
-
-    // set the button label to stop
-    const button = document.getElementById('tcpdumpButton');
-    button.textContent = 'Stop';
-
-    //  TODO show command preview  
-    document.getElementById('cmdPreview').innerHTML = `${command}`;
-
-    let packetCount = 0;
-    isTcpdumpRunning = true;
-    console.log("tcpdump is running : ", isTcpdumpRunning);
-
-    // show packet
-    Neutralino.events.on('spawnedProcess', (evt) => {
-        // check if the event is from the tcpdump process
-        if (tcpdumpProcess && tcpdumpProcess.id === evt.detail.id) {
-            let outputLength = document.getElementById('outPutTextArea').value.length;
-            if (outputLength > 1024) {
-                document.getElementById('outPutTextArea').value = "";
-
-            }
-
-            // check if the output contains 'IP' to count packets
-            if (evt.detail.data.includes('IP')) {
-                // increment the packet count
-                packetCount++;
-                // update the packet count in the console and on the UI
-                //console.log(`Packet count: ${packetCount}`);
-                document.getElementById('packetCount').innerHTML = "Packet count : " + packetCount;
-            }
-
-            // handle the output based on the action type
-            switch (evt.detail.action) {
-                case 'stdOut':
-                    //console.log(evt.detail.data);
-                    document.getElementById('outPutTextArea').value += evt.detail.data;
-                    break;
-                case 'stdErr':
-                    //console.error(evt.detail.data);
-                    document.getElementById('outPutTextArea').value += evt.detail.data;
-                    break;
-                case 'exit':
-                    console.warn(`command exit code: ${evt.detail.data}`);
-                    document.getElementById('outPutTextArea').value += evt.detail.data;
-                    tcpdumpProcess = null;
-                    isTcpdumpRunning = false;
-                    console.log("tcpdump is running : ", isTcpdumpRunning);
-                    //set button in start
-                    button.textContent = 'Start Recording';
-                    break;
-            }
-            // move the cursor to the end of the textarea
-            moveCursorToEnd();
+async function startTcpdump(mode) {
+    if (mode === undefined) {
+        //FLUX de commande 1 
+        // if mode is undefined, it means we are starting the tcpdump process
+        console.log("Starting tcpdump...");
+        //=====================
+        // check if the tcpdump process is already running
+        if (tcpdumpProcess) {
+            await stopTcpdump();
+            return;
         }
-    });
+
+        // check if the bridge is set up
+        const form = document.getElementById('tcpdumpForm');
+        const output = form.elements['output'].value;
+        const iface = form.elements['interface'].value;
+        const filter = form.elements['filter'].value;
+
+        //let command = 'sudo tcpdump -i eth0 -w - | sudo tee capture.pcap | tcpdump -r -';
+        //let command = 'sudo tcpdump -i eth0 -w - | sudo tee backup/capture1.pcap | sudo tee ../test/capture2.pcap | sudo tcpdump -r -';
+
+        // get the current date and time to use as a timestamp for the capture file name
+        // format the date and time as YYYY-MM-DD-HH-MM-SS
+        let now = new Date();
+        let year = now.getFullYear();
+        let month = String(now.getMonth() + 1).padStart(2, '0');
+        let day = String(now.getDate()).padStart(2, '0');
+        let hours = String(now.getHours()).padStart(2, '0');
+        let minutes = String(now.getMinutes()).padStart(2, '0');
+        let seconds = String(now.getSeconds()).padStart(2, '0');
+        let timestamp = `${year}-${month}-${day}-${hours}-${minutes}-${seconds}`;
+
+        // set the output file name with the timestamp
+        document.getElementById('recordStartTime').innerHTML = "Last record start at : <br>" + timestamp; // 
+
+        // set the backup file name with the timestamp
+        console.log(`Capture file will be saved as capture_${timestamp}.pcap`);
+
+        let command = '';
+        // check if the bridge is set up and use it if it is
+        if (filter) {
+            command = 'sudo tcpdump -i ' + iface + ' -w - ' + filter + ' | sudo tee ../backup/capture_' + timestamp + '.pcap | sudo tee ' + output + '/capture_' + iface + '_' + timestamp + '.pcap | sudo tcpdump -C 1000 -r -';
+        } else {
+            command = 'sudo tcpdump -i ' + iface + ' -w - | sudo tee ../backup/capture_' + timestamp + '.pcap | sudo tee ' + output + '/capture_' + iface + '_' + timestamp + '.pcap | sudo tcpdump -C 1000 -r -';
+        }
+
+
+        // Start the tcpdump process
+        tcpdumpProcess = await Neutralino.os.spawnProcess(command);
+        document.getElementById('outPutTextArea').value += command + '>>>> \n';
+
+        // set the button label to stop
+        const button = document.getElementById('tcpdumpButton');
+        button.textContent = 'Stop';
+
+        document.getElementById('cmdPreview').innerHTML = `${command}`;
+
+        let packetCount = 0;
+        isTcpdumpRunning = true;
+        console.log("tcpdump is running : ", isTcpdumpRunning);
+
+        // show packet
+        if (!Neutralino.events.hasListener('spawnedProcess')) {
+            Neutralino.events.on('spawnedProcess', (evt) => {
+                // check if the event is from the tcpdump process
+                if (tcpdumpProcess && tcpdumpProcess.id === evt.detail.id) {
+                    let outputLength = document.getElementById('outPutTextArea').value.length;
+                    if (outputLength > 1024) {
+                        document.getElementById('outPutTextArea').value = "";
+
+                    }
+
+                    // check if the output contains 'IP' to count packets
+                    if (evt.detail.data.includes('IP')) {
+                        // increment the packet count
+                        packetCount++;
+                        // update the packet count in the console and on the UI
+                        //console.log(`Packet count: ${packetCount}`);
+                        document.getElementById('packetCount').innerHTML = "Packet count : " + packetCount;
+                    }
+
+                    // handle the output based on the action type
+                    switch (evt.detail.action) {
+                        case 'stdOut':
+                            //console.log(evt.detail.data);
+                            document.getElementById('outPutTextArea').value += evt.detail.data;
+                            break;
+                        case 'stdErr':
+                            //console.error(evt.detail.data);
+                            document.getElementById('outPutTextArea').value += evt.detail.data;
+                            break;
+                        case 'exit':
+                            console.warn(`command exit code: ${evt.detail.data}`);
+                            document.getElementById('outPutTextArea').value += evt.detail.data;
+                            tcpdumpProcess = null;
+                            isTcpdumpRunning = false;
+                            console.log("tcpdump is running : ", isTcpdumpRunning);
+                            //set button in start
+                            button.textContent = 'Start Recording';
+                            break;
+                            // move the cursor to the end of the textarea
+                    }
+                    moveCursorToEnd();
+
+                }
+            });
+        }
+    } else if (mode == 2) {
+        //FLUX de commande 2 
+        // if mode is 2, it means we are starting the tcpdump process in a different mode
+        console.log("Starting tcpdump in mode 2...");
+        //=====================
+        // check if the tcpdump process is already running
+        console.log("tcpdumpProcess2 : ", tcpdumpProcess2);
+        if (tcpdumpProcess2) {
+            console.log("hello hello")
+            await stopTcpdump(2);
+            return;
+        }
+
+        // check if the bridge is set up
+        const form = document.getElementById('tcpdumpForm');
+        const output = form.elements['output2'].value;
+        const iface = form.elements['interface2'].value;
+        const filter = form.elements['filter2'].value;
+
+        //let command = 'sudo tcpdump -i eth0 -w - | sudo tee capture.pcap | tcpdump -r -';
+        //let command = 'sudo tcpdump -i eth0 -w - | sudo tee backup/capture1.pcap | sudo tee ../test/capture2.pcap | sudo tcpdump -r -';
+
+        // get the current date and time to use as a timestamp for the capture file name
+        // format the date and time as YYYY-MM-DD-HH-MM-SS
+        let now = new Date();
+        let year = now.getFullYear();
+        let month = String(now.getMonth() + 1).padStart(2, '0');
+        let day = String(now.getDate()).padStart(2, '0');
+        let hours = String(now.getHours()).padStart(2, '0');
+        let minutes = String(now.getMinutes()).padStart(2, '0');
+        let seconds = String(now.getSeconds()).padStart(2, '0');
+        let timestamp2 = `${year}-${month}-${day}-${hours}-${minutes}-${seconds}`;
+
+        // set the output file name with the timestamp
+        document.getElementById('recordStartTime2').innerHTML = "Last record start at : <br>" + timestamp2; // 
+
+        // set the backup file name with the timestamp
+        console.log(`Capture file will be saved as capture_${timestamp2}.pcap`);
+
+        let command = '';
+        // check if the bridge is set up and use it if it is
+        if (filter) {
+            command = 'sudo tcpdump -i ' + iface + ' -w - ' + filter + ' | sudo tee ../backup/capture_' + timestamp2 + '.pcap | sudo tee ' + output + '/capture_' + iface + '_' + timestamp2 + '.pcap | sudo tcpdump -C 1000 -r -';
+        } else {
+            command = 'sudo tcpdump -i ' + iface + ' -w - | sudo tee ../backup/capture_' + timestamp2 + '.pcap | sudo tee ' + output + '/capture_' + iface + '_' + timestamp2 + '.pcap | sudo tcpdump -C 1000 -r -';
+            //command = 'sudo tcpdump -i eth0 -w - | sudo tee backup/capture1.pcap | sudo tee ../test/capture2.pcap | sudo tcpdump -r -';
+
+        }
+
+
+        // Start the tcpdump process
+        tcpdumpProces2 = await Neutralino.os.spawnProcess(command);
+        document.getElementById('outPutTextArea2').value += command + '>>>> \n';
+
+        // set the button label to stop
+        const button = document.getElementById('tcpdumpButton2');
+        button.textContent = 'Stop';
+
+        document.getElementById('cmdPreview2').innerHTML = `${command}`;
+
+        //let packetCount = 0;
+        isTcpdumpRunning2 = true;
+        console.log("tcpdump is running : ", isTcpdumpRunning);
+
+        tcpdumpProcess2 = true;
+        // show packet
+        Neutralino.events.on('spawnedProces', (evt) => {
+            // check if the event is from the tcpdump process
+            if (tcpdumpProcess2 && tcpdumpProcess2.id === evt.detail.id) {
+                let outputLength = document.getElementById('outPutTextArea2').value.length;
+                if (outputLength > 1024) {
+                    document.getElementById('outPutTextArea2').value = "";
+
+                }
+
+                // check if the output contains 'IP' to count packets
+                if (evt.detail.data.includes('IP')) {
+                    // increment the packet count
+                    packetCount++;
+                    // update the packet count in the console and on the UI
+                    //console.log(`Packet count: ${packetCount}`);
+                    document.getElementById('packetCount2').innerHTML = "Packet count : " + packetCount;
+                }
+
+                // handle the output based on the action type
+                switch (evt.detail.action) {
+                    case 'stdOut':
+                        //console.log(evt.detail.data);
+                        document.getElementById('outPutTextArea2').value += evt.detail.data;
+                        break;
+                    case 'stdErr':
+                        //console.error(evt.detail.data);
+                        document.getElementById('outPutTextArea2').value += evt.detail.data;
+                        break;
+                    case 'exit':
+                        console.warn(`command exit code: ${evt.detail.data}`);
+                        document.getElementById('outPutTextArea2').value += evt.detail.data;
+                        tcpdumpProcess2 = null;
+                        isTcpdumpRunning2 = false;
+                        console.log("tcpdump is running : ", isTcpdumpRunning);
+                        //set button in start
+                        button.textContent = 'Start Recording';
+                        break;
+                }
+                // move the cursor to the end of the textarea
+                moveCursorToEnd();
+            }
+        });
+    }
 }
+
+
 
 
 /**
@@ -376,25 +503,49 @@ async function startTcpdump() {
  * @function stopTcpdump
  * @returns {Promise<void>} A promise that resolves when the tcpdump process has been stopped.
  */
-async function stopTcpdump() {
-    if (tcpdumpProcess) {
-        console.warn('stop')
-        await Neutralino.os.execCommand(`kill ${tcpdumpProcess.pid}`);
-        tcpdumpProcess = null;
-        isTcpdumpRunning = false;
-        console.log("tcpdump is running : ", isTcpdumpRunning);
-        const button = document.getElementById('tcpdumpButton');
-        button.textContent = 'Start Recording';
-        console.warn('tcpdump process stopped');
-        if (bridge) {
-            // remove the bridge if it was created
-            try {
-                await Neutralino.os.execCommand('sudo ifconfig br0 down');
-                await Neutralino.os.execCommand('sudo brctl delbr br0');
-                console.warn('Bridge br0 removed');
-                bridge = false; // reset the bridge flag
-            } catch (error) {
-                console.error("Error removing bridge:", error);
+async function stopTcpdump(mode) {
+    if (mode === undefined) {
+        if (tcpdumpProcess) {
+            console.warn('stop')
+            await Neutralino.os.execCommand(`kill ${tcpdumpProcess.pid}`);
+            tcpdumpProcess = null;
+            isTcpdumpRunning = false;
+            console.log("tcpdump is running : ", isTcpdumpRunning);
+            const button = document.getElementById('tcpdumpButton');
+            button.textContent = 'Start Recording';
+            console.warn('tcpdump process stopped');
+            if (bridge) {
+                // remove the bridge if it was created
+                try {
+                    await Neutralino.os.execCommand('sudo ifconfig br0 down');
+                    await Neutralino.os.execCommand('sudo brctl delbr br0');
+                    console.warn('Bridge br0 removed');
+                    bridge = false; // reset the bridge flag
+                } catch (error) {
+                    console.error("Error removing bridge:", error);
+                }
+            }
+        }
+    } else if (mode == 2) {
+        if (tcpdumpProcess2) {
+            console.warn('stop for 2 ')
+            await Neutralino.os.execCommand(`kill ${tcpdumpProcess2.pid}`);
+            tcpdumpProcess2 = null;
+            isTcpdumpRunning2 = false;
+            console.log("tcpdump 2 is running : ", isTcpdumpRunning2);
+            const button = document.getElementById('tcpdumpButton2');
+            button.textContent = 'Start Recording';
+            console.warn('tcpdump 2 process stopped');
+            if (bridge) {
+                // remove the bridge if it was created
+                try {
+                    await Neutralino.os.execCommand('sudo ifconfig br0 down');
+                    await Neutralino.os.execCommand('sudo brctl delbr br0');
+                    console.warn('Bridge br0 removed');
+                    bridge = false; // reset the bridge flag
+                } catch (error) {
+                    console.error("Error removing bridge:", error);
+                }
             }
         }
     }
