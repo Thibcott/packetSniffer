@@ -69,6 +69,7 @@ li a:hover {
     border: solid 1px #ccc;
     border-radius: 7px;
     padding: 5px;
+    padding-bottom: 0px;
     margin-right: 10px;
 
 }
