@@ -634,8 +634,8 @@ async function stopTcpdump(formMode) {
  * @returns {Promise<void>} - A promise that resolves when the navigation is complete.
  */
 async function isTcpdumpRun(link) {
-    //console.log(link);
-    if (isTcpdumpRunning == false) {
+    console.log(link);
+    if (isTcpdumpRunning == false && isTcpdumpRunning1 == false && isTcpdumpRunning2 == false) {
         // if tcpdump is not running, navigate to the link
         location.replace(link);
     } else {
