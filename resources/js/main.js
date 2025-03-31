@@ -335,51 +335,49 @@ async function startTcpdump(mode) {
         console.log("tcpdump is running : ", isTcpdumpRunning);
 
         // show packet
-        if (!Neutralino.events.hasListener('spawnedProcess')) {
-            Neutralino.events.on('spawnedProcess', (evt) => {
-                // check if the event is from the tcpdump process
-                if (tcpdumpProcess && tcpdumpProcess.id === evt.detail.id) {
-                    let outputLength = document.getElementById('outPutTextArea').value.length;
-                    if (outputLength > 1024) {
-                        document.getElementById('outPutTextArea').value = "";
-
-                    }
-
-                    // check if the output contains 'IP' to count packets
-                    if (evt.detail.data.includes('IP')) {
-                        // increment the packet count
-                        packetCount++;
-                        // update the packet count in the console and on the UI
-                        //console.log(`Packet count: ${packetCount}`);
-                        document.getElementById('packetCount').innerHTML = "Packet count : " + packetCount;
-                    }
-
-                    // handle the output based on the action type
-                    switch (evt.detail.action) {
-                        case 'stdOut':
-                            //console.log(evt.detail.data);
-                            document.getElementById('outPutTextArea').value += evt.detail.data;
-                            break;
-                        case 'stdErr':
-                            //console.error(evt.detail.data);
-                            document.getElementById('outPutTextArea').value += evt.detail.data;
-                            break;
-                        case 'exit':
-                            console.warn(`command exit code: ${evt.detail.data}`);
-                            document.getElementById('outPutTextArea').value += evt.detail.data;
-                            tcpdumpProcess = null;
-                            isTcpdumpRunning = false;
-                            console.log("tcpdump is running : ", isTcpdumpRunning);
-                            //set button in start
-                            button.textContent = 'Start Recording';
-                            break;
-                            // move the cursor to the end of the textarea
-                    }
-                    moveCursorToEnd();
+        Neutralino.events.on('spawnedProcess', (evt) => {
+            // check if the event is from the tcpdump process
+            if (tcpdumpProcess && tcpdumpProcess.id === evt.detail.id) {
+                let outputLength = document.getElementById('outPutTextArea').value.length;
+                if (outputLength > 1024) {
+                    document.getElementById('outPutTextArea').value = "";
 
                 }
-            });
-        }
+
+                // check if the output contains 'IP' to count packets
+                if (evt.detail.data.includes('IP')) {
+                    // increment the packet count
+                    packetCount++;
+                    // update the packet count in the console and on the UI
+                    //console.log(`Packet count: ${packetCount}`);
+                    document.getElementById('packetCount').innerHTML = "Packet count : " + packetCount;
+                }
+
+                // handle the output based on the action type
+                switch (evt.detail.action) {
+                    case 'stdOut':
+                        //console.log(evt.detail.data);
+                        document.getElementById('outPutTextArea').value += evt.detail.data;
+                        break;
+                    case 'stdErr':
+                        //console.error(evt.detail.data);
+                        document.getElementById('outPutTextArea').value += evt.detail.data;
+                        break;
+                    case 'exit':
+                        console.warn(`command exit code: ${evt.detail.data}`);
+                        document.getElementById('outPutTextArea').value += evt.detail.data;
+                        tcpdumpProcess = null;
+                        isTcpdumpRunning = false;
+                        console.log("tcpdump is running : ", isTcpdumpRunning);
+                        //set button in start
+                        button.textContent = 'Start Recording';
+                        break;
+                    // move the cursor to the end of the textarea
+                }
+                moveCursorToEnd();
+            }
+        });
+
     } else if (mode == 2) {
         //FLUX de commande 2 
         // if mode is 2, it means we are starting the tcpdump process in a different mode
