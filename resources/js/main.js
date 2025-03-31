@@ -346,14 +346,13 @@ async function startTcpdump(mode) {
                 }
 
                 // check if the output contains 'IP' to count packets
-                //TODO fix the packet count
-                /*if (evt.detail.data.includes('IP')) {
+                if (evt.detail.data.includes('IP')) {
                     // increment the packet count
                     packetCount++;
                     // update the packet count in the console and on the UI
                     //console.log(`Packet count: ${packetCount}`);
                     document.getElementById('packetCount').innerHTML = "Packet count : " + packetCount;
-                }8*/
+                }
 
                 // handle the output based on the action type
                 switch (evt.detail.action) {
@@ -1003,5 +1002,4 @@ Neutralino.events.on("windowClose", onWindowClose);
 if (NL_OS != "Darwin") { // : Fix https://github.com/neutralinojs/neutralinojs/issues/615
     setTray();
 }
-
 
