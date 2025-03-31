@@ -292,7 +292,9 @@ async function startTcpdump(mode) {
         const form = document.getElementById('tcpdumpForm');
         const output = form.elements['output'].value;
         const iface = form.elements['interface'].value;
+        console.warn("iface : ", iface);
         const filter = form.elements['filter'].value;
+        
 
         //let command = 'sudo tcpdump -i eth0 -w - | sudo tee capture.pcap | tcpdump -r -';
         //let command = 'sudo tcpdump -i eth0 -w - | sudo tee backup/capture1.pcap | sudo tee ../test/capture2.pcap | sudo tcpdump -r -';
@@ -346,6 +348,7 @@ async function startTcpdump(mode) {
                 }
 
                 // check if the output contains 'IP' to count packets
+                //TODO : add the filter to count the packet
                /* if (evt.detail.data.includes('IP')) {
                     // increment the packet count
                     packetCount++;
