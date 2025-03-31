@@ -319,7 +319,6 @@ async function startTcpdump(mode) {
             command = 'sudo tcpdump -i ' + iface + ' -w - | sudo tee ../backup/capture_' + timestamp + '.pcap | sudo tee ' + output + '/capture_' + iface + '_' + timestamp + '.pcap | sudo tcpdump -C 1000 -r -';
         }
 
-
         // Start the tcpdump process
         tcpdumpProcess = await Neutralino.os.spawnProcess(command);
         document.getElementById('outPutTextArea').value += command + '>>>> \n';
@@ -341,7 +340,6 @@ async function startTcpdump(mode) {
                 let outputLength = document.getElementById('outPutTextArea').value.length;
                 if (outputLength > 1024) {
                     document.getElementById('outPutTextArea').value = "";
-
                 }
 
                 // check if the output contains 'IP' to count packets
