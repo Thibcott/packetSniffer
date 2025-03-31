@@ -250,6 +250,8 @@ let tcpdumpProcess2 = null;
 
 // flag to check if tcpdump is running
 let isTcpdumpRunning = false;
+let isTcpdumpRunning2 = false;
+
 
 /**
  * Starts the tcpdump process to capture network packets.
@@ -429,7 +431,7 @@ async function startTcpdump(mode) {
 
 
         // Start the tcpdump process
-        tcpdumpProces2 = await Neutralino.os.spawnProcess(command);
+        tcpdumpProcess2 = await Neutralino.os.spawnProcess(command);
         document.getElementById('outPutTextArea2').value += command + '>>>> \n';
 
         // set the button label to stop
@@ -444,7 +446,7 @@ async function startTcpdump(mode) {
 
         tcpdumpProcess2 = true;
         // show packet
-        Neutralino.events.on('spawnedProces', (evt) => {
+        Neutralino.events.on('spawnedProcess', (evt) => {
             // check if the event is from the tcpdump process
             if (tcpdumpProcess2 && tcpdumpProcess2.id === evt.detail.id) {
                 let outputLength = document.getElementById('outPutTextArea2').value.length;
