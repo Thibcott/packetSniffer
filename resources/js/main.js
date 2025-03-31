@@ -53,15 +53,17 @@ async function setupBridge() {
  * If the element is not found, logs an error to the console.
  */
 function moveCursorToEnd() {
-    const input = document.getElementById('outPutTextArea');
-    if (input) {
-        const length = input.value.length;
-        // Focus on the input
-        input.focus();
-        // Set the cursor to the end
-        input.setSelectionRange(length, length);
+    const inputs = document.getElementsByTagName('textarea');
+    if (inputs.length > 0) {
+        for (const input of inputs) {
+            const length = input.value.length;
+            // Focus on the input
+            input.focus();
+            // Set the cursor to the end
+            input.setSelectionRange(length, length);
+        }
     } else {
-        console.error("Element with id 'outPutTextArea' not found.");
+        console.error("No textarea elements found.");
     }
 }
 
@@ -81,8 +83,8 @@ function moveCursorToEnd() {
  */
 async function getNetworkInterfaces() {
     // get the network interfaces available on the system
-    //let info = await Neutralino.os.execCommand('ls /sys/class/net');
-    let info = await Neutralino.os.execCommand('wmic nic get name');
+    let info = await Neutralino.os.execCommand('ls /sys/class/net');
+    //let info = await Neutralino.os.execCommand('wmic nic get name');
     console.log(info.stdOut);
     // filter the output to get only the interface names
     let interfaces = info.stdOut.split('\n').filter(line => line.trim() !== '' && line.trim() !== 'Name').map((iface) => {
@@ -598,7 +600,7 @@ async function stopTcpdump() {
 async function stopTcpdump1() {
     if (tcpdumpProcess1) {
         console.warn('stop')
-        await Neutralino.os.execCommand(`kill ${tcpdumpProcess1.pid}`);
+        await Neutralino.os.spawnProcess(`kill ${tcpdumpProcess1.pid}`);
         tcpdumpProcess1 = null;
         isTcpdumpRunning1 = false;
         console.log("tcpdump is running : ", isTcpdumpRunning1);
@@ -611,7 +613,7 @@ async function stopTcpdump1() {
 async function stopTcpdump2() {
     if (tcpdumpProcess2) {
         console.warn('stop')
-        await Neutralino.os.execCommand(`kill ${tcpdumpProcess2.pid}`);
+        await Neutralino.os.spawnProcess(`kill ${tcpdumpProcess2.pid}`);
         tcpdumpProcess2 = null;
         isTcpdumpRunning2 = false;
         console.log("tcpdump is running : ", isTcpdumpRunning2);
