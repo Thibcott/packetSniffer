@@ -417,7 +417,6 @@ async function startTcpdump1() {
         command = 'sudo tcpdump -i ' + iface + ' -w - | sudo tee ../backup/capture_' + timestamp + '.pcap | sudo tee ' + output + '/capture_eth0_' + timestamp + '.pcap | sudo tcpdump -C 1000 -r -';
     }
 
-
     // Start the tcpdump process
     tcpdumpProcess1 = await Neutralino.os.spawnProcess(command);
     document.getElementById('outPutTextArea1').value += command + '>>>> \n';
@@ -429,7 +428,6 @@ async function startTcpdump1() {
     //  TODO show command preview  
     document.getElementById('cmdPreview1').innerHTML = `${command}`;
 
-    let packetCount1 = 0;
     isTcpdumpRunning1 = true;
     console.log("tcpdump is running : ", isTcpdumpRunning1);
 
@@ -441,15 +439,6 @@ async function startTcpdump1() {
             if (outputLength > 1024) {
                 document.getElementById('outPutTextArea1').value = "";
 
-            }
-
-            // check if the output contains 'IP' to count packets
-            if (evt.detail.data.includes('IP')) {
-                // increment the packet count
-                packetCount1++;
-                // update the packet count in the console and on the UI
-                //console.log(`Packet count: ${packetCount}`);
-                document.getElementById('packetCount1').innerHTML = "Packet count : " + packetCount1;
             }
 
             // handle the output based on the action type
@@ -477,6 +466,7 @@ async function startTcpdump1() {
         }
     });
 }
+
 async function startTcpdump2() {
     // check if the tcpdump process is already running
     if (tcpdumpProcess2) {
@@ -487,7 +477,7 @@ async function startTcpdump2() {
     // check if the bridge is set up
     const form = document.getElementById('tcpdumpForm2');
     const output = form.elements['output2'].value;
-    const iface ='Eth1';
+    const iface ='eth1';
     const filter = form.elements['filter2'].value;
 
     //let command = 'sudo tcpdump -i eth0 -w - | sudo tee capture.pcap | tcpdump -r -';
@@ -518,7 +508,6 @@ async function startTcpdump2() {
         command = 'sudo tcpdump -i ' + iface + ' -w - | sudo tee ../backup/capture_' + timestamp + '.pcap | sudo tee ' + output +  '/capture_eth1_' + timestamp + '.pcap | sudo tcpdump -C 1000 -r -';
     }
 
-
     // Start the tcpdump process
     tcpdumpProcess2 = await Neutralino.os.spawnProcess(command);
     document.getElementById('outPutTextArea2').value += command + '>>>> \n';
@@ -530,7 +519,6 @@ async function startTcpdump2() {
     //  TODO show command preview  
     document.getElementById('cmdPreview2').innerHTML = `${command}`;
 
-    let packetCount2 = 0;
     isTcpdumpRunning2 = true;
     console.log("tcpdump is running : ", isTcpdumpRunning2);
 
@@ -542,15 +530,6 @@ async function startTcpdump2() {
             if (outputLength > 1024) {
                 document.getElementById('outPutTextArea2').value = "";
 
-            }
-
-            // check if the output contains 'IP' to count packets
-            if (evt.detail.data.includes('IP')) {
-                // increment the packet count
-                packetCount2++;
-                // update the packet count in the console and on the UI
-                //console.log(`Packet count: ${packetCount}`);
-                document.getElementById('packetCount2').innerHTML = "Packet count : " + packetCount2;
             }
 
             // handle the output based on the action type
