@@ -415,9 +415,9 @@ async function startTcpdump1() {
     let command = '';
     // check if the bridge is set up and use it if it is
     if (filter) {
-        command = 'sudo tcpdump -i ' + iface + ' -w - ' + filter + ' | sudo tee ../backup/capture_' + timestamp + '.pcap | sudo tee ' + output + '/capture_eth0_' + timestamp + '.pcap | sudo tcpdump -C 1000 -r -';
+        command = 'sudo tcpdump -i eth0 -w - ' + filter + ' | sudo tee ../backup/capture_' + timestamp + '.pcap | sudo tee ' + output + '/capture_eth0_' + timestamp + '.pcap | sudo tcpdump -C 1000 -r -';
     } else {
-        command = 'sudo tcpdump -i ' + iface + ' -w - | sudo tee ../backup/capture_' + timestamp + '.pcap | sudo tee ' + output + '/capture_eth0_' + timestamp + '.pcap | sudo tcpdump -C 1000 -r -';
+        command = 'sudo tcpdump -i eth0 -w - | sudo tee ../backup/capture_' + timestamp + '.pcap | sudo tee ' + output + '/capture_eth0_' + timestamp + '.pcap | sudo tcpdump -C 1000 -r -';
     }
 
     // Start the tcpdump process
@@ -506,9 +506,9 @@ async function startTcpdump2() {
     let command = '';
     // check if the bridge is set up and use it if it is
     if (filter) {
-        command = 'sudo tcpdump -i ' + iface + ' -w - ' + filter + ' | sudo tee ../backup/capture_' + timestamp + '.pcap | sudo tee ' + output + '/capture_eth1_' + timestamp + '.pcap | sudo tcpdump -C 1000 -r -';
+        command = 'sudo tcpdump -i eth1 -w - ' + filter + ' | sudo tee ../backup/capture_' + timestamp + '.pcap | sudo tee ' + output + '/capture_eth1_' + timestamp + '.pcap | sudo tcpdump -C 1000 -r -';
     } else {
-        command = 'sudo tcpdump -i ' + iface + ' -w - | sudo tee ../backup/capture_' + timestamp + '.pcap | sudo tee ' + output +  '/capture_eth1_' + timestamp + '.pcap | sudo tcpdump -C 1000 -r -';
+        command = 'sudo tcpdump -i eth1 -w - | sudo tee ../backup/capture_' + timestamp + '.pcap | sudo tee ' + output +  '/capture_eth1_' + timestamp + '.pcap | sudo tcpdump -C 1000 -r -';
     }
 
     // Start the tcpdump process
@@ -526,7 +526,7 @@ async function startTcpdump2() {
     console.log("tcpdump is running : ", isTcpdumpRunning2);
 
     // show packet
-    Neutralino.events.on('spawnedProcess2', (evt) => {
+    Neutralino.events.on('spawnedProcess', (evt) => {
         // check if the event is from the tcpdump process
         if (tcpdumpProcess2 && tcpdumpProcess2.id === evt.detail.id) {
             let outputLength = document.getElementById('outPutTextArea2').value.length;
