@@ -526,28 +526,27 @@ async function startTcpdump2() {
     console.log("tcpdump is running : ", isTcpdumpRunning2);
 
     // show packet
-    Neutralino.events.on('spawnedProcess2', (evt2) => {
+    Neutralino.events.on('spawnedProcess2', (evt) => {
         // check if the event is from the tcpdump process
-        if (tcpdumpProcess2 && tcpdumpProcess2.id === evt2.detail.id) {
+        if (tcpdumpProcess2 && tcpdumpProcess2.id === evt.detail.id) {
             let outputLength = document.getElementById('outPutTextArea2').value.length;
             if (outputLength > 1024) {
                 document.getElementById('outPutTextArea2').value = "";
-
             }
 
             // handle the output based on the action type
             switch (evt2.detail.action) {
                 case 'stdOut':
                     //console.log(evt.detail.data);
-                    document.getElementById('outPutTextArea2').value += evt2.detail.data;
+                    document.getElementById('outPutTextArea2').value += evt.detail.data;
                     break;
                 case 'stdErr':
                     //console.error(evt.detail.data);
-                    document.getElementById('outPutTextArea2').value += evt2.detail.data;
+                    document.getElementById('outPutTextArea2').value += evt.detail.data;
                     break;
                 case 'exit':
-                    console.warn(`command exit code: ${evt2.detail.data}`);
-                    document.getElementById('outPutTextArea2').value += evt2.detail.data;
+                    console.warn(`command exit code: ${evt.detail.data}`);
+                    document.getElementById('outPutTextArea2').value += evt.detail.data;
                     tcpdumpProcess2 = null;
                     isTcpdumpRunning2 = false;
                     console.log("tcpdump is running : ", isTcpdumpRunning2);
