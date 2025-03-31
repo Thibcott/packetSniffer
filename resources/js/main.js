@@ -535,7 +535,7 @@ async function startTcpdump2() {
             }
 
             // handle the output based on the action type
-            switch (evt2.detail.action) {
+            switch (evt.detail.action) {
                 case 'stdOut':
                     //console.log(evt.detail.data);
                     document.getElementById('outPutTextArea2').value += evt.detail.data;
