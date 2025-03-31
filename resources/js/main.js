@@ -376,10 +376,11 @@ async function startTcpdump() {
         }
     });
 }
+
 async function startTcpdump1() {
     // check if the tcpdump process is already running
     if (tcpdumpProcess1) {
-        await stopTcpdump();
+        await stopTcpdump1();
         return;
     }
 
@@ -470,7 +471,7 @@ async function startTcpdump1() {
 async function startTcpdump2() {
     // check if the tcpdump process is already running
     if (tcpdumpProcess2) {
-        await stopTcpdump();
+        await stopTcpdump2();
         return;
     }
 
@@ -593,6 +594,33 @@ async function stopTcpdump() {
         }
     }
 }
+
+async function stopTcpdump1() {
+    if (tcpdumpProcess1) {
+        console.warn('stop')
+        await Neutralino.os.execCommand(`kill ${tcpdumpProcess1.pid}`);
+        tcpdumpProcess1 = null;
+        isTcpdumpRunning1 = false;
+        console.log("tcpdump is running : ", isTcpdumpRunning1);
+        const button = document.getElementById('tcpdumpButton1');
+        button.textContent = 'Start Recording';
+        console.warn('tcpdump process stopped');
+    }
+}
+
+async function stopTcpdump2() {
+    if (tcpdumpProcess2) {
+        console.warn('stop')
+        await Neutralino.os.execCommand(`kill ${tcpdumpProcess2.pid}`);
+        tcpdumpProcess2 = null;
+        isTcpdumpRunning2 = false;
+        console.log("tcpdump is running : ", isTcpdumpRunning2);
+        const button = document.getElementById('tcpdumpButton2');
+        button.textContent = 'Start Recording';
+        console.warn('tcpdump process stopped');
+    }
+}
+
 
 
 /**
