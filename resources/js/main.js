@@ -279,7 +279,6 @@ let isTcpdumpRunning2 = false;
  */
 async function startTcpdump(formMode) {
     if (formMode == 1) {
-        //startTcpdump1();
         // check if the tcpdump process is already running
         if (tcpdumpProcess1) {
             await stopTcpdump(1);
@@ -328,11 +327,10 @@ async function startTcpdump(formMode) {
         const button = document.getElementById('tcpdumpButton1');
         button.textContent = 'Stop';
 
-        //  TODO show command preview  
+        // preview the command
         document.getElementById('cmdPreview1').innerHTML = `${command}`;
 
-        isTcpdumpRunning1 = true;
-        console.log("tcpdump is running : ", isTcpdumpRunning1);
+        isTcpdumpRunning1 = true;// set the flag to true
 
         // show packet
         Neutralino.events.on('spawnedProcess', (evt) => {
@@ -340,8 +338,8 @@ async function startTcpdump(formMode) {
             if (tcpdumpProcess1 && tcpdumpProcess1.id === evt.detail.id) {
                 let outputLength = document.getElementById('outPutTextArea1').value.length;
                 if (outputLength > 1024) {
+                    // clear the output textarea if it exceeds 1024 characters
                     document.getElementById('outPutTextArea1').value = "";
-
                 }
 
                 // handle the output based on the action type
@@ -357,6 +355,7 @@ async function startTcpdump(formMode) {
                     case 'exit':
                         console.warn(`command exit code: ${evt.detail.data}`);
                         document.getElementById('outPutTextArea1').value += evt.detail.data;
+                        // set the tcpdump process to null and the flag to false
                         tcpdumpProcess1 = null;
                         isTcpdumpRunning1 = false;
                         console.log("tcpdump is running : ", isTcpdumpRunning1);
@@ -369,7 +368,6 @@ async function startTcpdump(formMode) {
             }
         });
     } else if (formMode == 2) {
-        //startTcpdump2();
         // check if the tcpdump process is already running
         if (tcpdumpProcess2) {
             await stopTcpdump(2);
@@ -418,11 +416,11 @@ async function startTcpdump(formMode) {
         const button = document.getElementById('tcpdumpButton2');
         button.textContent = 'Stop';
 
-        //  TODO show command preview  
+        // preview the command
         document.getElementById('cmdPreview2').innerHTML = `${command}`;
 
+        // set the flag to true
         isTcpdumpRunning2 = true;
-        console.log("tcpdump is running : ", isTcpdumpRunning2);
 
         // show packet
         Neutralino.events.on('spawnedProcess', (evt) => {
@@ -446,6 +444,7 @@ async function startTcpdump(formMode) {
                     case 'exit':
                         console.warn(`command exit code: ${evt.detail.data}`);
                         document.getElementById('outPutTextArea2').value += evt.detail.data;
+                        // set the tcpdump process to null and the flag to false
                         tcpdumpProcess2 = null;
                         isTcpdumpRunning2 = false;
                         console.log("tcpdump is running : ", isTcpdumpRunning2);
@@ -453,7 +452,6 @@ async function startTcpdump(formMode) {
                         button.textContent = 'Start Recording';
                         break;
                 }
-
                 // move the cursor to the end of the textarea
                 moveCursorToEnd();
             }
@@ -511,9 +509,9 @@ async function startTcpdump(formMode) {
         //  TODO show command preview  
         document.getElementById('cmdPreview').innerHTML = `${command}`;
 
+        // set the flag to true and initialize the packet count
         let packetCount = 0;
         isTcpdumpRunning = true;
-        console.log("tcpdump is running : ", isTcpdumpRunning);
 
         // show packet
         Neutralino.events.on('spawnedProcess', (evt) => {
@@ -547,6 +545,7 @@ async function startTcpdump(formMode) {
                     case 'exit':
                         console.warn(`command exit code: ${evt.detail.data}`);
                         document.getElementById('outPutTextArea').value += evt.detail.data;
+                        // set the tcpdump process to null and the flag to false
                         tcpdumpProcess = null;
                         isTcpdumpRunning = false;
                         console.log("tcpdump is running : ", isTcpdumpRunning);
@@ -580,6 +579,7 @@ async function stopTcpdump(formMode) {
         if (tcpdumpProcess1) {
             console.warn('stop')
             await Neutralino.os.spawnProcess(`kill ${tcpdumpProcess1.pid}`);
+            // send a kill command to stop the tcpdump process
             tcpdumpProcess1 = null;
             isTcpdumpRunning1 = false;
             console.log("tcpdump is running : ", isTcpdumpRunning1);
@@ -591,6 +591,8 @@ async function stopTcpdump(formMode) {
         if (tcpdumpProcess2) {
             console.warn('stop')
             await Neutralino.os.spawnProcess(`kill ${tcpdumpProcess2.pid}`);
+            // send a kill command to stop the tcpdump process
+
             tcpdumpProcess2 = null;
             isTcpdumpRunning2 = false;
             console.log("tcpdump is running : ", isTcpdumpRunning2);
@@ -602,6 +604,8 @@ async function stopTcpdump(formMode) {
         if (tcpdumpProcess) {
             console.warn('stop')
             await Neutralino.os.execCommand(`kill ${tcpdumpProcess.pid}`);
+            // send a kill command to stop the tcpdump process
+
             tcpdumpProcess = null;
             isTcpdumpRunning = false;
             console.log("tcpdump is running : ", isTcpdumpRunning);
@@ -644,7 +648,6 @@ async function isTcpdumpRun(link) {
         if (messageBoxResult == 'CANCEL') {
             //console.log('Operation cancelled by user.');
         } else {
-            //console.warn('Stopping tcpdump...');
             // stop tcpdump and navigate to the link
             await stopTcpdump();
             location.replace(link);
@@ -670,7 +673,7 @@ async function getFileFromBackupFolder() {
     let files = await Neutralino.filesystem.readDirectory(backupFolder);
 
     let fileList = files.filter(file => file.type === 'FILE').map(file => file.entry);
-    console.warn('Backup files:', fileList);
+    //console.warn('Backup files:', fileList);
 
     // Clear the table body
     let tbody = document.getElementById('historyTable').getElementsByTagName('tbody')[0];
@@ -680,7 +683,6 @@ async function getFileFromBackupFolder() {
         console.log('No file in backup folder');
         tbody.innerHTML = "<tr><td colspan='4' style='text-align:center;'>No files in backup folder</td></tr>";
     } else {
-        //console.log('Files in backup folder');
         // Get file details including creation/modification date
         let fileDetails = await Promise.all(fileList.map(async (file) => {
             let stats = await Neutralino.filesystem.getStats(`${backupFolder}/${file}`);
@@ -695,7 +697,6 @@ async function getFileFromBackupFolder() {
 
         // Populate the history table with file details
         let historyTable = document.getElementById('historyTable');
-
 
         // Add the files to the table
         fileDetails.forEach(file => {
@@ -713,8 +714,6 @@ async function getFileFromBackupFolder() {
             cell4.innerHTML = remove;
         });
     }
-
-
 }
 
 /**
