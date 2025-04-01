@@ -60,11 +60,12 @@ li a:hover {
     /* Change background color on hover for the active link */
 }
 
-#Record2{
- display: flex;
- width: 100%;
- justify-content: center;
+#Record2 {
+    display: flex;
+    width: 100%;
+    justify-content: center;
 }
+
 #tcpdumpForm1,
 #tcpdumpForm2 {
     width: 98%;
@@ -82,6 +83,8 @@ li a:hover {
     margin-right: 10px;
 
 }
+
+
 
 #tcpdumpForm table td:nth-child(2) {
     width: 310px;
@@ -105,6 +108,7 @@ li a:hover {
     /* Style select elements inside the second column */
 }
 
+#tcpdumpForm table td:nth-child(3)
 
 
 button {
@@ -136,6 +140,7 @@ select {
     /* Style for specific page content sections */
 }
 
+
 #outPutTextArea,
 #outPutTextArea1,
 #outPutTextArea2 {
@@ -144,9 +149,11 @@ select {
     /* Style for the output text area */
 }
 
+
 #tcpdumpButton,
 #tcpdumpButton1,
-#tcpdumpButton2 {
+#tcpdumpButton2,
+#btn2Record {
     width: 100%;
     border: none;
     padding: 4px;
@@ -154,6 +161,7 @@ select {
     border-radius: 5px;
     /* Style for the tcpdump button */
 }
+
 
 #tcpdumpButton:hover,
 #tcpdumpButton1:hover,
