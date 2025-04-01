@@ -315,9 +315,9 @@ async function startTcpdump(formMode) {
         let command = '';
         // check if the bridge is set up and use it if it is
         if (filter) {
-            command = 'sudo tcpdump -i ' + iface + ' -w - ' + filter + ' | sudo tee ../backup/capture-' + iface + '_' +  timestamp + '.pcap | sudo tee ' + output + '/capture-' + iface + '_' + timestamp + '.pcap | sudo tcpdump -C 10000 -r -';
+            command = 'sudo tcpdump -i ' + iface + ' -w - ' + filter + ' | sudo tee ../backup/capture-' + iface + '_' + timestamp + '.pcap | sudo tee ' + output + '/capture-' + iface + '_' + timestamp + '.pcap | sudo tcpdump -C 10000 -r -';
         } else {
-            command = 'sudo tcpdump -i ' + iface + ' -w - | sudo tee ../backup/capture-' + iface + '_' +  timestamp + '.pcap | sudo tee ' + output + '/capture-' + iface + '_' + timestamp + '.pcap | sudo tcpdump -C 10000 -r -';
+            command = 'sudo tcpdump -i ' + iface + ' -w - | sudo tee ../backup/capture-' + iface + '_' + timestamp + '.pcap | sudo tee ' + output + '/capture-' + iface + '_' + timestamp + '.pcap | sudo tcpdump -C 10000 -r -';
         }
 
         // Start the tcpdump process
@@ -405,9 +405,9 @@ async function startTcpdump(formMode) {
         let command = '';
         // check if the bridge is set up and use it if it is
         if (filter) {
-            command = 'sudo tcpdump -i ' + iface + ' -w - ' + filter + ' | sudo tee ../backup/capture-' + iface + '_' +  timestamp + '.pcap | sudo tee ' + output + '/capture-' + iface + '_' + timestamp + '.pcap | sudo tcpdump -C 10000 -r -';
+            command = 'sudo tcpdump -i ' + iface + ' -w - ' + filter + ' | sudo tee ../backup/capture-' + iface + '_' + timestamp + '.pcap | sudo tee ' + output + '/capture-' + iface + '_' + timestamp + '.pcap | sudo tcpdump -C 10000 -r -';
         } else {
-            command = 'sudo tcpdump -i ' + iface + ' -w - | sudo tee ../backup/capture-' + iface + '_' +  timestamp + '.pcap | sudo tee ' + output + '/capture-' + iface + '_' + timestamp + '.pcap | sudo tcpdump -C 10000 -r -';
+            command = 'sudo tcpdump -i ' + iface + ' -w - | sudo tee ../backup/capture-' + iface + '_' + timestamp + '.pcap | sudo tee ' + output + '/capture-' + iface + '_' + timestamp + '.pcap | sudo tcpdump -C 10000 -r -';
         }
 
         // Start the tcpdump process
@@ -494,9 +494,9 @@ async function startTcpdump(formMode) {
         let command = '';
         // check if the bridge is set up and use it if it is
         if (filter) {
-            command = 'sudo tcpdump -i ' + iface + ' -w - ' + filter + ' | sudo tee ../backup/capture-' + iface + '_' +  timestamp + '.pcap | sudo tee ' + output + '/capture-' + iface + '_' + timestamp + '.pcap | sudo tcpdump -C 10000 -r -';
+            command = 'sudo tcpdump -i ' + iface + ' -w - ' + filter + ' | sudo tee ../backup/capture-' + iface + '_' + timestamp + '.pcap | sudo tee ' + output + '/capture-' + iface + '_' + timestamp + '.pcap | sudo tcpdump -C 10000 -r -';
         } else {
-            command = 'sudo tcpdump -i ' + iface + ' -w - | sudo tee ../backup/capture-' + iface + '_' +  timestamp + '.pcap | sudo tee ' + output + '/capture-' + iface + '_' + timestamp + '.pcap | sudo tcpdump -C 10000 -r -';
+            command = 'sudo tcpdump -i ' + iface + ' -w - | sudo tee ../backup/capture-' + iface + '_' + timestamp + '.pcap | sudo tee ' + output + '/capture-' + iface + '_' + timestamp + '.pcap | sudo tcpdump -C 10000 -r -';
         }
 
 
@@ -672,35 +672,49 @@ async function getFileFromBackupFolder() {
     let fileList = files.filter(file => file.type === 'FILE').map(file => file.entry);
     console.warn('Backup files:', fileList);
 
-    // Get file details including creation/modification date
-    let fileDetails = await Promise.all(fileList.map(async (file) => {
-        let stats = await Neutralino.filesystem.getStats(`${backupFolder}/${file}`);
-        return {
-            name: file,
-            date: new Date(stats.modifiedAt).toLocaleString()
-        };
-    }));
-
-    // Sort files by date (most recent first)
-    fileDetails.sort((a, b) => new Date(b.date) - new Date(a.date));
-
-    let historyTable = document.getElementById('historyTable');
+    // Clear the table body
     let tbody = document.getElementById('historyTable').getElementsByTagName('tbody')[0];
     tbody.innerHTML = "";
-    fileDetails.forEach(file => {
-        let row = historyTable.insertRow();
-        let cell1 = row.insertCell(0);
-        let cell2 = row.insertCell(1);
-        let cell3 = row.insertCell(2);
-        let cell4 = row.insertCell(3);
 
-        cell1.innerHTML = file.date;
-        cell2.innerHTML = file.name.split('_')[0];
-        let save = `<button onclick="copyFileToUserFolder('${file.name}')"><img src="icons/save.png" alt="More" style="width: 18px; height: 18px;"></button>`;
-        cell3.innerHTML = save;
-        let remove = `<button onclick="removeFile('${file.name}')"><img src="icons/delete.png" alt="More" style="width: 18px; height: 18px;"></button>`;
-        cell4.innerHTML = remove;
-    });
+    if (fileList.length == 0) {
+        console.log('No file in backup folder');
+        tbody.innerHTML = "<tr><td colspan='4'>No files in backup folder</td></tr>";
+    } else {
+        //console.log('Files in backup folder');
+        // Get file details including creation/modification date
+        let fileDetails = await Promise.all(fileList.map(async (file) => {
+            let stats = await Neutralino.filesystem.getStats(`${backupFolder}/${file}`);
+            return {
+                name: file,
+                date: new Date(stats.modifiedAt).toLocaleString()
+            };
+        }));
+
+        // Sort files by date (most recent first)
+        fileDetails.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+        // Populate the history table with file details
+        let historyTable = document.getElementById('historyTable');
+
+
+        // Add the files to the table
+        fileDetails.forEach(file => {
+            let row = historyTable.insertRow();
+            let cell1 = row.insertCell(0);
+            let cell2 = row.insertCell(1);
+            let cell3 = row.insertCell(2);
+            let cell4 = row.insertCell(3);
+
+            cell1.innerHTML = file.date;
+            cell2.innerHTML = file.name.split('_')[0];
+            let save = `<button onclick="copyFileToUserFolder('${file.name}')"><img src="icons/save.png" alt="More" style="width: 18px; height: 18px;"></button>`;
+            cell3.innerHTML = save;
+            let remove = `<button onclick="removeFile('${file.name}')"><img src="icons/delete.png" alt="More" style="width: 18px; height: 18px;"></button>`;
+            cell4.innerHTML = remove;
+        });
+    }
+
+
 }
 
 /**
