@@ -20,6 +20,7 @@
     "filesystem.readDirectory",
     "filesystem.copy",
     "filesystem.getStats",
+    "filesystem.readFile",
     "window.*"
   ],
   "globalVariables": {

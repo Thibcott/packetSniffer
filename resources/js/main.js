@@ -620,7 +620,7 @@ async function stopTcpdump(formMode) {
                 }
             }
         }
-    } 
+    }
 }
 
 
@@ -981,30 +981,58 @@ async function updateOS() {
  *                 or DOM manipulation fails.
  */
 async function getVersions() {
-    try {
-        // Get App version
-        document.getElementById("appVersion").innerText = `v${APP_VERSION}`;
 
+    // Get App version from config file
+    try {
+        let config = await Neutralino.filesystem.readFile('neutralino.config.json');
+        let configData = JSON.parse(config);
+        document.getElementById("appVersion").innerText = `v${configData.version}`;
+    } catch (error) {
+        console.error("Error reading or parsing neutralino.config.json:", error);
+        document.getElementById("appVersion").innerText = "Version not available";
+    }
+
+    try {
         // Get tcpdump version
         let tcpdumpVersion = await Neutralino.os.execCommand('tcpdump --v');
         document.getElementById("tcpdumpVersion").innerText = tcpdumpVersion.stdOut.split('\n')[0];
+    } catch (error) {
+        console.error("Error fetching tcpdump version:", error);
+        document.getElementById("tcpdumpVersion").innerText = "Version not available";
+    }
 
+    try {
         // Get OS version
         let osVersion = await Neutralino.os.execCommand('uname -a');
         document.getElementById("osVersion").innerText = osVersion.stdOut.trim();
+    } catch (error) {
+        console.error("Error fetching OS version:", error);
+        document.getElementById("osVersion").innerText = "Version not available";
+    }
 
+    try {
         // Get NeutralinoJs version
         document.getElementById("neutralinoVersion").innerText = `v${NL_VERSION}`;
+    } catch (error) {
+        console.error("Error fetching NeutralinoJs version:", error);
+        document.getElementById("neutralinoVersion").innerText = "Version not available";
+    }
 
+    try {
         // Get Node.js version
         let nodeVersion = await Neutralino.os.execCommand('node -v');
         document.getElementById("nodeVersion").innerText = nodeVersion.stdOut.trim();
+    } catch (error) {
+        console.error("Error fetching Node.js version:", error);
+        document.getElementById("nodeVersion").innerText = "Version not available";
+    }
 
+    try {
         // Get npm version
         let npmVersion = await Neutralino.os.execCommand('npm -v');
         document.getElementById("npmVersion").innerText = npmVersion.stdOut.trim();
-    } catch (err) {
-        console.error(`Error fetching versions: ${err.message} (${err.name})`);
+    } catch (error) {
+
     }
 }
 
