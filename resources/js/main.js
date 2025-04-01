@@ -315,9 +315,9 @@ async function startTcpdump(formMode) {
         let command = '';
         // check if the bridge is set up and use it if it is
         if (filter) {
-            command = 'sudo tcpdump -i ' + iface + ' -w - ' + filter + ' | sudo tee ../backup/capture_' + iface + '_' +  timestamp + '.pcap | sudo tee ' + output + '/capture_' + iface + '_' + timestamp + '.pcap | sudo tcpdump -C 1000 -r -';
+            command = 'sudo tcpdump -i ' + iface + ' -w - ' + filter + ' | sudo tee ../backup/capture-' + iface + '_' +  timestamp + '.pcap | sudo tee ' + output + '/capture-' + iface + '_' + timestamp + '.pcap | sudo tcpdump -C 10000 -r -';
         } else {
-            command = 'sudo tcpdump -i ' + iface + ' -w - | sudo tee ../backup/capture_' + iface + '_' +  timestamp + '.pcap | sudo tee ' + output + '/capture_' + iface + '_' + timestamp + '.pcap | sudo tcpdump -C 1000 -r -';
+            command = 'sudo tcpdump -i ' + iface + ' -w - | sudo tee ../backup/capture-' + iface + '_' +  timestamp + '.pcap | sudo tee ' + output + '/capture-' + iface + '_' + timestamp + '.pcap | sudo tcpdump -C 10000 -r -';
         }
 
         // Start the tcpdump process
@@ -405,9 +405,9 @@ async function startTcpdump(formMode) {
         let command = '';
         // check if the bridge is set up and use it if it is
         if (filter) {
-            command = 'sudo tcpdump -i ' + iface + ' -w - ' + filter + ' | sudo tee ../backup/capture_' + iface + '_' +  timestamp + '.pcap | sudo tee ' + output + '/capture_' + iface + '_' + timestamp + '.pcap | sudo tcpdump -C 1000 -r -';
+            command = 'sudo tcpdump -i ' + iface + ' -w - ' + filter + ' | sudo tee ../backup/capture-' + iface + '_' +  timestamp + '.pcap | sudo tee ' + output + '/capture-' + iface + '_' + timestamp + '.pcap | sudo tcpdump -C 10000 -r -';
         } else {
-            command = 'sudo tcpdump -i ' + iface + ' -w - | sudo tee ../backup/capture_' + iface + '_' +  timestamp + '.pcap | sudo tee ' + output + '/capture_' + iface + '_' + timestamp + '.pcap | sudo tcpdump -C 1000 -r -';
+            command = 'sudo tcpdump -i ' + iface + ' -w - | sudo tee ../backup/capture-' + iface + '_' +  timestamp + '.pcap | sudo tee ' + output + '/capture-' + iface + '_' + timestamp + '.pcap | sudo tcpdump -C 10000 -r -';
         }
 
         // Start the tcpdump process
@@ -494,9 +494,9 @@ async function startTcpdump(formMode) {
         let command = '';
         // check if the bridge is set up and use it if it is
         if (filter) {
-            command = 'sudo tcpdump -i ' + iface + ' -w - ' + filter + ' | sudo tee ../backup/capture_' + iface + '_' +  timestamp + '.pcap | sudo tee ' + output + '/capture_' + iface + '_' + timestamp + '.pcap | sudo tcpdump -C 1000 -r -';
+            command = 'sudo tcpdump -i ' + iface + ' -w - ' + filter + ' | sudo tee ../backup/capture-' + iface + '_' +  timestamp + '.pcap | sudo tee ' + output + '/capture-' + iface + '_' + timestamp + '.pcap | sudo tcpdump -C 10000 -r -';
         } else {
-            command = 'sudo tcpdump -i ' + iface + ' -w - | sudo tee ../backup/capture_' + iface + '_' +  timestamp + '.pcap | sudo tee ' + output + '/capture_' + iface + '_' + timestamp + '.pcap | sudo tcpdump -C 1000 -r -';
+            command = 'sudo tcpdump -i ' + iface + ' -w - | sudo tee ../backup/capture-' + iface + '_' +  timestamp + '.pcap | sudo tee ' + output + '/capture-' + iface + '_' + timestamp + '.pcap | sudo tcpdump -C 10000 -r -';
         }
 
 
