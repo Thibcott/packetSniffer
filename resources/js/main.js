@@ -678,7 +678,7 @@ async function getFileFromBackupFolder() {
 
     if (fileList.length == 0) {
         console.log('No file in backup folder');
-        tbody.innerHTML = "<tr><td colspan='4'>No files in backup folder</td></tr>";
+        tbody.innerHTML = "<tr><td colspan='4' style='text-align:center;'>No files in backup folder</td></tr>";
     } else {
         //console.log('Files in backup folder');
         // Get file details including creation/modification date
