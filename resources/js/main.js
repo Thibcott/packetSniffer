@@ -815,7 +815,8 @@ async function toggleFullScreen() {
  */
 async function logout() {
     try {
-        await Neutralino.os.execCommand('dm-tool lock');
+        // Execute the command to lock the screen and return to the login screen
+        await Neutralino.os.execCommand('xdg-screensaver lock');
     } catch (err) {
         console.error(`Error logging out: ${err.message} (${err.name})`);
     }
