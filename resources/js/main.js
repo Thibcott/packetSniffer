@@ -815,10 +815,31 @@ async function toggleFullScreen() {
  */
 async function logout() {
     try {
-        // Execute the command to lock the screen and return to the login screen
-        await Neutralino.os.execCommand('sudo pkill -u pi');
+        // Add the logout option to the system tray menu
+        let tray = {
+            icon: "/resources/icons/trayIcon.png",
+            menuItems: [
+                { id: "LOGOUT", text: "Logout" },
+                { id: "SEP", text: "-" },
+                { id: "QUIT", text: "Quit" }
+            ]
+        };
+
+        Neutralino.os.setTray(tray);
+
+        // Handle the logout action when the tray menu item is clicked
+        Neutralino.events.on("trayMenuItemClicked", async (event) => {
+            if (event.detail.id === "LOGOUT") {
+                try {
+                    let result = await Neutralino.os.execCommand('sudo pkill -u pi');
+                    console.log("Command executed successfully:", result.stdOut);
+                } catch (error) {
+                    console.error("Error executing command:", error);
+                }
+            }
+        });
     } catch (err) {
-        console.error(`Error logging out: ${err.message} (${err.name})`);
+        console.error(`Error setting up logout in tray: ${err.message} (${err.name})`);
     }
 }
 
