@@ -890,19 +890,13 @@ async function accessFileExplorer() {
     try {
         // Toggle full-screen mode before opening the file explorer
         await toggleFullScreen();
-        
-        // Use platform-specific commands to open the file explorer
-        if (NL_OS === "Windows") {
-            await Neutralino.os.execCommand(`explorer ${Neutralino.os.getPath('app')}/../backup`);
-        } else if (NL_OS === "Darwin") {
-            await Neutralino.os.execCommand(`open ${Neutralino.os.getPath('app')}/../backup`);
-        } else {
-            await Neutralino.os.execCommand(`xdg-open ${Neutralino.os.getPath('app')}/../backup`);
-        }
-    } catch (err) {
+        // Use the Raspberry Pi OS-specific command to open the file explorer
+        const appPath = await Neutralino.os.getPath('app');
+        await Neutralino.os.execCommand(`xdg-open ${appPath}/../backup`);
+        } catch (err) {
         console.error(`Error opening file explorer: ${err.message} (${err.name})`);
+        }
     }
-}
 
 
 /**
