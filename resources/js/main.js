@@ -967,15 +967,30 @@ async function accessTerminal() {
  * @returns {Promise<void>} A promise that resolves when the shutdown command is executed or the function returns.
  * @throws {Error} Throws an error if there is an issue executing the shutdown command.
  */
-async function extractSD() {
-    let result = await Neutralino.os.showMessageBox('Confirmation', 'Are you sure you want to shut down the RPI?', 'YES_NO');
+async function extractUSB() {
+    let result = await Neutralino.os.showMessageBox('Confirmation', 'Are you sure you want to eject the USB drive?', 'YES_NO');
     if (result === 'NO') {
         return;
     } else {
         try {
-            await Neutralino.os.execCommand('sudo shutdown -h now');
+            // Find the USB drive (assuming it's mounted under /media/pi or similar)
+            let drives = await Neutralino.os.execCommand('lsblk -o NAME,MOUNTPOINT | grep /media');
+            if (drives.stdOut.trim() === "") {
+                console.error("No USB drive detected.");
+                await Neutralino.os.showMessageBox('Error', 'No USB drive detected.', 'OK');
+                return;
+            }
+
+            // Extract the device name (e.g., sda1)
+            let usbDrive = drives.stdOut.split('\n')[0].split(' ')[0].trim();
+
+            // Unmount the USB drive
+            await Neutralino.os.execCommand(`sudo umount /dev/${usbDrive}`);
+            console.log(`USB drive /dev/${usbDrive} ejected successfully.`);
+            await Neutralino.os.showMessageBox('Success', 'USB drive ejected successfully.', 'OK');
         } catch (err) {
-            console.error(`Error extracting SD card: ${err.message} (${err.name})`);
+            console.error(`Error ejecting USB drive: ${err.message} (${err.name})`);
+            await Neutralino.os.showMessageBox('Error', `Error ejecting USB drive: ${err.message}`, 'OK');
         }
     }
 }
