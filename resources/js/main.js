@@ -892,8 +892,10 @@ async function accessFileExplorer() {
         await toggleFullScreen();
         // Use the Raspberry Pi OS-specific command to open the file explorer
         await Neutralino.os.execCommand('xdg-open ');
+    } catch (err) {
+        console.error(`Error opening file explorer: ${err.message} (${err.name})`);
     }
-
+}
 
 /**
  * Opens a terminal using the Neutralino OS execCommand.
