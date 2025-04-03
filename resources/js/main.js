@@ -984,10 +984,27 @@ async function extractUSB() {
             // Extract the device name (e.g., sda1)
             let usbDrive = drives.stdOut.split('\n')[0].split(' ')[0].trim();
 
-            // Unmount the USB drive
-            await Neutralino.os.execCommand(`sudo umount /dev/${usbDrive}`);
-            console.log(`USB drive /dev/${usbDrive} ejected successfully.`);
-            await Neutralino.os.showMessageBox('Success', 'USB drive ejected successfully.', 'OK');
+            // Validate the extracted USB drive name
+            if (!usbDrive || usbDrive === "") {
+                console.error("Invalid USB drive detected.");
+                await Neutralino.os.showMessageBox('Error', 'Invalid USB drive detected.', 'OK');
+                return;
+            }
+
+            try {
+                // Unmount the USB drive
+                let unmountResult = await Neutralino.os.execCommand(`sudo umount /dev/${usbDrive}`);
+                if (unmountResult.stdErr) {
+                    console.error(`Error unmounting USB drive: ${unmountResult.stdErr}`);
+                    await Neutralino.os.showMessageBox('Error', `Error unmounting USB drive: ${unmountResult.stdErr}`, 'OK');
+                } else {
+                    console.log(`USB drive /dev/${usbDrive} ejected successfully.`);
+                    await Neutralino.os.showMessageBox('Success', 'USB drive ejected successfully.', 'OK');
+                }
+            } catch (err) {
+                console.error(`Error unmounting USB drive: ${err.message}`);
+                await Neutralino.os.showMessageBox('Error', `Error unmounting USB drive: ${err.message}`, 'OK');
+            }
         } catch (err) {
             console.error(`Error ejecting USB drive: ${err.message} (${err.name})`);
             await Neutralino.os.showMessageBox('Error', `Error ejecting USB drive: ${err.message}`, 'OK');
