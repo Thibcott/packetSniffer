@@ -802,7 +802,7 @@ async function toggleFullScreen() {
     }
 }
 
- 
+
 
 /**
  * Logs out the user by locking the screen using the system's display manager tool.
@@ -1052,7 +1052,6 @@ async function updateApp() {
 /**
  * Asynchronously updates the operating system by executing the 'sudo apt-get update && sudo apt-get upgrade -y' command.
  */
-
 async function updateOS() {
     try {
         let result = await Neutralino.os.showMessageBox('Update OS', 'Are you sure you want to update the OS?', 'YES_NO');
@@ -1130,7 +1129,26 @@ async function getVersions() {
         let npmVersion = await Neutralino.os.execCommand('npm -v');
         document.getElementById("npmVersion").innerText = npmVersion.stdOut.trim();
     } catch (error) {
+        console.error("Error fetching npm version:", error);
+        document.getElementById("npmVersion").innerText = "Version not available";
+    }
 
+    try {
+        // Get Git version
+        let gitVersion = await Neutralino.os.execCommand('git --version');
+        document.getElementById("gitVersion").innerText = gitVersion.stdOut.trim();
+    } catch (error) {
+        console.error("Error fetching Git version:", error);
+        document.getElementById("gitVersion").innerText = "Version not available";
+    }
+
+    try {
+        // Get bridge-utils version
+        let bridgeVersion = await Neutralino.os.execCommand('brctl --version');
+        document.getElementById("bridgeVersion").innerText = bridgeVersion.stdOut.trim();
+    } catch (error) {
+        console.error("Error fetching bridge-utils version:", error);
+        document.getElementById("bridgeVersion").innerText = "Version not available";
     }
 }
 
