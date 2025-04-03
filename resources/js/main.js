@@ -902,7 +902,7 @@ async function accessFileExplorer() {
  */
 async function accessTerminal() {
     try {
-        await Neutralino.os.execCommand('lxterminal --geometry=80x24 --fullscreen');
+        await Neutralino.os.execCommand('lxterminal --geometry=80x24');
     } catch (err) {
         console.error(`Error opening terminal: ${err.message} (${err.name})`);
     }
