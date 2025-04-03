@@ -802,6 +802,8 @@ async function toggleFullScreen() {
     }
 }
 
+ 
+
 /**
  * Logs out the user by locking the screen using the system's display manager tool.
  * This function executes the 'dm-tool lock' command to lock the screen.
@@ -811,6 +813,15 @@ async function toggleFullScreen() {
  * @throws {Error} If an error occurs while attempting to lock the screen, 
  *         it will be logged to the console with the error message and name.
  */
+async function logout() {
+    try {
+        await Neutralino.os.execCommand('dm-tool lock');
+    } catch (err) {
+        console.error(`Error logging out: ${err.message} (${err.name})`);
+    }
+}
+
+
 async function rebootRPI() {
     try {
         await Neutralino.os.execCommand('sudo reboot');
