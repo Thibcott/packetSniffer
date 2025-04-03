@@ -999,7 +999,7 @@ async function extractUSB() {
                     await Neutralino.os.showMessageBox('Error', `Error unmounting USB drive: ${unmountResult.stdErr}`, 'OK');
                 } else {
                     console.log(`USB drive /dev/${usbDrive} ejected successfully.`);
-                    await Neutralino.os.showMessageBox('Success', 'USB drive ejected successfully.', 'OK');
+                    await Neutralino.os.showMessageBox('Success', 'USB drive ejected successfully. Now, you can remove the usb stick', 'OK');
                 }
             } catch (err) {
                 console.error(`Error unmounting USB drive: ${err.message}`);
