@@ -889,8 +889,16 @@ async function turnOffApp() {
 async function accessFileExplorer() {
     try {
         // Toggle full-screen mode before opening the file explorer
-        toggleFullScreen();
-        await Neutralino.os.execCommand('xdg-open ../backup');
+        await toggleFullScreen();
+        
+        // Use platform-specific commands to open the file explorer
+        if (NL_OS === "Windows") {
+            await Neutralino.os.execCommand(`explorer ${Neutralino.os.getPath('app')}/../backup`);
+        } else if (NL_OS === "Darwin") {
+            await Neutralino.os.execCommand(`open ${Neutralino.os.getPath('app')}/../backup`);
+        } else {
+            await Neutralino.os.execCommand(`xdg-open ${Neutralino.os.getPath('app')}/../backup`);
+        }
     } catch (err) {
         console.error(`Error opening file explorer: ${err.message} (${err.name})`);
     }
@@ -909,8 +917,15 @@ async function accessFileExplorer() {
 async function accessTerminal() {
     try {
         // Toggle full-screen mode before opening the terminal
-        toggleFullScreen();
-        await Neutralino.os.execCommand('lxterminal');
+        await toggleFullScreen();
+
+        // Check if lxterminal is available
+        let checkCommand = await Neutralino.os.execCommand('command -v lxterminal');
+        if (checkCommand.stdOut.trim()) {
+            await Neutralino.os.execCommand('lxterminal');
+        } else {
+            console.error("Error: 'lxterminal' is not installed or not available in PATH.");
+        }
     } catch (err) {
         console.error(`Error opening terminal: ${err.message} (${err.name})`);
     }
