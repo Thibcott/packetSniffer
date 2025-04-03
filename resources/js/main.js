@@ -787,11 +787,15 @@ async function removeFile(file) {
  */
 async function toggleFullScreen() {
     try {
-        let isFullScreen = await Neutralino.window.isFullScreen();
-        if (isFullScreen) {
-            await Neutralino.window.exitFullScreen();
+        if (Neutralino.window && Neutralino.window.isFullScreen && Neutralino.window.exitFullScreen && Neutralino.window.setFullScreen) {
+            let isFullScreen = await Neutralino.window.isFullScreen();
+            if (isFullScreen) {
+                await Neutralino.window.exitFullScreen();
+            } else {
+                await Neutralino.window.setFullScreen();
+            }
         } else {
-            await Neutralino.window.setFullScreen();
+            console.error("Full-screen methods are not supported in this environment.");
         }
     } catch (err) {
         console.error(`Error toggling full-screen mode: ${err.message} (${err.name})`);
@@ -884,6 +888,8 @@ async function turnOffApp() {
  */
 async function accessFileExplorer() {
     try {
+        // Toggle full-screen mode before opening the file explorer
+        toggleFullScreen();
         await Neutralino.os.execCommand('xdg-open ../backup');
     } catch (err) {
         console.error(`Error opening file explorer: ${err.message} (${err.name})`);
@@ -902,6 +908,8 @@ async function accessFileExplorer() {
  */
 async function accessTerminal() {
     try {
+        // Toggle full-screen mode before opening the terminal
+        toggleFullScreen();
         await Neutralino.os.execCommand('lxterminal');
     } catch (err) {
         console.error(`Error opening terminal: ${err.message} (${err.name})`);
