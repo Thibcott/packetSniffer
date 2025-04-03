@@ -1048,6 +1048,11 @@ async function updateApp() {
     }
 }
 
+
+/**
+ * Asynchronously updates the operating system by executing the 'sudo apt-get update && sudo apt-get upgrade -y' command.
+ */
+
 async function updateOS() {
     try {
         let result = await Neutralino.os.showMessageBox('Update OS', 'Are you sure you want to update the OS?', 'YES_NO');
