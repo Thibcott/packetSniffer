@@ -83,8 +83,8 @@ function moveCursorToEnd() {
  */
 async function getNetworkInterfaces() {
     // get the network interfaces available on the system
-    //let info = await Neutralino.os.execCommand('ls /sys/class/net');
-    let info = await Neutralino.os.execCommand('wmic nic get name');
+    let info = await Neutralino.os.execCommand('ls /sys/class/net');
+    //let info = await Neutralino.os.execCommand('wmic nic get name');
     console.log(info.stdOut);
     // filter the output to get only the interface names
     let interfaces = info.stdOut.split('\n').filter(line => line.trim() !== '' && line.trim() !== 'Name').map((iface) => {
