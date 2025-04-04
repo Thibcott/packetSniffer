@@ -103,7 +103,7 @@ async function checkIfBridge() {
     // get the selected interface from the dropdown
     let selectedInterface = document.getElementById('interface').value;
     console.log(selectedInterface);
-    if(selectedInterface === 'br0') {
+    if (selectedInterface === 'br0') {
         await setupBridge();
     }
 }
@@ -642,30 +642,18 @@ async function stopTcpdump(formMode) {
 
 
 async function checkIfConnectedDevices(netInetrface, formMode) {
-    // get the connected devices and their IP addresses
-    // using the command 'ip -o -4 addr list | awk '{print $2, $4}''
-    // this command lists the network interfaces and their IPv4 addresses
-    let interfacesInfo = await Neutralino.os.execCommand('ip -o -4 addr list | awk \'{print $2, $4}\'');
-    console.log(interfacesInfo.stdOut);
-    let ip = interfacesInfo.stdOut.split('\n').filter(line => line.includes(netInetrface));
-
-
-    if (ip.length == 0) {
-        console.warn('No device connected to ' + netInetrface);
-        // show a message box to inform the user and stop the tcpdump process
-        let messageBoxResult = await Neutralino.os.showMessageBox('Warning', 'No device connected to ' + netInetrface, 'OK');
-        // stop tcpdump and navigate to the link
-        if (messageBoxResult == 'OK') {
-            // stop tcpdump and navigate to the link
-            await stopTcpdump(formMode);
-        }
+    if (netInetrface == 'br0') { 
+        
     } else {
-        console.log('Device connected to ' + netInetrface);
+        // get the connected devices and their IP addresses
+        // using the command 'ip -o -4 addr list | awk '{print $2, $4}''
+        // this command lists the network interfaces and their IPv4 addresses
+        let interfacesInfo = await Neutralino.os.execCommand('ip -o -4 addr list | awk \'{print $2, $4}\'');
+        console.log(interfacesInfo.stdOut);
+        let ip = interfacesInfo.stdOut.split('\n').filter(line => line.includes(netInetrface));
 
-        if (interfacesInfo.stdOut.includes(netInetrface)) {
-            console.log("Device is connected to " + netInetrface);
-        } else {
-            console.warn("Device is not connected to " + netInetrface);
+        if (ip.length == 0) {
+            console.warn('No device connected to ' + netInetrface);
             // show a message box to inform the user and stop the tcpdump process
             let messageBoxResult = await Neutralino.os.showMessageBox('Warning', 'No device connected to ' + netInetrface, 'OK');
             // stop tcpdump and navigate to the link
@@ -673,7 +661,23 @@ async function checkIfConnectedDevices(netInetrface, formMode) {
                 // stop tcpdump and navigate to the link
                 await stopTcpdump(formMode);
             }
+        } else {
+            console.log('Device connected to ' + netInetrface);
+
+            if (interfacesInfo.stdOut.includes(netInetrface)) {
+                console.log("Device is connected to " + netInetrface);
+            } else {
+                console.warn("Device is not connected to " + netInetrface);
+                // show a message box to inform the user and stop the tcpdump process
+                let messageBoxResult = await Neutralino.os.showMessageBox('Warning', 'No device connected to ' + netInetrface, 'OK');
+                // stop tcpdump and navigate to the link
+                if (messageBoxResult == 'OK') {
+                    // stop tcpdump and navigate to the link
+                    await stopTcpdump(formMode);
+                }
+            }
         }
+
     }
 }
 
