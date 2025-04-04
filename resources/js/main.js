@@ -100,6 +100,7 @@ async function getNetworkInterfaces() {
 
     document.getElementById('interface').addEventListener('change', async (event) => {
         if (event.target.value === 'bridge') {
+            console.log("hello hello 1")
             await setupBridge();
         }
     });
