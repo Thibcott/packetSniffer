@@ -108,8 +108,14 @@ li a:hover {
     /* Style select elements inside the second column */
 }
 
-#tcpdumpForm table td:nth-child(3)
+#tcpdumpForm table td:nth-child(3){}
 
+select option {
+    padding: 0px !important;
+    background-color: white !important;
+    border:none !important;
+    /* Style options inside select elements */
+}
 
 button {
     border: none;
