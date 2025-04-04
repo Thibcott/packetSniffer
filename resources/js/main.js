@@ -307,7 +307,7 @@ async function startTcpdump(formMode) {
         let timestamp = `${year}-${month}-${day}-${hours}-${minutes}-${seconds}`;
 
         // check if the devices are connected
-        checkIfConnectedDevices(iface,1);
+        checkIfConnectedDevices(iface, 1);
 
 
         // set the output file name with the timestamp
@@ -400,7 +400,7 @@ async function startTcpdump(formMode) {
         let timestamp = `${year}-${month}-${day}-${hours}-${minutes}-${seconds}`;
 
         // check if the devices are connected
-        checkIfConnectedDevices(iface,2);
+        checkIfConnectedDevices(iface, 2);
 
         // set the output file name with the timestamp
         document.getElementById('recordStartTime2').innerHTML = "Last record start at : <br>" + timestamp; // 
@@ -492,7 +492,7 @@ async function startTcpdump(formMode) {
         let timestamp = `${year}-${month}-${day}-${hours}-${minutes}-${seconds}`;
 
         // check if the devices are connected
-        checkIfConnectedDevices(iface,3);
+        checkIfConnectedDevices(iface, 3);
 
         // set the output file name with the timestamp
         document.getElementById('recordStartTime').innerHTML = "Last record start at : <br>" + timestamp; // 
@@ -639,23 +639,35 @@ async function stopTcpdump(formMode) {
 }
 
 
-async function checkIfConnectedDevices(netInetrface , formMode) {
+async function checkIfConnectedDevices(netInetrface, formMode) {
     // get the connected devices and their IP addresses
     // using the command 'ip -o -4 addr list | awk '{print $2, $4}''
     // this command lists the network interfaces and their IPv4 addresses
     let interfacesInfo = await Neutralino.os.execCommand('ip -o -4 addr list | awk \'{print $2, $4}\'');
     console.log(interfacesInfo.stdOut);
     let ip = interfacesInfo.stdOut.split('\n').filter(line => line.includes(netInetrface));
-    
+
+
     if (ip.length == 0) {
         console.warn('No device connected to ' + netInetrface);
-        
+
         // show a message box to inform the user and stop the tcpdump process
         let messageBoxResult = await Neutralino.os.showMessageBox('Warning', 'No device connected to ' + netInetrface, 'OK');
+
+        if (formMode == 1) {
+            document.getElementById("outPutTextArea1").innerHTML = "<span style='color: red;'>No device connected to " + netInetrface + "</span>";
+
+        } else if (formMode == 2) {
+            document.getElementById("outPutTextArea2").innerHTML = "<span style='color: red;'>No device connected to " + netInetrface + "</span>";
+
+        } else {
+            document.getElementById("outPutTextArea").innerHTML = "<span style='color: red;'>No device connected to " + netInetrface + "</span>";
+        }
+
+        // stop tcpdump and navigate to the link
         if (messageBoxResult == 'OK') {
             // stop tcpdump and navigate to the link
             await stopTcpdump(formMode);
-            document.getElementById("outPutTextArea"+formMode).innerHTML = "<span style='color: red;'>No device connected to " + netInetrface + "</span>";
         }
     } else {
         console.log('Device connected to ' + netInetrface);
@@ -666,11 +678,21 @@ async function checkIfConnectedDevices(netInetrface , formMode) {
             console.warn("Device is not connected to " + netInetrface);
             // show a message box to inform the user and stop the tcpdump process
             let messageBoxResult = await Neutralino.os.showMessageBox('Warning', 'No device connected to ' + netInetrface, 'OK');
+
+            if (formMode == 1) {
+                document.getElementById("outPutTextArea1").innerHTML = "<span style='color: red;'>No device connected to " + netInetrface + "</span>";
+
+            } else if (formMode == 2) {
+                document.getElementById("outPutTextArea2").innerHTML = "<span style='color: red;'>No device connected to " + netInetrface + "</span>";
+
+            } else {
+                document.getElementById("outPutTextArea").innerHTML = "<span style='color: red;'>No device connected to " + netInetrface + "</span>";
+            }
+
+            // stop tcpdump and navigate to the link
             if (messageBoxResult == 'OK') {
                 // stop tcpdump and navigate to the link
                 await stopTcpdump(formMode);
-                document.getElementById("outPutTextArea"+formMode).innerHTML = "<span style='color: red;'>No device connected to " + netInetrface + "</span>";
-
             }
         }
     }
