@@ -98,10 +98,17 @@ async function getNetworkInterfaces() {
     }
     document.getElementById('interface').innerHTML = interfaces.join('');
 
-    document.getElementById('interface').addEventListener('change', async (event) => {
-        if (event.target.value === 'bridge') {
-            console.log("hello hello 1")
-            await setupBridge();
+    document.addEventListener('DOMContentLoaded', () => {
+        const interfaceElement = document.getElementById('interface');
+        if (interfaceElement) {
+            interfaceElement.addEventListener('change', async (event) => {
+                console.log(event.target.value);
+                if (event.target.value === 'bridge') {
+                    await setupBridge();
+                }
+            });
+        } else {
+            console.error("Element with ID 'interface' not found.");
         }
     });
 }
