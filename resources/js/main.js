@@ -655,6 +655,7 @@ async function checkIfConnectedDevices(netInetrface , formMode) {
         if (messageBoxResult == 'OK') {
             // stop tcpdump and navigate to the link
             await stopTcpdump(formMode);
+            document.getElementById("outPutTextArea"+formMode).innerHTML = "<span style='color: red;'>No device connected to " + netInetrface + "</span>";
         }
     } else {
         console.log('Device connected to ' + netInetrface);
@@ -668,6 +669,8 @@ async function checkIfConnectedDevices(netInetrface , formMode) {
             if (messageBoxResult == 'OK') {
                 // stop tcpdump and navigate to the link
                 await stopTcpdump(formMode);
+                document.getElementById("outPutTextArea"+formMode).innerHTML = "<span style='color: red;'>No device connected to " + netInetrface + "</span>";
+
             }
         }
     }
