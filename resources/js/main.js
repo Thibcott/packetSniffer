@@ -650,20 +650,8 @@ async function checkIfConnectedDevices(netInetrface, formMode) {
 
     if (ip.length == 0) {
         console.warn('No device connected to ' + netInetrface);
-
         // show a message box to inform the user and stop the tcpdump process
         let messageBoxResult = await Neutralino.os.showMessageBox('Warning', 'No device connected to ' + netInetrface, 'OK');
-
-        if (formMode == 1) {
-            document.getElementById("outPutTextArea1").innerHTML = "<span style='color: red;'>No device connected to " + netInetrface + "</span>";
-
-        } else if (formMode == 2) {
-            document.getElementById("outPutTextArea2").innerHTML = "<span style='color: red;'>No device connected to " + netInetrface + "</span>";
-
-        } else {
-            document.getElementById("outPutTextArea").innerHTML = "<span style='color: red;'>No device connected to " + netInetrface + "</span>";
-        }
-
         // stop tcpdump and navigate to the link
         if (messageBoxResult == 'OK') {
             // stop tcpdump and navigate to the link
@@ -678,17 +666,6 @@ async function checkIfConnectedDevices(netInetrface, formMode) {
             console.warn("Device is not connected to " + netInetrface);
             // show a message box to inform the user and stop the tcpdump process
             let messageBoxResult = await Neutralino.os.showMessageBox('Warning', 'No device connected to ' + netInetrface, 'OK');
-
-            if (formMode == 1) {
-                document.getElementById("outPutTextArea1").innerHTML = "<span style='color: red;'>No device connected to " + netInetrface + "</span>";
-
-            } else if (formMode == 2) {
-                document.getElementById("outPutTextArea2").innerHTML = "<span style='color: red;'>No device connected to " + netInetrface + "</span>";
-
-            } else {
-                document.getElementById("outPutTextArea").innerHTML = "<span style='color: red;'>No device connected to " + netInetrface + "</span>";
-            }
-
             // stop tcpdump and navigate to the link
             if (messageBoxResult == 'OK') {
                 // stop tcpdump and navigate to the link
