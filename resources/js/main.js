@@ -22,8 +22,6 @@ let bridge = false; // flag to check if the bridge is set up
  * @throws Will throw an error if there is an issue executing the commands to set up the bridge.
  */
 async function setupBridge() {
-    console.warn("EXECUTEZ L ORDRE 67");
-
     let bridgeInfo = await Neutralino.os.execCommand('brctl show');
     if (bridgeInfo.stdOut.includes('br0')) {
         console.log('Bridge br0 already exists.');
@@ -106,7 +104,6 @@ async function checkIfBridge() {
     let selectedInterface = document.getElementById('interface').value;
     console.log(selectedInterface);
     if(selectedInterface === 'br0') {
-        console.warn("EXECUTEZ L ORDRE 66");
         await setupBridge();
     }
 }
