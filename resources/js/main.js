@@ -307,7 +307,7 @@ async function startTcpdump(formMode) {
         let timestamp = `${year}-${month}-${day}-${hours}-${minutes}-${seconds}`;
 
         // check if the devices are connected
-        checkIfConnectedDevices(iface);
+        checkIfConnectedDevices(iface,1);
 
 
         // set the output file name with the timestamp
@@ -400,7 +400,7 @@ async function startTcpdump(formMode) {
         let timestamp = `${year}-${month}-${day}-${hours}-${minutes}-${seconds}`;
 
         // check if the devices are connected
-        checkIfConnectedDevices(iface);
+        checkIfConnectedDevices(iface,2);
 
         // set the output file name with the timestamp
         document.getElementById('recordStartTime2').innerHTML = "Last record start at : <br>" + timestamp; // 
@@ -471,9 +471,6 @@ async function startTcpdump(formMode) {
             return;
         }
 
-        // check if the devices are connected
-        checkIfConnectedDevices(iface);
-
         // check if the bridge is set up
         const form = document.getElementById('tcpdumpForm');
         const output = form.elements['output'].value;
@@ -493,6 +490,9 @@ async function startTcpdump(formMode) {
         let minutes = String(now.getMinutes()).padStart(2, '0');
         let seconds = String(now.getSeconds()).padStart(2, '0');
         let timestamp = `${year}-${month}-${day}-${hours}-${minutes}-${seconds}`;
+
+        // check if the devices are connected
+        checkIfConnectedDevices(iface,3);
 
         // set the output file name with the timestamp
         document.getElementById('recordStartTime').innerHTML = "Last record start at : <br>" + timestamp; // 
@@ -639,7 +639,7 @@ async function stopTcpdump(formMode) {
 }
 
 
-async function checkIfConnectedDevices(netInetrface) {
+async function checkIfConnectedDevices(netInetrface , formMode) {
     // get the connected devices and their IP addresses
     // using the command 'ip -o -4 addr list | awk '{print $2, $4}''
     // this command lists the network interfaces and their IPv4 addresses
@@ -654,7 +654,7 @@ async function checkIfConnectedDevices(netInetrface) {
         let messageBoxResult = await Neutralino.os.showMessageBox('Warning', 'No device connected to ' + netInetrface, 'OK');
         if (messageBoxResult == 'OK') {
             // stop tcpdump and navigate to the link
-            await stopTcpdump();
+            await stopTcpdump(formMode);
         }
     } else {
         console.log('Device connected to ' + netInetrface);
@@ -667,7 +667,7 @@ async function checkIfConnectedDevices(netInetrface) {
             let messageBoxResult = await Neutralino.os.showMessageBox('Warning', 'No device connected to ' + netInetrface, 'OK');
             if (messageBoxResult == 'OK') {
                 // stop tcpdump and navigate to the link
-                await stopTcpdump();
+                await stopTcpdump(formMode);
             }
         }
     }
