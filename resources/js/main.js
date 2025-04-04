@@ -22,6 +22,8 @@ let bridge = false; // flag to check if the bridge is set up
  * @throws Will throw an error if there is an issue executing the commands to set up the bridge.
  */
 async function setupBridge() {
+    console.warn("EXECUTEZ L ORDRE 67");
+
     let bridgeInfo = await Neutralino.os.execCommand('brctl show');
     if (bridgeInfo.stdOut.includes('br0')) {
         console.log('Bridge br0 already exists.');
@@ -83,8 +85,8 @@ function moveCursorToEnd() {
  */
 async function getNetworkInterfaces() {
     // get the network interfaces available on the system
-    let info = await Neutralino.os.execCommand('ls /sys/class/net');
-    //let info = await Neutralino.os.execCommand('wmic nic get name');
+    //let info = await Neutralino.os.execCommand('ls /sys/class/net');
+    let info = await Neutralino.os.execCommand('wmic nic get name');
     console.log(info.stdOut);
     // filter the output to get only the interface names
     let interfaces = info.stdOut.split('\n').filter(line => line.trim() !== '' && line.trim() !== 'Name').map((iface) => {
@@ -98,21 +100,16 @@ async function getNetworkInterfaces() {
     }
     document.getElementById('interface').innerHTML = interfaces.join('');
 
-    document.addEventListener('DOMContentLoaded', () => {
-        const interfaceElement = document.getElementById('interface');
-        if (interfaceElement) {
-            interfaceElement.addEventListener('change', async (event) => {
-                console.log(event.target.value);
-                if (event.target.value === 'bridge') {
-                    await setupBridge();
-                }
-            });
-        } else {
-            console.error("Element with ID 'interface' not found.");
-        }
-    });
 }
-
+async function checkIfBridge() {
+    // get the selected interface from the dropdown
+    let selectedInterface = document.getElementById('interface').value;
+    console.log(selectedInterface);
+    if(selectedInterface === 'br0') {
+        console.warn("EXECUTEZ L ORDRE 66");
+        await setupBridge();
+    }
+}
 
 async function getConnectedDevices() {
     // get the connected devices and their IP addresses
