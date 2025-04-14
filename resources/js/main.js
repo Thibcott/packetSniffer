@@ -28,21 +28,21 @@ async function setupBridge() {
         return;
     } else {
         let bridgeInfo = await Neutralino.os.execCommand('brctl show');
-        if (bridgeInfo.stdOut.includes('br0')) {
-            console.log('Bridge br0 already exists.');
+        if (bridgeInfo.stdOut.includes('bridge')) {
+            console.log('Bridge bridge already exists.');
             if (bridgeInfo.stdOut.includes('eth0') && bridgeInfo.stdOut.includes('eth1')) {
-                console.log('Bridge br0 already contains eth0 and eth1.');
+                console.log('Bridge bridge already contains eth0 and eth1.');
                 return;
             } else {
-                console.log('Bridge br0 exists but does not contain eth0 and eth1.');
+                console.log('Bridge bridge exists but does not contain eth0 and eth1.');
             }
         } else {
             try {
-                await Neutralino.os.execCommand('sudo brctl addbr br0');
-                await Neutralino.os.execCommand('sudo brctl addif br0 eth0 eth1');
+                await Neutralino.os.execCommand('sudo brctl addbr bridge');
+                await Neutralino.os.execCommand('sudo brctl addif bridge eth0 eth1');
                 await Neutralino.os.execCommand('sudo ifconfig eth0 up');
                 await Neutralino.os.execCommand('sudo ifconfig eth1 up');
-                let info = await Neutralino.os.execCommand('sudo ifconfig br0 up');
+                let info = await Neutralino.os.execCommand('sudo ifconfig bridge up');
                 console.log("BRIDGE : ",info.stdOut);
                 bridge = true; // set the bridge flag to true
             } catch (error) {
@@ -100,8 +100,8 @@ async function getNetworkInterfaces() {
 
 
     // add the bridge interface if it does not exist
-    if (!interfaces.some(option => option.includes('value="br0"'))) {
-        interfaces.push('<option value="br0">bridge</option>');
+    if (!interfaces.some(option => option.includes('value="bridge"'))) {
+        interfaces.push('<option value="bridge">bridge</option>');
         console.log('Bridge interface added to the list.');
     } else {
         console.log('Bridge interface already exists in the list.');
@@ -114,7 +114,6 @@ async function getNetworkInterfaces() {
 async function checkIfBridge() {
     // get the selected interface from the dropdown
     let selectedInterface = document.getElementById('interface').value;
-    console.warn("hello");
     console.log(selectedInterface);
     if (selectedInterface === 'br0' || selectedInterface == 'bridge' ) {
         await setupBridge();
@@ -126,14 +125,14 @@ async function checkIfBridge() {
         } else {
             console.log('Bridge setup confirmed by user.');
             try { 
-                await Neutralino.os.execCommand('sudo ifconfig br0 down');
-                await Neutralino.os.execCommand('sudo brctl delbr br0');
-                console.log('Bridge br0 deleted successfully.');
+                await Neutralino.os.execCommand('sudo ifconfig bridge down');
+                await Neutralino.os.execCommand('sudo brctl delbr bridge');
+                console.log('Bridge bridge deleted successfully.');
     
                 //set the new choose interface
                 await Neutralino.os.execCommand('sudo ifconfig ' + selectedInterface + ' up');
             } catch (error) {
-                console.error('Error deleting bridge br0:', error);
+                console.error('Error deleting bridge bridge:', error);
             }
         }
     }
@@ -659,9 +658,9 @@ async function stopTcpdump(formMode) {
             if (bridge) {
                 // remove the bridge if it was created
                 try {
-                    await Neutralino.os.execCommand('sudo ifconfig br0 down');
-                    await Neutralino.os.execCommand('sudo brctl delbr br0');
-                    console.warn('Bridge br0 removed');
+                    await Neutralino.os.execCommand('sudo ifconfig bridge down');
+                    await Neutralino.os.execCommand('sudo brctl delbr bridge');
+                    console.warn('Bridge bridge removed');
                     bridge = false; // reset the bridge flag
                 } catch (error) {
                     console.error("Error removing bridge:", error);
@@ -676,7 +675,7 @@ async function checkIfConnectedDevices(netInetrface, formMode) {
     if (netInetrface == 'br0') { 
         //TODO set ip in navbar
 
-        console.warn('Bridge br0 is set up');
+        console.warn('Bridge bridge is set up');
     } else {
         // get the connected devices and their IP addresses
         // using the command 'ip -o -4 addr list | awk '{print $2, $4}''
