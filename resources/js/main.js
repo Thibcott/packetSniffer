@@ -93,7 +93,7 @@ async function getNetworkInterfaces() {
 
 
     // add the bridge interface if it does not exist
-    if (interfaces.includes('br0')) {
+    if (!interfaces.includes('br0')) {
         interfaces.push('<option value="br0">bridge</option>');
     }
     document.getElementById('interface').innerHTML = interfaces.join('');
