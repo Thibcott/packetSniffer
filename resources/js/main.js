@@ -99,49 +99,29 @@ async function turnOffBridge() {
  * @param {string} buttons - The buttons to display (e.g., 'YES_NO', 'OK', etc.).
  * @returns {Promise<string>} A promise that resolves with the user's response (e.g., 'YES', 'NO', 'OK', 'CANCEL').
  */
-async function showModalMessageBox(message, buttons) {
-    return new Promise((resolve) => {
-        const modal = document.getElementById('customModal');
-        const modalTitle = document.getElementById('modalTitle');
-        const modalMessage = document.getElementById('modalMessage');
-        const yesButton = document.getElementById('modalYesButton');
-        const noButton = document.getElementById('modalNoButton');
-
-        // Set the title and message
-        modalTitle.textContent = "message";
-        modalMessage.textContent = message;
-
-        // Show the modal and disable interactions with the rest of the page
-        modal.style.display = 'block';
-        document.body.style.pointerEvents = 'none'; // Disable interactions with the rest of the page
-        modal.style.pointerEvents = 'auto'; // Enable interactions with the modal
-
-        // Show or hide buttons based on the "buttons" parameter
-        if (buttons === 'YES_NO') {
-            yesButton.style.display = 'inline-block';
-            noButton.style.display = 'inline-block';
-        } else if (buttons === 'OK') {
-            yesButton.style.display = 'inline-block';
-            noButton.style.display = 'none';
-            yesButton.textContent = 'OK';
+async function showModalMessageBox(title, message, buttons) {
+    try {
+        // Disable interactions with the main window
+        if (Neutralino.window && Neutralino.window.setOptions) {
+            await Neutralino.window.setOptions({ alwaysOnTop: true, enableInspector: false });
+        } else {
+            console.warn("Neutralino.window.setOptions is not supported in this environment.");
         }
 
-        // Handle Yes/OK button click
-        yesButton.onclick = () => {
-            modal.style.display = 'none';
-            document.body.style.pointerEvents = 'auto'; // Re-enable interactions with the rest of the page
-            resolve('YES');
-        };
+        // Show the message box
+        let response = await Neutralino.os.showMessageBox(title, message, buttons);
 
-        // Handle No button click
-        noButton.onclick = () => {
-            modal.style.display = 'none';
-            document.body.style.pointerEvents = 'auto'; // Re-enable interactions with the rest of the page
-            resolve('NO');
-        };
-    });
+        // Re-enable interactions with the main window
+        if (Neutralino.window && Neutralino.window.setOptions) {
+            await Neutralino.window.setOptions({ alwaysOnTop: false, enableInspector: true });
+        }
+
+        return response;
+    } catch (error) {
+        console.error("Error in showModalMessageBox:", error);
+        return "ERROR";
+    }
 }
-
 
 /**
  * Moves the cursor to the end of the text in the textarea with the id 'outPutTextArea'.
