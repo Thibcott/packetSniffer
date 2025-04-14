@@ -56,7 +56,7 @@ async function setupBridge() {
                 }
 
                 bridge = true; // set the bridge flag to true
-                
+
             } catch (error) {
                 if (error.message.includes('permission denied')) {
                     console.error("Error: Insufficient permissions to execute commands. Please run the application with elevated privileges.");
@@ -66,7 +66,27 @@ async function setupBridge() {
             }
         }
     }
-    
+}
+
+async function turnOffBridge() {
+    let confirmation = await Neutralino.os.showMessageBox('Confirmation', 'Do you want to set down the bridge?', 'YES_NO');
+    if (confirmation === 'NO') {
+        console.log('Bridge setup canceled by user.');
+        return;
+    } else {
+        console.log('Bridge setup confirmed by user.');
+        try {
+            await Neutralino.os.execCommand('sudo ifconfig br0 down');
+            await Neutralino.os.execCommand('sudo brctl delbr br0');
+            console.log('Bridge br0 deleted successfully.');
+
+            bridge = false; // set the bridge flag to false
+            //set the new choose interface
+            await Neutralino.os.execCommand('sudo ifconfig ' + selectedInterface + ' up');
+        } catch (error) {
+            console.error('Error deleting bridge br0:', error);
+        }
+    }
 }
 
 
@@ -122,7 +142,7 @@ async function getNetworkInterfaces() {
     } else {
         console.log('Bridge interface already exists in the list.');
     }
-    
+
     document.getElementById('interface').innerHTML = interfaces.join('');
 
 }
@@ -132,26 +152,10 @@ async function checkIfBridge() {
     let selectedInterface = document.getElementById('interface').value;
     console.warn("hello");
     console.log(selectedInterface);
-    if (selectedInterface === 'br0' || selectedInterface == 'bridge' ) {
+    if (selectedInterface === 'br0' || selectedInterface == 'bridge') {
         await setupBridge();
     } else {
-        let confirmation = await Neutralino.os.showMessageBox('Confirmation', 'Do you want to set down the bridge?', 'YES_NO');
-        if (confirmation === 'NO') {
-            console.log('Bridge setup canceled by user.');
-            return;
-        } else {
-            console.log('Bridge setup confirmed by user.');
-            try { 
-                await Neutralino.os.execCommand('sudo ifconfig br0 down');
-                await Neutralino.os.execCommand('sudo brctl delbr br0');
-                console.log('Bridge br0 deleted successfully.');
-    
-                //set the new choose interface
-                await Neutralino.os.execCommand('sudo ifconfig ' + selectedInterface + ' up');
-            } catch (error) {
-                console.error('Error deleting bridge br0:', error);
-            }
-        }
+        await turnOffBridge();
     }
 }
 
@@ -689,7 +693,7 @@ async function stopTcpdump(formMode) {
 
 
 async function checkIfConnectedDevices(netInetrface, formMode) {
-    if (netInetrface == 'br0') { 
+    if (netInetrface == 'br0') {
         //TODO set ip in navbar
 
         console.warn('Bridge br0 is set up');
@@ -755,6 +759,11 @@ async function isTcpdumpRun(link) {
             // stop tcpdump and navigate to the link
             await stopTcpdump();
             location.replace(link);
+
+            // Only turn off the bridge if it is set
+            if (bridge) {
+                await turnOffBridge();
+            }
         }
     }
 }
