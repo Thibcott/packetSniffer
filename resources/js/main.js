@@ -118,14 +118,21 @@ async function checkIfBridge() {
     if (selectedInterface === 'br0' || selectedInterface == 'bridge' ) {
         await setupBridge();
     } else {
-        try { 
-            await Neutralino.os.execCommand('sudo brctl delbr br0');
-            console.log('Bridge br0 deleted successfully.');
-
-            //set the new choose interface
-            await Neutralino.os.execCommand('sudo ifconfig ' + selectedInterface + ' up');
-        } catch (error) {
-            console.error('Error deleting bridge br0:', error);
+        let confirmation = await Neutralino.os.showMessageBox('Confirmation', 'Do you want to set down the bridge?', 'YES_NO');
+        if (confirmation === 'NO') {
+            console.log('Bridge setup canceled by user.');
+            return;
+        } else {
+            console.log('Bridge setup confirmed by user.');
+            try { 
+                await Neutralino.os.execCommand('sudo brctl delbr br0');
+                console.log('Bridge br0 deleted successfully.');
+    
+                //set the new choose interface
+                await Neutralino.os.execCommand('sudo ifconfig ' + selectedInterface + ' up');
+            } catch (error) {
+                console.error('Error deleting bridge br0:', error);
+            }
         }
     }
 }
