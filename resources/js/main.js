@@ -38,7 +38,7 @@ async function setupBridge() {
             await Neutralino.os.execCommand('sudo ifconfig eth0 up');
             await Neutralino.os.execCommand('sudo ifconfig eth1 up');
             let info = await Neutralino.os.execCommand('sudo ifconfig br0 up');
-            console.log(info.stdOut);
+            console.log("BRIDGE : ",info.stdOut);
             bridge = true; // set the bridge flag to true
         } catch (error) {
             console.error("Error setting up bridge:", error);
@@ -102,8 +102,9 @@ async function getNetworkInterfaces() {
 async function checkIfBridge() {
     // get the selected interface from the dropdown
     let selectedInterface = document.getElementById('interface').value;
+    console.warn("hello");
     console.log(selectedInterface);
-    if (selectedInterface === 'br0') {
+    if (selectedInterface === 'br0' || selectedInterface == 'bridge' ) {
         await setupBridge();
     }
 }
