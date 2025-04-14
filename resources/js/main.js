@@ -108,7 +108,7 @@ async function showModalMessageBox(message, buttons) {
         const noButton = document.getElementById('modalNoButton');
 
         // Set the title and message
-        modalTitle.textContent = title;
+        modalTitle.textContent = "message";
         modalMessage.textContent = message;
 
         // Show the modal and disable interactions with the rest of the page
