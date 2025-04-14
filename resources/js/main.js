@@ -38,15 +38,31 @@ async function setupBridge() {
             }
         } else {
             try {
-                await Neutralino.os.execCommand('sudo brctl addbr br0');
-                await Neutralino.os.execCommand('sudo brctl addif br0 eth0 eth1');
-                await Neutralino.os.execCommand('sudo ifconfig eth0 up');
-                await Neutralino.os.execCommand('sudo ifconfig eth1 up');
-                let info = await Neutralino.os.execCommand('sudo ifconfig br0 up');
-                console.log("BRIDGE : ",info.stdOut);
+                const commands = [
+                    'sudo sysctl -w net.ipv4.ip_forward=1',
+                    'sudo iptables -t nat -A POSTROUTING -o eth1 -j MASQUERADE',
+                    'sudo iptables -A FORWARD -i eth1 -o eth0 -m state --state RELATED,ESTABLISHED -j ACCEPT',
+                    'sudo iptables -A FORWARD -i eth0 -o eth1 -j ACCEPT',
+                    'sudo brctl addbr br0',
+                    'sudo brctl addif br0 eth0 eth1',
+                    'sudo ifconfig eth0 up',
+                    'sudo ifconfig eth1 up',
+                    'sudo ifconfig br0 up'
+                ];
+
+                for (const command of commands) {
+                    let result = await Neutralino.os.execCommand(command);
+                    console.log(`Command executed: ${command}, Output: ${result.stdOut}`);
+                }
+
                 bridge = true; // set the bridge flag to true
+                
             } catch (error) {
-                console.error("Error setting up bridge:", error);
+                if (error.message.includes('permission denied')) {
+                    console.error("Error: Insufficient permissions to execute commands. Please run the application with elevated privileges.");
+                } else {
+                    console.error("Error setting up bridge:", error);
+                }
             }
         }
     }
