@@ -22,28 +22,35 @@ let bridge = false; // flag to check if the bridge is set up
  * @throws Will throw an error if there is an issue executing the commands to set up the bridge.
  */
 async function setupBridge() {
-    let bridgeInfo = await Neutralino.os.execCommand('brctl show');
-    if (bridgeInfo.stdOut.includes('br0')) {
-        console.log('Bridge br0 already exists.');
-        if (bridgeInfo.stdOut.includes('eth0') && bridgeInfo.stdOut.includes('eth1')) {
-            console.log('Bridge br0 already contains eth0 and eth1.');
-            return;
-        } else {
-            console.log('Bridge br0 exists but does not contain eth0 and eth1.');
-        }
+    let confirmation = await Neutralino.os.showMessageBox('Confirmation', 'Do you want to set up the bridge?', 'YES_NO');
+    if (confirmation === 'NO') {
+        console.log('Bridge setup canceled by user.');
+        return;
     } else {
-        try {
-            await Neutralino.os.execCommand('sudo brctl addbr br0');
-            await Neutralino.os.execCommand('sudo brctl addif br0 eth0 eth1');
-            await Neutralino.os.execCommand('sudo ifconfig eth0 up');
-            await Neutralino.os.execCommand('sudo ifconfig eth1 up');
-            let info = await Neutralino.os.execCommand('sudo ifconfig br0 up');
-            console.log("BRIDGE : ",info.stdOut);
-            bridge = true; // set the bridge flag to true
-        } catch (error) {
-            console.error("Error setting up bridge:", error);
+        let bridgeInfo = await Neutralino.os.execCommand('brctl show');
+        if (bridgeInfo.stdOut.includes('br0')) {
+            console.log('Bridge br0 already exists.');
+            if (bridgeInfo.stdOut.includes('eth0') && bridgeInfo.stdOut.includes('eth1')) {
+                console.log('Bridge br0 already contains eth0 and eth1.');
+                return;
+            } else {
+                console.log('Bridge br0 exists but does not contain eth0 and eth1.');
+            }
+        } else {
+            try {
+                await Neutralino.os.execCommand('sudo brctl addbr br0');
+                await Neutralino.os.execCommand('sudo brctl addif br0 eth0 eth1');
+                await Neutralino.os.execCommand('sudo ifconfig eth0 up');
+                await Neutralino.os.execCommand('sudo ifconfig eth1 up');
+                let info = await Neutralino.os.execCommand('sudo ifconfig br0 up');
+                console.log("BRIDGE : ",info.stdOut);
+                bridge = true; // set the bridge flag to true
+            } catch (error) {
+                console.error("Error setting up bridge:", error);
+            }
         }
     }
+    
 }
 
 
