@@ -106,7 +106,7 @@ async function showModalMessageBox(title, message, buttons) {
             await Neutralino.window.setOptions({
                 alwaysOnTop: true, // Keep the window on top
                 resizable: false, // Prevent resizing
-                borderless: true, // Disable the window border to simulate a modal
+                borderless: false, // Keep the window border
                 enableInspector: false // Disable developer tools
             });
         } else {
@@ -116,7 +116,7 @@ async function showModalMessageBox(title, message, buttons) {
         // Show the message box
         let response = await Neutralino.os.showMessageBox(title, message, buttons);
 
-        // Re-enable interactions with the main window
+        // Wait for the user to close the message box before re-enabling the main window
         if (Neutralino.window && Neutralino.window.setOptions) {
             await Neutralino.window.setOptions({
                 alwaysOnTop: false, // Restore default behavior
@@ -129,9 +129,22 @@ async function showModalMessageBox(title, message, buttons) {
         return response;
     } catch (error) {
         console.error("Error in showModalMessageBox:", error);
+
+        // Ensure the main window is re-enabled even if an error occurs
+        if (Neutralino.window && Neutralino.window.setOptions) {
+            await Neutralino.window.setOptions({
+                alwaysOnTop: false,
+                resizable: true,
+                borderless: false,
+                enableInspector: true
+            });
+        }
+
         return "ERROR";
     }
 }
+
+
 /**
  * Moves the cursor to the end of the text in the textarea with the id 'outPutTextArea'.
  * If the element is not found, logs an error to the console.
