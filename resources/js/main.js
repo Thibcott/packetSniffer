@@ -22,7 +22,7 @@ let bridge = false; // flag to check if the bridge is set up
  * @throws Will throw an error if there is an issue executing the commands to set up the bridge.
  */
 async function setupBridge() {
-    let confirmation = await Neutralino.os.showMessageBox('Confirmation', 'Do you want to set up the bridge?', 'YES_NO');
+    let confirmation = await showModalMessageBox('Confirmation', 'Do you want to set up the bridge?', 'YES_NO');
     if (confirmation === 'NO') {
         console.log('Bridge setup canceled by user.');
         return;
@@ -69,7 +69,7 @@ async function setupBridge() {
 }
 
 async function turnOffBridge() {
-    let confirmation = await Neutralino.os.showMessageBox('Confirmation', 'Do you want to set down the bridge?', 'YES_NO');
+    let confirmation = await showModalMessageBox('Confirmation', 'Do you want to set down the bridge?', 'YES_NO');
     if (confirmation === 'NO') {
         console.log('Bridge setup canceled by user.');
         return;
@@ -89,7 +89,39 @@ async function turnOffBridge() {
     }
 }
 
+/**
+ * Displays a modal message box and temporarily disables interactions with the main window.
+ * 
+ * @async
+ * @function showModalMessageBox
+ * @param {string} title - The title of the message box.
+ * @param {string} message - The message to display in the message box.
+ * @param {string} buttons - The buttons to display (e.g., 'YES_NO', 'OK', etc.).
+ * @returns {Promise<string>} A promise that resolves with the user's response (e.g., 'YES', 'NO', 'OK', 'CANCEL').
+ */
+async function showModalMessageBox(title, message, buttons) {
+    try {
+        // Disable interactions with the main window
+        if (Neutralino.window && Neutralino.window.setOptions) {
+            await Neutralino.window.setOptions({ alwaysOnTop: true });
+        } else {
+            console.warn("Neutralino.window.setOptions is not supported in this environment.");
+        }
 
+        // Show the message box
+        let response = await Neutralino.os.showMessageBox(title, message, buttons);
+
+        // Re-enable interactions with the main window
+        if (Neutralino.window && Neutralino.window.setOptions) {
+            await Neutralino.window.setOptions({ alwaysOnTop: false });
+        }
+
+        return response;
+    } catch (error) {
+        console.error("Error in showModalMessageBox:", error);
+        return "ERROR";
+    }
+}
 
 /**
  * Moves the cursor to the end of the text in the textarea with the id 'outPutTextArea'.
@@ -710,8 +742,7 @@ async function checkIfConnectedDevices(netInetrface, formMode) {
         if (ip.length == 0) {
             console.warn('No device connected to ' + netInetrface);
             // show a message box to inform the user and stop the tcpdump process
-            let messageBoxResult = await Neutralino.os.showMessageBox('Warning', 'No device connected to ' + netInetrface, 'OK');
-            // stop tcpdump and navigate to the link
+            let messageBoxResult = await showModalMessageBox('Warning', 'No device connected to ' + netInetrface, 'OK');            // stop tcpdump and navigate to the link
             if (messageBoxResult == 'OK') {
                 // stop tcpdump and navigate to the link
                 await stopTcpdump(formMode);
@@ -868,7 +899,7 @@ async function copyFileToUserFolder(file) {
  * @throws {Error} - Throws an error if the file removal fails.
  */
 async function removeFile(file) {
-    let result = await Neutralino.os.showMessageBox('Confirmation', `Are you sure you want to delete the file ${file}?`, 'YES_NO');
+    let result = await showModalMessageBox('Confirmation', `Are you sure you want to delete the file ${file}?`, 'YES_NO');
     if (result === 'NO') {
         return;
     } else if (result === 'CANCEL') {
@@ -1061,7 +1092,7 @@ async function extractUSB() {
             // Validate the extracted USB drive name
             if (!usbDrive || usbDrive === "") {
                 console.error("Invalid USB drive detected.");
-                await Neutralino.os.showMessageBox('Error', 'Invalid USB drive detected.', 'OK');
+                await showModalMessageBox('Error', 'Invalid USB drive detected.', 'OK');
                 return;
             }
 
@@ -1070,18 +1101,18 @@ async function extractUSB() {
                 let unmountResult = await Neutralino.os.execCommand(`sudo umount /dev/${usbDrive}`);
                 if (unmountResult.stdErr) {
                     console.error(`Error unmounting USB drive: ${unmountResult.stdErr}`);
-                    await Neutralino.os.showMessageBox('Error', `Error unmounting USB drive: ${unmountResult.stdErr}`, 'OK');
+                    await showModalMessageBox('Error', `Error unmounting USB drive: ${unmountResult.stdErr}`, 'OK');
                 } else {
                     console.log(`USB drive /dev/${usbDrive} ejected successfully.`);
-                    await Neutralino.os.showMessageBox('Success', 'USB drive ejected successfully. Now, you can remove the usb stick', 'OK');
+                    await showModalMessageBox('Success', 'USB drive ejected successfully. Now, you can remove the usb stick', 'OK');
                 }
             } catch (err) {
                 console.error(`Error unmounting USB drive: ${err.message}`);
-                await Neutralino.os.showMessageBox('Error', `Error unmounting USB drive: ${err.message}`, 'OK');
+                await showModalMessageBox('Error', `Error unmounting USB drive: ${err.message}`, 'OK');
             }
         } catch (err) {
             console.error(`Error ejecting USB drive: ${err.message} (${err.name})`);
-            await Neutralino.os.showMessageBox('Error', `Error ejecting USB drive: ${err.message}`, 'OK');
+            await showModalMessageBox('Error', `Error ejecting USB drive: ${err.message}`, 'OK');
         }
     }
 }
@@ -1109,13 +1140,13 @@ async function updateApp() {
 
         // Compare the hashes to determine if an update is needed
         if (remoteHash !== localHash) {
-            let result = await Neutralino.os.showMessageBox('Update Available', 'A new update is available. Do you want to update now?', 'YES_NO');
+            let result = await showModalMessageBox('Update Available', 'A new update is available. Do you want to update now?', 'YES_NO');
             if (result === 'YES') {
                 await Neutralino.os.execCommand('git pull origin main');
                 await restartApp();
             }
         } else {
-            await Neutralino.os.showMessageBox('Up to Date', 'The application is up to date.', 'OK');
+            await showModalMessageBox('Up to Date', 'The application is up to date.', 'OK');
         }
     } catch (err) {
         console.error(`Error checking for updates: ${err.message} (${err.name})`);
@@ -1128,7 +1159,7 @@ async function updateApp() {
  */
 async function updateOS() {
     try {
-        let result = await Neutralino.os.showMessageBox('Update OS', 'Are you sure you want to update the OS?', 'YES_NO');
+        let result = await showModalMessageBox('Update OS', 'Are you sure you want to update the OS?', 'YES_NO');
         if (result === 'YES') {
             await Neutralino.os.execCommand('sudo apt-get update && sudo apt-get upgrade -y');
         }
@@ -1265,7 +1296,7 @@ function onTrayMenuItemClicked(event) {
     switch (event.detail.id) {
         case "VERSION":
             // Display version information
-            Neutralino.os.showMessageBox("Version information",
+            showModalMessageBox("Version information",
                 `Neutralinojs server: v${NL_VERSION} | Neutralinojs client: v${NL_CVERSION}`);
             break;
         case "QUIT":
