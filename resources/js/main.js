@@ -110,6 +110,7 @@ async function getNetworkInterfaces() {
     document.getElementById('interface').innerHTML = interfaces.join('');
 
 }
+
 async function checkIfBridge() {
     // get the selected interface from the dropdown
     let selectedInterface = document.getElementById('interface').value;
@@ -125,6 +126,7 @@ async function checkIfBridge() {
         } else {
             console.log('Bridge setup confirmed by user.');
             try { 
+                await Neutralino.os.execCommand('sudo ifconfig br0 down');
                 await Neutralino.os.execCommand('sudo brctl delbr br0');
                 console.log('Bridge br0 deleted successfully.');
     
