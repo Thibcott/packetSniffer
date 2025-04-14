@@ -101,9 +101,9 @@ async function turnOffBridge() {
  */
 async function showModalMessageBox(title, message, buttons) {
     try {
-        // Disable interactions with the main window and make it modal
+        // Disable interactions with the main window
         if (Neutralino.window && Neutralino.window.setOptions) {
-            await Neutralino.window.setOptions({ alwaysOnTop: true, resizable: false });
+            await Neutralino.window.setOptions({ alwaysOnTop: true, enableInspector: false });
         } else {
             console.warn("Neutralino.window.setOptions is not supported in this environment.");
         }
@@ -113,7 +113,7 @@ async function showModalMessageBox(title, message, buttons) {
 
         // Re-enable interactions with the main window
         if (Neutralino.window && Neutralino.window.setOptions) {
-            await Neutralino.window.setOptions({ alwaysOnTop: false, resizable: true });
+            await Neutralino.window.setOptions({ alwaysOnTop: false, enableInspector: true });
         }
 
         return response;
