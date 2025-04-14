@@ -95,7 +95,10 @@ async function getNetworkInterfaces() {
     // add the bridge interface if it does not exist
     if (!interfaces.includes('br0')) {
         interfaces.push('<option value="br0">bridge</option>');
+    } else {
+        console.log('Bridge interface already exists in the list.');
     }
+    
     document.getElementById('interface').innerHTML = interfaces.join('');
 
 }
