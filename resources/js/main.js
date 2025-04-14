@@ -643,7 +643,9 @@ async function stopTcpdump(formMode) {
 
 async function checkIfConnectedDevices(netInetrface, formMode) {
     if (netInetrface == 'br0') { 
-        
+        //TODO set ip in navbar
+
+        console.warn('Bridge br0 is set up');
     } else {
         // get the connected devices and their IP addresses
         // using the command 'ip -o -4 addr list | awk '{print $2, $4}''
