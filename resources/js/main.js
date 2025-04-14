@@ -101,15 +101,14 @@ async function turnOffBridge() {
  */
 async function showModalMessageBox(title, message, buttons) {
     try {
-        // Disable interactions with the main window
-        if (Neutralino.window?.setOptions) {
-            await Neutralino.window.setOptions({ alwaysOnTop: true, enableInspector: false });
-        } else {
-            console.warn("Neutralino.window.setOptions is not supported or unavailable in this environment.");
-        }
-
-        // Show the message box
+        
+        await Neutralino.window.minimize();
         let response = await Neutralino.os.showMessageBox(title, message, buttons);
+
+        // Remove the modal element after the message box is closed
+        if (modalElement.parentNode) {
+            modalElement.parentNode.removeChild(modalElement);
+        }
 
         // Re-enable interactions with the main window
         if (Neutralino.window?.setOptions) {
@@ -120,6 +119,9 @@ async function showModalMessageBox(title, message, buttons) {
     } catch (error) {
         console.error("Error in showModalMessageBox:", error);
         return "ERROR";
+    } finally {
+        // Ensure the main window is restored after the message box is closed
+        await Neutralino.window.unminimize();
     }
 }
 
