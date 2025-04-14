@@ -99,7 +99,7 @@ async function turnOffBridge() {
  * @param {string} buttons - The buttons to display (e.g., 'YES_NO', 'OK', etc.).
  * @returns {Promise<string>} A promise that resolves with the user's response (e.g., 'YES', 'NO', 'OK', 'CANCEL').
  */
-async function showModalMessageBox(title, message, buttons) {
+async function showModalMessageBox(message, buttons) {
     return new Promise((resolve) => {
         const modal = document.getElementById('customModal');
         const modalTitle = document.getElementById('modalTitle');
