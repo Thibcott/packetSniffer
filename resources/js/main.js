@@ -117,6 +117,16 @@ async function checkIfBridge() {
     console.log(selectedInterface);
     if (selectedInterface === 'br0' || selectedInterface == 'bridge' ) {
         await setupBridge();
+    } else {
+        try { 
+            await Neutralino.os.execCommand('sudo brctl delbr br0');
+            console.log('Bridge br0 deleted successfully.');
+
+            //set the new choose interface
+            await Neutralino.os.execCommand('sudo ifconfig ' + selectedInterface + ' up');
+        } catch (error) {
+            console.error('Error deleting bridge br0:', error);
+        }
     }
 }
 
