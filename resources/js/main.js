@@ -100,7 +100,7 @@ async function getNetworkInterfaces() {
 
 
     // add the bridge interface if it does not exist
-    if (!interfaces.includes('br0')) {
+    if (!interfaces.some(option => option.includes('value="br0"'))) {
         interfaces.push('<option value="br0">bridge</option>');
         console.log('Bridge interface added to the list.');
     } else {
