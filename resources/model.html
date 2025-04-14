@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .modal {
+            display: none;
+            /* Masqué par défaut */
+            position: fixed;
+            z-index: 1000;
+            /* Au-dessus de tout */
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            /* Fond semi-transparent */
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .modal-buttons {
+            margin-top: 20px;
+        }
+
+        .modal-buttons button {
+            margin: 0 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="customModal" class="modal">
+        <div class="modal-content">
+            <h2 id="modalTitle">Title</h2>
+            <p id="modalMessage">Message</p>
+            <div class="modal-buttons">
+                <button id="modalYesButton">Yes</button>
+                <button id="modalNoButton">No</button>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

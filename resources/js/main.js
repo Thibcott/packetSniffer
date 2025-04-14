@@ -100,48 +100,46 @@ async function turnOffBridge() {
  * @returns {Promise<string>} A promise that resolves with the user's response (e.g., 'YES', 'NO', 'OK', 'CANCEL').
  */
 async function showModalMessageBox(title, message, buttons) {
-    try {
-        // Disable interactions with the main window
-        if (Neutralino.window && Neutralino.window.setOptions) {
-            await Neutralino.window.setOptions({
-                alwaysOnTop: true, // Keep the window on top
-                resizable: false, // Prevent resizing
-                borderless: false, // Keep the window border
-                enableInspector: false // Disable developer tools
-            });
-        } else {
-            console.warn("Neutralino.window.setOptions is not supported in this environment.");
+    return new Promise((resolve) => {
+        const modal = document.getElementById('customModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalMessage = document.getElementById('modalMessage');
+        const yesButton = document.getElementById('modalYesButton');
+        const noButton = document.getElementById('modalNoButton');
+
+        // Set the title and message
+        modalTitle.textContent = title;
+        modalMessage.textContent = message;
+
+        // Show the modal and disable interactions with the rest of the page
+        modal.style.display = 'block';
+        document.body.style.pointerEvents = 'none'; // Disable interactions with the rest of the page
+        modal.style.pointerEvents = 'auto'; // Enable interactions with the modal
+
+        // Show or hide buttons based on the "buttons" parameter
+        if (buttons === 'YES_NO') {
+            yesButton.style.display = 'inline-block';
+            noButton.style.display = 'inline-block';
+        } else if (buttons === 'OK') {
+            yesButton.style.display = 'inline-block';
+            noButton.style.display = 'none';
+            yesButton.textContent = 'OK';
         }
 
-        // Show the message box
-        let response = await Neutralino.os.showMessageBox(title, message, buttons);
+        // Handle Yes/OK button click
+        yesButton.onclick = () => {
+            modal.style.display = 'none';
+            document.body.style.pointerEvents = 'auto'; // Re-enable interactions with the rest of the page
+            resolve('YES');
+        };
 
-        // Wait for the user to close the message box before re-enabling the main window
-        if (Neutralino.window && Neutralino.window.setOptions) {
-            await Neutralino.window.setOptions({
-                alwaysOnTop: false, // Restore default behavior
-                resizable: true, // Allow resizing
-                borderless: false, // Restore the window border
-                enableInspector: true // Re-enable developer tools
-            });
-        }
-
-        return response;
-    } catch (error) {
-        console.error("Error in showModalMessageBox:", error);
-
-        // Ensure the main window is re-enabled even if an error occurs
-        if (Neutralino.window && Neutralino.window.setOptions) {
-            await Neutralino.window.setOptions({
-                alwaysOnTop: false,
-                resizable: true,
-                borderless: false,
-                enableInspector: true
-            });
-        }
-
-        return "ERROR";
-    }
+        // Handle No button click
+        noButton.onclick = () => {
+            modal.style.display = 'none';
+            document.body.style.pointerEvents = 'auto'; // Re-enable interactions with the rest of the page
+            resolve('NO');
+        };
+    });
 }
 
 
