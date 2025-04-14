@@ -150,12 +150,14 @@ async function getNetworkInterfaces() {
 async function checkIfBridge() {
     // get the selected interface from the dropdown
     let selectedInterface = document.getElementById('interface').value;
-    console.warn("hello");
     console.log(selectedInterface);
     if (selectedInterface === 'br0' || selectedInterface == 'bridge') {
         await setupBridge();
     } else {
-        await turnOffBridge();
+        if (bridge) {
+            // if the bridge is set up, turn it off
+            await turnOffBridge();
+        }
     }
 }
 
