@@ -100,28 +100,25 @@ async function turnOffBridge() {
  * @returns {Promise<string>} A promise that resolves with the user's response (e.g., 'YES', 'NO', 'OK', 'CANCEL').
  */
 async function showModalMessageBox(title, message, buttons) {
+    // Minimize the main window to prevent user interaction
+    // and show the message box
+    // and wait for the user's response
+    // Ensure the main window is restored after the message box is closed
+    // Return the user's response
     try {
-        
+        // Minimize the main window to prevent user interaction
         await Neutralino.window.minimize();
+        // Show the message box
+        // and wait for the user's response
         let response = await Neutralino.os.showMessageBox(title, message, buttons);
-
-        // Remove the modal element after the message box is closed
-        if (modalElement.parentNode) {
-            modalElement.parentNode.removeChild(modalElement);
-        }
-
-        // Re-enable interactions with the main window
-        if (Neutralino.window?.setOptions) {
-            await Neutralino.window.setOptions({ alwaysOnTop: false, enableInspector: true });
-        }
-
-        return response;
-    } catch (error) {
-        console.error("Error in showModalMessageBox:", error);
-        return "ERROR";
-    } finally {
         // Ensure the main window is restored after the message box is closed
         await Neutralino.window.unminimize();
+        // Return the user's response
+        return response;
+    } catch (error) {
+        // Handle any errors that occur during the process
+        console.error("Error in showModalMessageBox:", error);
+        return "ERROR";
     }
 }
 
