@@ -969,9 +969,10 @@ async function rebootRPI() {
  */
 async function turnOffRPI() {
     try {
-        await Neutralino.os.execCommand('sudo poweroff');
         // Clear the trash files
-        await Neutralino.os.execCommand(' rm -rf trash:///*');
+        await Neutralino.os.execCommand('rm -rf trash:///*');
+        await Neutralino.os.execCommand('sudo poweroff');
+        
     } catch (err) {
         console.error(`Error turning off RPI: ${err.message} (${err.name})`);
     }
