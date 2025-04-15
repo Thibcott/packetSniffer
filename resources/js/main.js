@@ -68,8 +68,20 @@ async function setupBridge() {
     }
 }
 
+/*
+* This function is used to turn off the bridge and delete it.
+* It prompts the user for confirmation before proceeding with the operation.
+* If the user confirms, it executes the necessary commands to turn off the bridge and delete it.
+* It also sets the bridge flag to false and brings up the selected interface.
+*
+* @async
+* @function turnOffBridge
+* @returns {Promise<void>} A promise that resolves when the bridge is turned off and deleted.
+*/
 async function turnOffBridge() {
+    // get the selected interface from the dropdown
     let confirmation = await showModalMessageBox('Confirmation', 'Do you want to set down the bridge?', 'YES_NO');
+    // check if the user confirmed the action
     if (confirmation === 'NO') {
         console.log('Bridge setup canceled by user.');
         return;
@@ -174,10 +186,22 @@ async function getNetworkInterfaces() {
         console.log('Bridge interface already exists in the list.');
     }
 
+    // update the HTML select element with the available interfaces
     document.getElementById('interface').innerHTML = interfaces.join('');
 
 }
 
+
+/** Checks if the selected interface is a bridge and sets it up if necessary.
+ * 
+ * This function retrieves the selected interface from the dropdown and checks if it is 'br0' or 'bridge'.
+ * If it is, it calls the setupBridge function to set up the bridge.
+ * If the bridge is already set up, it calls the turnOffBridge function to remove it.
+ * 
+ * @async
+ * @function checkIfBridge
+ * @returns {Promise<void>} A promise that resolves when the bridge check is complete.
+ * */
 async function checkIfBridge() {
     // get the selected interface from the dropdown
     let selectedInterface = document.getElementById('interface').value;
@@ -192,6 +216,19 @@ async function checkIfBridge() {
     }
 }
 
+/** 
+ * Asynchronously retrieves the connected devices and their IP addresses.
+ * 
+ * This function uses the command 'ip -o -4 addr list | awk '{print $2, $4}'' to get the network interfaces and their IPv4 addresses.
+ * It filters the output to get only eth0 and eth1.
+ * 
+ * The function updates the HTML elements with the IP addresses of eth0 and eth1.
+ * If no device is connected, it sets the innerHTML to "No device connected".
+ * 
+ * @async
+ * @function getConnectedDevices
+ * @returns {Promise<void>} A promise that resolves when the connected devices have been retrieved and displayed.
+ * */
 async function getConnectedDevices() {
     // get the connected devices and their IP addresses
     // using the command 'ip -o -4 addr list | awk '{print $2, $4}''   
@@ -222,6 +259,18 @@ async function getConnectedDevices() {
  * Updates the filter values based on the input fields in the document.
  * Retrieves the values from the input fields with IDs 'protocol', 'port', 'ipSource', 'ipDestination', and 'direction',
  * and then calls the buildFilter function to apply the updated filter.
+ * 
+ * @function updateFilter
+ * @returns {void} No return value.
+ * @global
+ * @constant {string} protocol - The protocol to be used in the filter (e.g., "tcp", "udp").
+ * @constant {number} port - The port number to be used in the filter.
+ * @constant {string} ipSource - The source IP address to be used in the filter.
+ * @constant {string} ipDestination - The destination IP address to be used in the filter.
+ * @constant {string} direction - The direction of the traffic to be used in the filter ("src" or "dst").
+ * @constant {string} filter - The filter string that will be built based on the input values.
+ * @constant {string} filterP - The filter string that will be displayed in the HTML element with ID 'filterP'.
+ * * This function is called when the user changes the values in the input fields.
  */
 function updateFilter() {
     protocol = document.getElementById('protocol').value;
@@ -284,8 +333,7 @@ function buildFilter() {
         filter = filter.substring(0, filter.lastIndexOf("and")).trim();
     }
 
-    //console.log("Filter: " + filter);
-
+    // Set the filter string to the value of the HTML element with ID 'filter'
     document.getElementById('filter').value = filter;
 }
 
@@ -295,7 +343,11 @@ function buildFilter() {
  * This function updates the filter, displays an alert with the applied filter,
  * and sets the value of the HTML elements with IDs 'filterP' and 'filter' to the filter value.
  * 
- * @function
+ * @function applyFilter
+ * @returns {void} No return value.
+ * @global
+ * @constant {string} filter - The filter string that will be applied to the application.
+ * @constant {string} filterP - The filter string that will be displayed in the HTML element with ID 'filterP'.
  */
 function applyFilter() {
     updateFilter();
@@ -362,6 +414,15 @@ let isTcpdumpRunning2 = false;
  * @async
  * @function startTcpdump
  * @returns {Promise<void>} A promise that resolves when the tcpdump process is started or stopped.
+ * @param {number} formMode - The mode of the form (1, 2, or 3) to determine which tcpdump process to start.
+ * @throws Will throw an error if the tcpdump process fails to start or stop.
+ * @global
+ * @constant {string} command - The command to start tcpdump with the specified options.
+ * @constant {string} timestamp - The current date and time formatted as YYYY-MM-DD-HH-MM-SS.
+ * @constant {string} iface - The network interface to capture packets from.
+ * @constant {string} output - The directory where the capture file will be saved.
+ * @constant {string} filter - The filter to apply to the tcpdump command.
+ * @constant {string} now - The current date and time.
  */
 async function startTcpdump(formMode) {
     if (formMode == 1) {
@@ -670,6 +731,17 @@ async function startTcpdump(formMode) {
  * @async
  * @function stopTcpdump
  * @returns {Promise<void>} A promise that resolves when the tcpdump process has been stopped.
+ * @param {number} formMode - The mode of the form (1, 2, or 3) to determine which tcpdump process to stop.
+ * @throws Will throw an error if the tcpdump process fails to stop.
+ * @global
+ * @constant {boolean} isTcpdumpRunning - A flag indicating whether tcpdump is currently running.
+ * @constant {boolean} isTcpdumpRunning1 - A flag indicating whether tcpdump for form mode 1 is currently running.
+ * @constant {boolean} isTcpdumpRunning2 - A flag indicating whether tcpdump for form mode 2 is currently running.
+ * @constant {HTMLElement} button - The button element that will be updated to indicate the tcpdump process status.
+ * @constant {string} command - The command to stop the tcpdump process.
+ * @constant {string} tcpdumpProcess - The tcpdump process that will be stopped.
+ * @constant {string} tcpdumpProcess1 - The tcpdump process for form mode 1 that will be stopped.
+ * @constant {string} tcpdumpProcess2 - The tcpdump process for form mode 2 that will be stopped.
  */
 async function stopTcpdump(formMode) {
     if (formMode == 1) {
@@ -689,7 +761,6 @@ async function stopTcpdump(formMode) {
             console.warn('stop')
             await Neutralino.os.spawnProcess(`kill ${tcpdumpProcess2.pid}`);
             // send a kill command to stop the tcpdump process
-
             tcpdumpProcess2 = null;
             isTcpdumpRunning2 = false;
             console.log("tcpdump is running : ", isTcpdumpRunning2);
@@ -702,7 +773,6 @@ async function stopTcpdump(formMode) {
             console.warn('stop')
             await Neutralino.os.execCommand(`kill ${tcpdumpProcess.pid}`);
             // send a kill command to stop the tcpdump process
-
             tcpdumpProcess = null;
             isTcpdumpRunning = false;
             console.log("tcpdump is running : ", isTcpdumpRunning);
@@ -724,6 +794,26 @@ async function stopTcpdump(formMode) {
     }
 }
 
+/**
+ * Checks if the selected network interface is a bridge (br0) and sets it up if necessary.
+ * 
+ * This function retrieves the selected network interface from the dropdown and checks if it is 'br0'.
+ * If it is, it calls the setupBridge function to set up the bridge.
+ * If the bridge is already set up, it calls the turnOffBridge function to remove it.
+ * 
+ * @async
+ * @function checkIfConnectedDevices
+ * @param {string} netInetrface - The selected network interface to check.
+ * @param {number} formMode - The mode of the form (1, 2, or 3) to determine which tcpdump process to check.
+ * @returns {Promise<void>} A promise that resolves when the connected devices have been checked.
+ * @throws Will throw an error if the tcpdump process fails to stop.
+ * @global
+ * @constant {string} netInetrface - The selected network interface to check.
+ * @constant {number} formMode - The mode of the form (1, 2, or 3) to determine which tcpdump process to check.
+ * @constant {string} ip - The IP address of the connected device.
+ * @constant {string} interfacesInfo - The output of the command to get the connected devices and their IP addresses.
+ * @constant {string} messageBoxResult - The result of the message box to inform the user.
+ */
 
 async function checkIfConnectedDevices(netInetrface, formMode) {
     if (netInetrface == 'br0') {
@@ -969,7 +1059,7 @@ async function turnOffRPI() {
         // Clear the trash files
         await Neutralino.os.execCommand('rm -rf trash:///*');
         await Neutralino.os.execCommand('sudo poweroff');
-        
+
     } catch (err) {
         console.error(`Error turning off RPI: ${err.message} (${err.name})`);
     }
@@ -1158,6 +1248,18 @@ async function updateApp() {
 
 /**
  * Asynchronously updates the operating system by executing the 'sudo apt-get update && sudo apt-get upgrade -y' command.
+ * 
+ * This function prompts the user with a confirmation message box asking if they want to update the OS.
+ * If the user confirms, it executes the command to update the OS.
+ * If the user cancels, the function returns without performing any action.
+ * 
+ * @async
+ * @function updateOS
+ * @returns {Promise<void>} A promise that resolves when the OS update command is executed or the function returns.
+ * @throws {Error} Throws an error if there is an issue executing the OS update command.
+ * @global
+ * @constant {string} result - The result of the message box to inform the user.
+ * 
  */
 async function updateOS() {
     try {
