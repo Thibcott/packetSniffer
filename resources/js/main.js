@@ -56,6 +56,10 @@ async function setupBridge() {
                 }
 
                 bridge = true; // set the bridge flag to true
+                console.log('Bridge br0 set up successfully.');
+                document.getElementById("bridgeSet").innerHTML = "the bridge is set up";
+
+                
 
             } catch (error) {
                 if (error.message.includes('permission denied')) {
@@ -464,7 +468,6 @@ async function startTcpdump(formMode) {
         console.log(`Capture file will be saved as capture_${timestamp}.pcap`);
 
         let command = '';
-        // check if the bridge is set up and use it if it is
         if (filter) {
             command = 'sudo tcpdump -i ' + iface + ' -w - ' + filter + ' | sudo tee ../backup/capture-' + iface + '_' + timestamp + '.pcap | sudo tee ' + output + '/capture-' + iface + '_' + timestamp + '.pcap | sudo tcpdump -C 10000 -r -';
         } else {
