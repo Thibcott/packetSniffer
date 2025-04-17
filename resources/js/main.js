@@ -57,7 +57,7 @@ async function setupBridge() {
 
                 bridge = true; // set the bridge flag to true
                 console.log('Bridge br0 set up successfully.');
-                document.getElementById("bridgeSet").innerHTML = "the bridge is set up | ";
+                document.getElementById("bridgeSet").innerHTML = "the bridge mode is set up | ";
 
                 
 
