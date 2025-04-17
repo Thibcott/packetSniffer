@@ -57,7 +57,7 @@ async function setupBridge() {
 
                 bridge = true; // set the bridge flag to true
                 console.log('Bridge br0 set up successfully.');
-                document.getElementById("bridgeSet").innerHTML = "the bridge is set up";
+                document.getElementById("bridgeSet").innerHTML = "the bridge is set up | ";
 
                 
 
@@ -97,6 +97,7 @@ async function turnOffBridge() {
             console.log('Bridge br0 deleted successfully.');
 
             bridge = false; // set the bridge flag to false
+            document.getElementById("bridgeSet").innerHTML = " ";
             //set the new choose interface
             await Neutralino.os.execCommand('sudo ifconfig ' + selectedInterface + ' up');
         } catch (error) {
