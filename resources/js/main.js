@@ -1026,7 +1026,7 @@ async function saveFileOnPc(file) {
 
         if (sendResult.stdErr) {
             console.error("Error sending file via Bluetooth:", sendResult.stdErr);
-            await showModalMessageBox('Error', 'Failed to send the file via Bluetooth.', 'OK');
+            await showModalMessageBox('Error', 'Failed to send the file via Bluetooth. : ' + sendResult.stdErr, 'OK');
         } else {
             console.log(`File ${newFileName} sent to Bluetooth device ${macAddress} successfully.`);
             await showModalMessageBox('Success', 'File sent via Bluetooth successfully.', 'OK');
