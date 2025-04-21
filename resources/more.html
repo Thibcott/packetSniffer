@@ -22,7 +22,7 @@ External CSS and JavaScript files are linked for styling and functionality.
   <div id="navbar">
     <ul>
       <li>
-        <a  href="index.html">Packet recording</a>
+        <a href="index.html">Packet recording</a>
       </li>
       <li>
         <a href="history.html">History</a>
@@ -37,7 +37,7 @@ External CSS and JavaScript files are linked for styling and functionality.
       </li>
     </ul>
   </div>
-  
+
   <div id="helpPageContent">
     <div id="moreOption">
       <h2>More option</h2>
@@ -56,7 +56,7 @@ External CSS and JavaScript files are linked for styling and functionality.
       </div>
       <br>
       <h2>Version</h2>
-      <table >
+      <table>
         <tr>
           <td>App</td>
           <td id="appVersion">-</td>
@@ -91,17 +91,29 @@ External CSS and JavaScript files are linked for styling and functionality.
         </tr>
       </table>
     </div>
+    <div>
+      <hr style="width: 100%;border: 1px solid black;">
+      <h2>User documentation</h2>
+      <div style="width: 100%;">
+        <hr>
+        <p>1 . Connection</p>
+        <img src="icons/connectionDoc.png" alt="connectionDoc">
+        <hr>
+        <p>2 . How to connect</p>
+        <img src="icons/howConnect.png" alt="howConnect">
+      </div>
+    </div>
   </div>
 
   <script src="/js/neutralino.js"></script>
   <!-- Your app's source files -->
   <script src="/js/main.js"></script>
   <script>
-    window.onload = function() {
+    window.onload = function () {
       getConnectedDevices();
       getVersions();
     };
   </script>
- </body>
+</body>
 
 </html>
