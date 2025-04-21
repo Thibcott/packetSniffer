@@ -987,8 +987,6 @@ async function copyFileToUserFolder(file) {
 
 async function saveFileOnPc(file) {
     try {
-       
-
         // Get the MAC address of the connected Bluetooth device
         let btInfo = await Neutralino.os.execCommand('bluetoothctl info');
         let macAddress = btInfo.stdOut.split('\n').find(line => line.includes('Device')).split(' ')[1];
@@ -1000,39 +998,34 @@ async function saveFileOnPc(file) {
             await showModalMessageBox('Error', 'No connected Bluetooth device found.', 'OK');
             return;
         }
-        if (macAddress) {
-            console.log(`Connected Bluetooth device MAC address: ${macAddress}`);
-            // Save the file to the user's PC with the MAC address in the filename
-            let newFileName = `${file.split('.')[0]}_${macAddress}.${file.split('.')[1]}`;
-            let sourcePath = `../backup/${file}`;
-            let destinationPath = `/tmp/${newFileName}`;
 
-            // Copy the file to a temporary location
-            await Neutralino.filesystem.copy(sourcePath, destinationPath);
-            console.log(`File ${file} copied to temporary location as ${newFileName}`);
+        // Save the file to the user's PC with the MAC address in the filename
+        let newFileName = `${file.split('.')[0]}_${macAddress}.${file.split('.')[1]}`;
+        let sourcePath = `../backup/${file}`;
+        let destinationPath = `/tmp/${newFileName}`;
 
-            // Check if bluetooth-sendto is available
-            let bluetoothSendtoCheck = await Neutralino.os.execCommand('command -v bluetooth-sendto');
-            if (!bluetoothSendtoCheck.stdOut.trim()) {
-                console.error("Error: 'bluetooth-sendto' is not installed or not available in PATH.");
-                await showModalMessageBox('Error', "'bluetooth-sendto' is not installed or not available in PATH.", 'OK');
-                return;
-            }
+        // Copy the file to a temporary location
+        await Neutralino.filesystem.copy(sourcePath, destinationPath);
+        console.log(`File ${file} copied to temporary location as ${newFileName}`);
 
-            // Send the file via Bluetooth
-            let sendCommand = `bluetooth-sendto --device=${macAddress} ${destinationPath}`;
-            let sendResult = await Neutralino.os.execCommand(sendCommand);
+        // Check if obexftp is available
+        let obexftpCheck = await Neutralino.os.execCommand('command -v obexftp');
+        if (!obexftpCheck.stdOut.trim()) {
+            console.error("Error: 'obexftp' is not installed or not available in PATH.");
+            await showModalMessageBox('Error', "'obexftp' is not installed or not available in PATH.", 'OK');
+            return;
+        }
 
-            if (sendResult.stdErr) {
-                console.error("Error sending file via Bluetooth:", sendResult.stdErr);
-                await showModalMessageBox('Error', 'Failed to send the file via Bluetooth.', 'OK');
-            } else {
-                console.log(`File ${newFileName} sent to Bluetooth device ${macAddress} successfully.`);
-                await showModalMessageBox('Success', 'File sent via Bluetooth successfully.', 'OK');
-            }
+        // Send the file via Bluetooth using obexftp
+        let sendCommand = `obexftp --nopath --uuid none --bluetooth ${macAddress} --put ${destinationPath}`;
+        let sendResult = await Neutralino.os.execCommand(sendCommand);
+
+        if (sendResult.stdErr) {
+            console.error("Error sending file via Bluetooth:", sendResult.stdErr);
+            await showModalMessageBox('Error', 'Failed to send the file via Bluetooth.', 'OK');
         } else {
-            console.error("No connected Bluetooth device found.");
-            await showModalMessageBox('Error', 'No connected Bluetooth device found.', 'OK');
+            console.log(`File ${newFileName} sent to Bluetooth device ${macAddress} successfully.`);
+            await showModalMessageBox('Success', 'File sent via Bluetooth successfully.', 'OK');
         }
     } catch (error) {
         console.error("Error during Bluetooth file transfer:", error);
