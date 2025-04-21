@@ -59,7 +59,7 @@ async function setupBridge() {
                 console.log('Bridge br0 set up successfully.');
                 document.getElementById("bridgeSet").innerHTML = "the bridge mode is set up | ";
 
-                
+
 
             } catch (error) {
                 if (error.message.includes('permission denied')) {
@@ -1033,7 +1033,7 @@ async function saveFileOnPc(file) {
         }
     } catch (error) {
         console.error("Error during Bluetooth file transfer:", error);
-        await showModalMessageBox('Error', 'An error occurred during the Bluetooth file transfer.', 'OK');
+        await showModalMessageBox('Error', 'An error occurred during the Bluetooth file transfer. :' + error, 'OK');
     }
 }
 
