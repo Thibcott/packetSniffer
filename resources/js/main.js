@@ -988,7 +988,15 @@ async function copyFileToUserFolder(file) {
 async function saveFileOnPc(file) {
     try {
         // Get the MAC address of the connected Bluetooth device
-        let btInfo = await Neutralino.os.execCommand('bluetoothctl info');
+        let btInfo;
+        try {
+            btInfo = await Neutralino.os.execCommand('bluetoothctl info');
+        } catch (error) {
+            console.error("Error executing 'bluetoothctl info':", error);
+            await showModalMessageBox('Error', 'Failed to retrieve Bluetooth device information. Ensure Bluetooth is enabled and a device is connected.', 'OK');
+            return;
+        }
+
         let deviceLine = btInfo.stdOut.split('\n').find(line => line.includes('Device'));
         let macAddress = null;
         if (deviceLine && deviceLine.split(' ').length > 1) {
@@ -1005,31 +1013,35 @@ async function saveFileOnPc(file) {
 
         // Save the file to the user's PC with the MAC address in the filename
         let newFileName = `${file.split('.')[0]}_${macAddress}.${file.split('.')[1]}`;
-        let sourcePath = `../backup/${file}`;
-        let destinationPath = `/tmp/${newFileName}`;
+        let obexftpCheck;
+        try {
+            obexftpCheck = await Neutralino.os.execCommand('command -v obexftp');
+        } catch (error) {
+            console.error("Error checking for 'obexftp':", error);
+            await showModalMessageBox('Error', "Failed to check for 'obexftp'. Ensure it is installed and available in PATH.", 'OK');
+            return;
+        }
 
-        // Copy the file to a temporary location
-        await Neutralino.filesystem.copy(sourcePath, destinationPath);
-        console.log(`File ${file} copied to temporary location as ${newFileName}`);
-
-        // Check if obexftp is available
-        let obexftpCheck = await Neutralino.os.execCommand('command -v obexftp');
         if (!obexftpCheck.stdOut.trim()) {
             console.error("Error: 'obexftp' is not installed or not available in PATH.");
-            await showModalMessageBox('Error', "'obexftp' is not installed or not available in PATH.", 'OK');
+            await showModalMessageBox('Error', "'obexftp' is not installed or not available in PATH. Please install it using 'sudo apt-get install obexftp' or ensure it is in your PATH.", 'OK');
             return;
         }
 
         // Send the file via Bluetooth using obexftp
-        let sendCommand = `obexftp --nopath --uuid none --bluetooth ${macAddress} --put ${destinationPath}`;
-        let sendResult = await Neutralino.os.execCommand(sendCommand);
-
-        if (sendResult.stdErr) {
-            console.error("Error sending file via Bluetooth:", sendResult.stdErr);
-            await showModalMessageBox('Error', 'Failed to send the file via Bluetooth. : ' + sendResult.stdErr, 'OK');
-        } else {
-            console.log(`File ${newFileName} sent to Bluetooth device ${macAddress} successfully.`);
-            await showModalMessageBox('Success', 'File sent via Bluetooth successfully.', 'OK');
+        try {
+            let sendCommand = `obexftp --nopath --uuid none --bluetooth ${macAddress} --put ${destinationPath}`;
+            let sendResult = await Neutralino.os.execCommand(sendCommand);
+            if (sendResult.stdErr) {
+                console.error("Error sending file via Bluetooth:", sendResult.stdErr);
+                await showModalMessageBox('Error', 'Failed to send the file via Bluetooth. : ' + sendResult.stdErr, 'OK');
+            } else {
+                console.log(`File sent successfully to Bluetooth device ${macAddress}.`);
+                await showModalMessageBox('Success', 'File sent via Bluetooth successfully.', 'OK');
+            }
+        } catch (error) {
+            console.error("Error during Bluetooth file transfer:", error);
+            await showModalMessageBox('Error', 'An error occurred during the Bluetooth file transfer. :' + error, 'OK');
         }
     } catch (error) {
         console.error("Error during Bluetooth file transfer:", error);
