@@ -944,13 +944,16 @@ async function getFileFromBackupFolder() {
             let cell2 = row.insertCell(1);
             let cell3 = row.insertCell(2);
             let cell4 = row.insertCell(3);
+            let cell5 = row.insertCell(4);
 
             cell1.innerHTML = file.date;
             cell2.innerHTML = file.name.split('_')[0];
-            let save = `<button onclick="copyFileToUserFolder('${file.name}')"><img src="icons/save.png" alt="More" style="width: 18px; height: 18px;"></button>`;
+            let save = `<button onclick="copyFileToUserFolder('${file.name}')"><img src="icons/save.png" alt="save" style="width: 18px; height: 18px;"></button>`;
             cell3.innerHTML = save;
-            let remove = `<button onclick="removeFile('${file.name}')"><img src="icons/delete.png" alt="More" style="width: 18px; height: 18px;"></button>`;
+            let remove = `<button onclick="removeFile('${file.name}')"><img src="icons/delete.png" alt="del" style="width: 18px; height: 18px;"></button>`;
             cell4.innerHTML = remove;
+            let saveOnPc = `<button onclick="saveFileOnPc('${file.name}')"><img src="icons/saveOnPc2.png" alt="saveOnPc" style="width: 18px; height: 18px;"></button>`;
+            cell5.innerHTML = saveOnPc;
         });
     }
 }
@@ -979,6 +982,33 @@ async function copyFileToUserFolder(file) {
         }
     } else {
         console.error("No destination folder selected.");
+    }
+}
+
+async function saveFileOnPc(file) {
+    //get the mac form bluetooth device connected
+    try {
+        // Get the MAC address of the connected Bluetooth device
+        let bluetoothInfo = await Neutralino.os.execCommand('hcitool con');
+        let macAddress = bluetoothInfo.stdOut.split('\n').filter(line => line.includes('ACL')).map(line => line.split(' ')[2])[0];
+
+        if (macAddress) {
+            console.log(`Connected Bluetooth device MAC address: ${macAddress}`);
+            // Save the file to the user's PC with the MAC address in the filename
+            let entry = await Neutralino.os.showFolderDialog('Select destination folder', {});
+            if (entry) {
+                let newFileName = `${file.split('.')[0]}_${macAddress}.${file.split('.')[1]}`;
+                await Neutralino.filesystem.copy(`../backup/${file}`, `${entry}/${newFileName}`);
+                console.log(`File ${file} copied to ${entry} as ${newFileName}`);
+            } else {
+                console.error("No destination folder selected.");
+            }
+        } else {
+            console.error("No connected Bluetooth device found.");
+            await showModalMessageBox('Error', 'No connected Bluetooth device found.', 'OK');
+        }
+    } catch (error) {
+        console.error("Error retrieving Bluetooth device MAC address:", error);
     }
 }
 

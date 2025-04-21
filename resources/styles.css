@@ -224,6 +224,10 @@ select {
         text-align: center;
         /* Center-align text in the fourth column */
     }
+    td:nth-child(5) {
+        text-align: center;
+        /* Center-align text in the fourth column */
+    }
 }
 
 #moreOption {
