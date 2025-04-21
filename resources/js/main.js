@@ -987,18 +987,19 @@ async function copyFileToUserFolder(file) {
 
 async function saveFileOnPc(file) {
     try {
-        // Check if hcitool is available
-        let hcitoolCheck = await Neutralino.os.execCommand('command -v hcitool');
-        if (!hcitoolCheck.stdOut.trim()) {
-            console.error("Error: 'hcitool' is not installed or not available in PATH.");
-            await showModalMessageBox('Error', "'hcitool' is not installed or not available in PATH.", 'OK');
-            return;
-        }
+       
 
         // Get the MAC address of the connected Bluetooth device
-        let bluetoothInfo = await Neutralino.os.execCommand('hcitool con');
-        let macAddress = bluetoothInfo.stdOut.split('\n').filter(line => line.includes('ACL')).map(line => line.split(' ')[2])[0];
-
+        let btInfo = await Neutralino.os.execCommand('bluetoothctl info');
+        let macAddress = btInfo.stdOut.split('\n').find(line => line.includes('Device')).split(' ')[1];
+        // Check if a Bluetooth device is connected
+        if (macAddress) {
+            console.log(`Connected Bluetooth device MAC address: ${macAddress}`);
+        } else {
+            console.error("No connected Bluetooth device found.");
+            await showModalMessageBox('Error', 'No connected Bluetooth device found.', 'OK');
+            return;
+        }
         if (macAddress) {
             console.log(`Connected Bluetooth device MAC address: ${macAddress}`);
             // Save the file to the user's PC with the MAC address in the filename
