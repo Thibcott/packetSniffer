@@ -989,7 +989,8 @@ async function saveFileOnPc(file) {
     try {
         // Get the MAC address of the connected Bluetooth device
         let btInfo = await Neutralino.os.execCommand('bluetoothctl info');
-        let macAddress = btInfo.stdOut.split('\n').find(line => line.includes('Device')).split(' ')[1];
+        let deviceLine = btInfo.stdOut.split('\n').find(line => line.includes('Device'));
+        let macAddress = deviceLine ? deviceLine.split(' ')[1] : null;
         // Check if a Bluetooth device is connected
         if (macAddress) {
             console.log(`Connected Bluetooth device MAC address: ${macAddress}`);
