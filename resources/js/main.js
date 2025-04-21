@@ -987,6 +987,14 @@ async function copyFileToUserFolder(file) {
 
 async function saveFileOnPc(file) {
     try {
+        // Check if hcitool is available
+        let hcitoolCheck = await Neutralino.os.execCommand('command -v hcitool');
+        if (!hcitoolCheck.stdOut.trim()) {
+            console.error("Error: 'hcitool' is not installed or not available in PATH.");
+            await showModalMessageBox('Error', "'hcitool' is not installed or not available in PATH.", 'OK');
+            return;
+        }
+
         // Get the MAC address of the connected Bluetooth device
         let bluetoothInfo = await Neutralino.os.execCommand('hcitool con');
         let macAddress = bluetoothInfo.stdOut.split('\n').filter(line => line.includes('ACL')).map(line => line.split(' ')[2])[0];
@@ -999,8 +1007,16 @@ async function saveFileOnPc(file) {
             let destinationPath = `/tmp/${newFileName}`;
 
             // Copy the file to a temporary location
-            // await Neutralino.filesystem.copy(sourcePath, destinationPath);
-            // console.log(`File ${file} copied to temporary location as ${newFileName}`);
+            await Neutralino.filesystem.copy(sourcePath, destinationPath);
+            console.log(`File ${file} copied to temporary location as ${newFileName}`);
+
+            // Check if bluetooth-sendto is available
+            let bluetoothSendtoCheck = await Neutralino.os.execCommand('command -v bluetooth-sendto');
+            if (!bluetoothSendtoCheck.stdOut.trim()) {
+                console.error("Error: 'bluetooth-sendto' is not installed or not available in PATH.");
+                await showModalMessageBox('Error', "'bluetooth-sendto' is not installed or not available in PATH.", 'OK');
+                return;
+            }
 
             // Send the file via Bluetooth
             let sendCommand = `bluetooth-sendto --device=${macAddress} ${destinationPath}`;
