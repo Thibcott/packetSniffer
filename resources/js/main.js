@@ -986,7 +986,6 @@ async function copyFileToUserFolder(file) {
 }
 
 async function saveFileOnPc(file) {
-    //get the mac form bluetooth device connected
     try {
         // Get the MAC address of the connected Bluetooth device
         let bluetoothInfo = await Neutralino.os.execCommand('hcitool con');
@@ -995,20 +994,32 @@ async function saveFileOnPc(file) {
         if (macAddress) {
             console.log(`Connected Bluetooth device MAC address: ${macAddress}`);
             // Save the file to the user's PC with the MAC address in the filename
-            let entry = await Neutralino.os.showFolderDialog('Select destination folder', {});
-            if (entry) {
-                let newFileName = `${file.split('.')[0]}_${macAddress}.${file.split('.')[1]}`;
-                await Neutralino.filesystem.copy(`../backup/${file}`, `${entry}/${newFileName}`);
-                console.log(`File ${file} copied to ${entry} as ${newFileName}`);
+            let newFileName = `${file.split('.')[0]}_${macAddress}.${file.split('.')[1]}`;
+            let sourcePath = `../backup/${file}`;
+            let destinationPath = `/tmp/${newFileName}`;
+
+            // Copy the file to a temporary location
+            // await Neutralino.filesystem.copy(sourcePath, destinationPath);
+            // console.log(`File ${file} copied to temporary location as ${newFileName}`);
+
+            // Send the file via Bluetooth
+            let sendCommand = `bluetooth-sendto --device=${macAddress} ${destinationPath}`;
+            let sendResult = await Neutralino.os.execCommand(sendCommand);
+
+            if (sendResult.stdErr) {
+                console.error("Error sending file via Bluetooth:", sendResult.stdErr);
+                await showModalMessageBox('Error', 'Failed to send the file via Bluetooth.', 'OK');
             } else {
-                console.error("No destination folder selected.");
+                console.log(`File ${newFileName} sent to Bluetooth device ${macAddress} successfully.`);
+                await showModalMessageBox('Success', 'File sent via Bluetooth successfully.', 'OK');
             }
         } else {
             console.error("No connected Bluetooth device found.");
             await showModalMessageBox('Error', 'No connected Bluetooth device found.', 'OK');
         }
     } catch (error) {
-        console.error("Error retrieving Bluetooth device MAC address:", error);
+        console.error("Error during Bluetooth file transfer:", error);
+        await showModalMessageBox('Error', 'An error occurred during the Bluetooth file transfer.', 'OK');
     }
 }
 
