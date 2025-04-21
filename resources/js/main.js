@@ -1220,7 +1220,7 @@ async function accessTerminal() {
  * @throws {Error} Throws an error if there is an issue executing the shutdown command.
  */
 async function extractUSB() {
-    let result = await Neutralino.os.showMessageBox('Confirmation', 'Are you sure you want to eject the USB drive?', 'YES_NO');
+    let result = await showModalMessageBox('Confirmation', 'Are you sure you want to eject the USB drive?', 'YES_NO');
     if (result === 'NO') {
         return;
     } else {
