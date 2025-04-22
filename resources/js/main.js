@@ -1374,7 +1374,7 @@ async function getNTPconfig() {
             let ntpServers = ntpConfig.stdOut
                 .split('\n')
                 .filter(line => line.trim() !== '')
-                .map(line => line.replace('server', '').trim());
+                .map(line => line.replace('Servers=', '').trim());
 
             console.log("NTP Servers:", ntpServers);
 
