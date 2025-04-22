@@ -1384,7 +1384,9 @@ async function getNTPconfig() {
                 console.error("Error: 'ntpServerlist' element not found in the DOM.");
                 return;
             }
-            ntpServerList.innerText = ntpServers.join(', ');
+
+            // Join the servers with a pipe or newline
+            ntpServerList.innerText = ntpServers.join(' |\n');
         } else {
             console.warn("No NTP servers found in the configuration.");
             let ntpServerList = document.getElementById('ntpServerlist');
