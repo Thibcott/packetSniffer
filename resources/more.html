@@ -93,6 +93,24 @@ External CSS and JavaScript files are linked for styling and functionality.
     </div>
     <br>
     <div>
+      <h2>Set up the clock</h2>
+      <div>
+        <label for="ntpServerInput">Add NTP Server:</label>
+        <input type="text" id="ntpServerInput" placeholder="Enter NTP server address">
+        <button onclick="addNtpServer()">Add</button>
+      </div>
+      <div>
+        <label>Configured NTP Servers:</label>
+        <table id="ntpServerTable">
+          <tr>
+            <td>NTP Server:</td>
+          </tr>
+        </table>
+      </div>
+
+    </div>
+    <br>
+    <div>
       <hr style="width: 100%;border: 1px solid black;">
       <h2>User documentation</h2>
       <div style="width: 100%;">
@@ -117,6 +135,7 @@ External CSS and JavaScript files are linked for styling and functionality.
     window.onload = function () {
       getConnectedDevices();
       getVersions();
+      getNTPconfig();
     };
   </script>
 </body>

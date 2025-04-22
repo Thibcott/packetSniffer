@@ -60,7 +60,6 @@ async function setupBridge() {
                 document.getElementById("bridgeSet").innerHTML = "the bridge mode is set up | ";
 
 
-
             } catch (error) {
                 if (error.message.includes('permission denied')) {
                     console.error("Error: Insufficient permissions to execute commands. Please run the application with elevated privileges.");
@@ -1362,6 +1361,45 @@ async function getVersions() {
     } catch (error) {
         console.error("Error fetching bridge-utils version:", error);
         document.getElementById("bridgeVersion").innerText = "Version not available";
+    }
+}
+
+async function getNTPconfig(params) {
+    // Get all NTP servers set
+    try {
+        // Execute the command to get the list of NTP servers
+        let ntpConfig = await Neutralino.os.execCommand('cat /etc/ntp.conf | grep "^server"');
+        if (ntpConfig.stdOut.trim()) {
+            // Parse the output to extract server addresses
+            let ntpServers = ntpConfig.stdOut
+                .split('\n')
+                .filter(line => line.trim() !== '')
+                .map(line => line.replace('server', '').trim());
+
+            console.log("NTP Servers:", ntpServers);
+
+            // Clear the table body
+            let tbody = document.getElementById('ntpServerTable').getElementsByTagName('tbody')[0];
+            tbody.innerHTML = "";
+
+            // Populate the table with NTP servers
+            ntpServers.forEach((server, index) => {
+                let row = tbody.insertRow();
+                let cell1 = row.insertCell(0);
+                let cell2 = row.insertCell(1);
+
+                cell1.innerText = index + 1; // Serial number
+                cell2.innerText = server;   // NTP server address
+            });
+        } else {
+            console.warn("No NTP servers found in the configuration.");
+            let tbody = document.getElementById('ntpServerTable').getElementsByTagName('tbody')[0];
+            tbody.innerHTML = "<tr><td colspan='2' style='text-align:center;'>No NTP servers found.</td></tr>";
+        }
+    } catch (error) {
+        console.error("Error fetching NTP configuration:", error);
+        let tbody = document.getElementById('ntpServerTable').getElementsByTagName('tbody')[0];
+        tbody.innerHTML = "<tr><td colspan='2' style='text-align:center;'>Error fetching NTP configuration.</td></tr>";
     }
 }
 
