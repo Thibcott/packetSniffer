@@ -1364,7 +1364,7 @@ async function getVersions() {
     }
 }
 
-async function getNTPconfig(params) {
+async function getNTPconfig() {
     // Get all NTP servers set
     try {
         // Execute the command to get the list of NTP servers
@@ -1379,17 +1379,28 @@ async function getNTPconfig(params) {
             console.log("NTP Servers:", ntpServers);
 
             // Clear the table body
-            let tbody = document.getElementById('ntpServerTable').getElementsByTagName('tbody')[0];
+            let ntpTable = document.getElementById('ntpServerTable');
+            if (!ntpTable) {
+                console.error("Error: 'ntpServerTable' element not found in the DOM.");
+                return;
+            }
+            let tbody = ntpTable.getElementsByTagName('tbody')[0];
+            if (!tbody) {
+                console.error("Error: 'tbody' element not found in 'ntpServerTable'.");
+                return;
+            }
             tbody.innerHTML = "";
 
             // Populate the table with NTP servers
             ntpServers.forEach((server, index) => {
-                let row = tbody.insertRow();
-                let cell1 = row.insertCell(0);
-                let cell2 = row.insertCell(1);
+        ntpServers.forEach((server, index) => {
+            let row = tbody.insertRow();
+            let cell1 = row.insertCell(0);
+            let cell2 = row.insertCell(1);
 
-                cell1.innerText = index + 1; // Serial number
-                cell2.innerText = server;   // NTP server address
+            cell1.innerText = index + 1; // Serial number
+            cell2.innerText = server;   // NTP server address
+        });
             });
         } else {
             console.warn("No NTP servers found in the configuration.");
