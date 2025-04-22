@@ -1378,39 +1378,22 @@ async function getNTPconfig() {
 
             console.log("NTP Servers:", ntpServers);
 
-            // Clear the table body
-            let ntpTable = document.getElementById('ntpServerTable');
-            if (!ntpTable) {
-                console.error("Error: 'ntpServerTable' element not found in the DOM.");
+            // Display the NTP servers in the paragraph element
+            let ntpServerList = document.getElementById('ntpServerlist');
+            if (!ntpServerList) {
+                console.error("Error: 'ntpServerlist' element not found in the DOM.");
                 return;
             }
-            let tbody = ntpTable.getElementsByTagName('tbody')[0];
-            if (!tbody) {
-                console.error("Error: 'tbody' element not found in 'ntpServerTable'.");
-                return;
-            }
-            tbody.innerHTML = "";
-
-            // Populate the table with NTP servers
-            ntpServers.forEach((server, index) => {
-        ntpServers.forEach((server, index) => {
-            let row = tbody.insertRow();
-            let cell1 = row.insertCell(0);
-            let cell2 = row.insertCell(1);
-
-            cell1.innerText = index + 1; // Serial number
-            cell2.innerText = server;   // NTP server address
-        });
-            });
+            ntpServerList.innerText = ntpServers.join(', ');
         } else {
             console.warn("No NTP servers found in the configuration.");
-            let tbody = document.getElementById('ntpServerTable').getElementsByTagName('tbody')[0];
-            tbody.innerHTML = "<tr><td colspan='2' style='text-align:center;'>No NTP servers found.</td></tr>";
+            let ntpServerList = document.getElementById('ntpServerlist');
+            ntpServerList.innerText = "No NTP servers found.";
         }
     } catch (error) {
         console.error("Error fetching NTP configuration:", error);
-        let tbody = document.getElementById('ntpServerTable').getElementsByTagName('tbody')[0];
-        tbody.innerHTML = "<tr><td colspan='2' style='text-align:center;'>Error fetching NTP configuration.</td></tr>";
+        let ntpServerList = document.getElementById('ntpServerlist');
+        ntpServerList.innerText = "Error fetching NTP configuration.";
     }
 }
 
