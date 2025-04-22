@@ -1368,7 +1368,7 @@ async function getNTPconfig() {
     // Get all NTP servers set
     try {
         // Execute the command to get the list of NTP servers
-        let ntpConfig = await Neutralino.os.execCommand('cat /etc/ntp.conf | grep "^server"');
+        let ntpConfig = await Neutralino.os.execCommand('cat /etc/systemd/timesyncd.conf | grep "^Servers="');
         if (ntpConfig.stdOut.trim()) {
             // Parse the output to extract server addresses
             let ntpServers = ntpConfig.stdOut
