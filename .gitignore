@@ -6,9 +6,8 @@
 /bin/.tmp
 
 # Neutralinojs config files
-/.tmp
-
-
+.tmp
+.tmp\window_state.config.json
 # Neutralinojs related files
 .storage
 *.log
