@@ -1405,6 +1405,26 @@ async function getNTPconfig() {
     }
 }
 
+async function addNtpServer() {
+    // Get the NTP server address from the input field
+    let ntpServerInput = document.getElementById('ntpServerInput');
+    let ntpServer = ntpServerInput.value.trim();
+
+    if (!ntpServer) {
+        console.error("Error: NTP server address is empty.");
+        return;
+    }
+
+    try {
+        // Append the new NTP server to the configuration file
+        await Neutralino.os.execCommand(`sudo sed -i '/^Servers=/ s/$/ ${ntpServer}/' /etc/systemd/timesyncd.conf || echo "Servers=${ntpServer}" | sudo tee -a /etc/systemd/timesyncd.conf`);
+        console.log(`NTP server ${ntpServer} added successfully.`);
+        await getNTPconfig();
+    } catch (error) {
+        console.error("Error adding NTP server:", error);
+    }
+}
+
 
 //==========================================
 // Neutralino setup
