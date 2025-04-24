@@ -1367,7 +1367,7 @@ async function getNTPconfig() {
     // Get all NTP servers set
     try {
         // Execute the command to get the list of NTP servers
-        let ntpConfig = await Neutralino.os.execCommand('cat /etc/systemd/timesyncd.conf | grep "^Servers="');
+        let ntpConfig = await Neutralino.os.execCommand('cat /etc/systemd/timesyncd.conf | grep "Servers="');
         if (ntpConfig.stdErr) {
             console.error("Error fetching NTP configuration:", ntpConfig.stdErr);
             document.getElementById('ntpServerlist').innerText = "Error fetching NTP configuration.";
