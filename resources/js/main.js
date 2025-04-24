@@ -1385,6 +1385,13 @@ async function getNTPconfig() {
                 return;
             }
 
+            if (ntpServers.length > 200) {
+                ntpServers = ntpServers.substring(0, 100) + "...";
+            }
+            if (ntpServers.includes(" ")) {
+                ntpServers.replace(" ", " | ");
+            }
+
             ntpServerList.innerText = ntpServers;
         } else {
             console.warn("No NTP servers found in the configuration.");
