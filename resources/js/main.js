@@ -1373,7 +1373,8 @@ async function getNTPconfig() {
             let ntpServers = ntpConfig.stdOut
                 .split('\n')
                 .filter(line => line.trim() !== '')
-                .map(line => line.replace('Servers=', '').trim());
+                .map(line => line.replace('Servers=', '').trim())
+                .join(' | '); // Join the servers with a pipe separator
 
             console.log("NTP Servers:", ntpServers);
 
@@ -1384,8 +1385,7 @@ async function getNTPconfig() {
                 return;
             }
 
-            // Join the servers with a pipe or newline
-            ntpServerList.innerText = ntpServers.join(' |\n');
+            ntpServerList.innerText = ntpServers;
         } else {
             console.warn("No NTP servers found in the configuration.");
             let ntpServerList = document.getElementById('ntpServerlist');
