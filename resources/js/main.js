@@ -1420,6 +1420,7 @@ async function addNtpServer() {
         await Neutralino.os.execCommand(`sudo sed -i '/^Servers=/ s/$/ ${ntpServer}/' /etc/systemd/timesyncd.conf || echo "Servers=${ntpServer}" | sudo tee -a /etc/systemd/timesyncd.conf`);
         console.log(`NTP server ${ntpServer} added successfully.`);
         await getNTPconfig();
+        document.getElementById('ntpServerInput') = ""; // Clear the input field
     } catch (error) {
         console.error("Error adding NTP server:", error);
     }
