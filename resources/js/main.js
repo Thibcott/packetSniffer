@@ -1389,7 +1389,7 @@ async function getNTPconfig() {
                 ntpServers = ntpServers.substring(0, 100) + "...";
             }
             if (ntpServers.includes(" ")) {
-                ntpServers.replace(" ", " | ");
+                ntpServers = ntpServers.replace(/ /g, " | ");
             }
 
             ntpServerList.innerText = ntpServers;
