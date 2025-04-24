@@ -847,7 +847,7 @@ async function checkIfConnectedDevices(netInetrface, formMode) {
             } else {
                 console.warn("Device is not connected to " + netInetrface);
                 // show a message box to inform the user and stop the tcpdump process
-                let messageBoxResult = await Neutralino.os.showMessageBox('Warning', 'No device connected to ' + netInetrface, 'OK');
+                let messageBoxResult = await showModalMessageBox('Warning', 'No device connected to ' + netInetrface, 'OK');
                 // stop tcpdump and navigate to the link
                 if (messageBoxResult == 'OK') {
                     // stop tcpdump and navigate to the link
@@ -877,7 +877,7 @@ async function isTcpdumpRun(link) {
         location.replace(link);
     } else {
         // if tcpdump is running, show a warning message and ask the user to stop tcpdump
-        let messageBoxResult = await Neutralino.os.showMessageBox('Warning', 'Tcpdump is running. Are you sure do you want to stop the tcpdump process ?', 'OK_CANCEL');
+        let messageBoxResult = await showModalMessageBox('Warning', 'Tcpdump is running. Are you sure do you want to stop the tcpdump process ?', 'OK_CANCEL');
         if (messageBoxResult == 'CANCEL') {
             //console.log('Operation cancelled by user.');
         } else {
@@ -1176,7 +1176,7 @@ async function extractUSB() {
             let drives = await Neutralino.os.execCommand('lsblk -o NAME,MOUNTPOINT | grep /media');
             if (drives.stdOut.trim() === "") {
                 console.error("No USB drive detected.");
-                await Neutralino.os.showMessageBox('Error', 'No USB drive detected.', 'OK');
+                await showModalMessageBox('Error', 'No USB drive detected.', 'OK');
                 return;
             }
 
