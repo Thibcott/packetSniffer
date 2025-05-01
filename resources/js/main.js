@@ -138,6 +138,8 @@ async function showModalMessageBox(title, message, buttons) {
     }
 }
 
+
+
 /**
  * Moves the cursor to the end of the text in the textarea with the id 'outPutTextArea'.
  * If the element is not found, logs an error to the console.
@@ -371,18 +373,35 @@ function applyFilter() {
  * @returns {Promise<void>} A promise that resolves when the folder dialog is closed and the path is set.
  */
 async function chooseOutputFile(input) {
-    let entry = await Neutralino.os.showFolderDialog('Select output file', {
-        defaultPath: '/home/user/app/capture'
-    });
-    if (entry) {
-        if (input == 1) {
-            document.getElementById('output1').value = entry;
-        } else if (input == 2) {
-            document.getElementById('output2').value = entry;
-        } else {
-            document.getElementById('output').value = entry;
-        }
+    try {
+        await Neutralino.window.minimize();
+    } catch (error) {
+        console.error("Error minimizing window:", error);
+    }
 
+    try {
+        let entry = await Neutralino.os.showFolderDialog('Select output file', {
+            defaultPath: '/home/user/app/capture'
+        });
+        if (entry && typeof entry === 'string') {
+            if (input === 1) {
+                document.getElementById('output1').value = entry;
+            } else if (input === 2) {
+                document.getElementById('output2').value = entry;
+            } else {
+                document.getElementById('output').value = entry;
+            }
+        } else {
+            console.warn("No folder selected or invalid entry.");
+        }
+    } catch (error) {
+        console.error("Error showing folder dialog:", error);
+    }
+
+    try {
+        await Neutralino.window.unminimize();
+    } catch (error) {
+        console.error("Error unminimizing window:", error);
     }
 }
 
@@ -967,17 +986,28 @@ async function getFileFromBackupFolder() {
  * @returns {Promise<void>} - A promise that resolves when the file copy operation is complete.
  */
 async function copyFileToUserFolder(file) {
-    let entry = await Neutralino.os.showFolderDialog('Select destination folder', {});
+    try {
+        await Neutralino.window.minimize();
 
-    if (entry) {
-        try {
-            await Neutralino.filesystem.copy(`../backup/${file}`, `${entry}/${file}`);
-            console.log(`File ${file} copied to ${entry}`);
-        } catch (error) {
-            console.error("Error copying file:", error);
+        let entry = await Neutralino.os.showFolderDialog('Select destination folder', {});
+
+        if (entry) {
+            const sourcePath = Neutralino.filesystem.joinPaths('../backup', file);
+            const destinationPath = Neutralino.filesystem.joinPaths(entry, file);
+
+            try {
+                await Neutralino.filesystem.copy(sourcePath, destinationPath);
+                console.log(`File ${file} copied to ${entry}`);
+            } catch (error) {
+                console.error(`Error copying file from ${sourcePath} to ${destinationPath}:`, error);
+            }
+        } else {
+            console.error("No destination folder selected.");
         }
-    } else {
-        console.error("No destination folder selected.");
+    } catch (error) {
+        console.error("Error during file copy operation:", error);
+    } finally {
+        await Neutralino.window.unminimize();
     }
 }
 
@@ -1363,6 +1393,25 @@ async function getVersions() {
     }
 }
 
+/**
+ * Asynchronously retrieves the NTP configuration and displays the NTP servers in the HTML element with ID 'ntpServerlist'.
+ * 
+ * This function executes a command to read the NTP configuration file and extracts the server addresses.
+ * If the configuration is found, it formats the server addresses and updates the inner text of the specified HTML element.
+ * If an error occurs during the process, it logs the error and updates the element with an error message.
+ * 
+ * @async
+ * @function getNTPconfig
+ * @returns {Promise<void>} A promise that resolves when the NTP configuration is retrieved and displayed.
+ * @throws {Error} If there is an error executing the command or updating the HTML element.
+ * @global
+ * @constant {HTMLElement} ntpServerList - The HTML element where the NTP server list will be displayed.
+ * @constant {string} ntpConfig - The output of the command to get the NTP configuration.
+ * @constant {string} ntpServers - The formatted list of NTP server addresses.
+ * @constant {string} ntpServerList - The HTML element where the NTP server list will be displayed.
+ * @constant {string} ntpServer - The NTP server address entered by the user.
+ * @constant {string} ntpServerInput - The HTML input element where the user enters the NTP server address.
+ */
 async function getNTPconfig() {
     // Get all NTP servers set
     try {
@@ -1376,7 +1425,7 @@ async function getNTPconfig() {
                 .map(line => line.replace('Servers=', '').trim())
                 .join(' | '); // Join the servers with a pipe separator
 
-            console.log("NTP Servers:", ntpServers);
+                console.log("NTP Servers:", ntpServers);
 
             // Display the NTP servers in the paragraph element
             let ntpServerList = document.getElementById('ntpServerlist');
@@ -1385,13 +1434,17 @@ async function getNTPconfig() {
                 return;
             }
 
+            // Format the NTP servers for display
             if (ntpServers.length > 200) {
                 ntpServers = ntpServers.substring(0, 100) + "...";
             }
+
+            // Replace spaces with pipe separators for better readability
             if (ntpServers.includes(" ")) {
                 ntpServers = ntpServers.replace(/ /g, " | ");
             }
 
+            // Update the inner text of the NTP server list element
             ntpServerList.innerText = ntpServers;
         } else {
             console.warn("No NTP servers found in the configuration.");
@@ -1405,6 +1458,18 @@ async function getNTPconfig() {
     }
 }
 
+/**
+ * Asynchronously adds a new NTP server to the configuration file and updates the displayed list of NTP servers.
+ * 
+ * This function retrieves the NTP server address from the input field, appends it to the configuration file,
+ * and updates the displayed list of NTP servers. If the input is empty or an error occurs,
+ * it logs an error message to the console.
+ * 
+ * @async
+ * @function addNtpServer
+ * @returns {Promise<void>} A promise that resolves when the NTP server is added and the list is updated.
+ * @throws {Error} If there is an error executing the command or updating the HTML element.
+ */
 async function addNtpServer() {
     // Get the NTP server address from the input field
     let ntpServerInput = document.getElementById('ntpServerInput');
