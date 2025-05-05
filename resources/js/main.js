@@ -28,6 +28,7 @@ async function setupBridge() {
         return;
     } else {
         let bridgeInfo = await Neutralino.os.execCommand('brctl show');
+        // check if the bridge already exists
         if (bridgeInfo.stdOut.includes('br0')) {
             console.log('Bridge br0 already exists.');
             if (bridgeInfo.stdOut.includes('eth0') && bridgeInfo.stdOut.includes('eth1')) {
@@ -37,6 +38,7 @@ async function setupBridge() {
                 console.log('Bridge br0 exists but does not contain eth0 and eth1.');
             }
         } else {
+            // if the bridge does not exist, create it and add the interfaces
             try {
                 const commands = [
                     'sudo sysctl -w net.ipv4.ip_forward=1',
@@ -49,7 +51,8 @@ async function setupBridge() {
                     'sudo ifconfig eth1 up',
                     'sudo ifconfig br0 up'
                 ];
-
+                
+                // execute the commands to set up the bridge
                 for (const command of commands) {
                     let result = await Neutralino.os.execCommand(command);
                     console.log(`Command executed: ${command}, Output: ${result.stdOut}`);
@@ -57,6 +60,7 @@ async function setupBridge() {
 
                 bridge = true; // set the bridge flag to true
                 console.log('Bridge br0 set up successfully.');
+                // set the bridge mode in the HTML element
                 document.getElementById("bridgeSet").innerHTML = "the bridge mode is set up | ";
 
 
@@ -1224,17 +1228,21 @@ async function extractUSB() {
                 // Unmount the USB drive
                 let unmountResult = await Neutralino.os.execCommand(`sudo umount /dev/${usbDrive}`);
                 if (unmountResult.stdErr) {
+                    // Handle unmount error
                     console.error(`Error unmounting USB drive: ${unmountResult.stdErr}`);
                     await showModalMessageBox('Error', `Error unmounting USB drive: ${unmountResult.stdErr}`, 'OK');
                 } else {
+                    // Successfully unmounted the USB drive
                     console.log(`USB drive /dev/${usbDrive} ejected successfully.`);
                     await showModalMessageBox('Success', 'USB drive ejected successfully. Now, you can remove the usb stick', 'OK');
                 }
             } catch (err) {
+                // Handle unmount error
                 console.error(`Error unmounting USB drive: ${err.message}`);
                 await showModalMessageBox('Error', `Error unmounting USB drive: ${err.message}`, 'OK');
             }
         } catch (err) {
+            // Handle error while executing the command to find USB drives
             console.error(`Error ejecting USB drive: ${err.message} (${err.name})`);
             await showModalMessageBox('Error', `Error ejecting USB drive: ${err.message}`, 'OK');
         }
