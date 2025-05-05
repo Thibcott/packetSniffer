@@ -18,8 +18,12 @@ body {
 textarea {
     resize: none;
     /* Prevent textarea from being resized */
-    pointer-events: none;
-    /* Disable pointer events for textarea */
+    /* Remove tooltip*/
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+
+    
 }
 
 ul {
