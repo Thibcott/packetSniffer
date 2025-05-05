@@ -146,7 +146,9 @@ select {
     /* Style for specific page content sections */
 }
 
-
+textarea {
+    pointer-events: none;
+}
 #outPutTextArea,
 #outPutTextArea1,
 #outPutTextArea2 {
