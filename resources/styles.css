@@ -18,6 +18,8 @@ body {
 textarea {
     resize: none;
     /* Prevent textarea from being resized */
+    pointer-events: none;
+    /* Disable pointer events for textarea */
 }
 
 ul {
@@ -146,9 +148,7 @@ select {
     /* Style for specific page content sections */
 }
 
-textarea {
-    pointer-events: none;
-}
+
 #outPutTextArea,
 #outPutTextArea1,
 #outPutTextArea2 {
