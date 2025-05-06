@@ -783,7 +783,7 @@ async function stopTcpdump(formMode) {
     if (formMode == 1) {
         if (tcpdumpProcess1) {
             console.warn('stop')
-            await Neutralino.os.execCommand(`sudo kill -9 ${tcpdumpProcess1.pid}`);
+            await Neutralino.os.execCommand(`sudo pkill -f "tcpdump -i eth0"`);
             // send a kill command to stop the tcpdump process
             tcpdumpProcess1 = null;
             isTcpdumpRunning1 = false;
@@ -795,7 +795,7 @@ async function stopTcpdump(formMode) {
     } else if (formMode == 2) {
         if (tcpdumpProcess2) {
             console.warn('stop')
-            await Neutralino.os.execCommand(`sudo kill -9 ${tcpdumpProcess2.pid}`);
+            await Neutralino.os.execCommand(`sudo pkill -f "tcpdump -i eth1"`);
             // send a kill command to stop the tcpdump process
             tcpdumpProcess2 = null;
             isTcpdumpRunning2 = false;
