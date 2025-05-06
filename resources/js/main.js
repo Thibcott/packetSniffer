@@ -785,6 +785,37 @@ async function startTcpdump(formMode) {
  * @constant {string} tcpdumpProcess2 - The tcpdump process for form mode 2 that will be stopped.
  */
 async function stopTcpdump(formMode) {
+    if (formMode == 1 && tcpdumpProcess1) {
+        console.warn('Stopping tcpdump process 1...');
+        await Neutralino.os.execCommand(`sudo kill -9 ${tcpdumpProcess1Pid}`);
+        await Neutralino.os.execCommand(`sudo pkill -P ${tcpdumpProcess1Pid}`);
+        tcpdumpProcess1 = null;
+        isTcpdumpRunning1 = false;
+        document.getElementById('tcpdumpButton1').textContent = 'Start Recording';
+        button.textContent = 'Start Recording';
+        console.warn('Tcpdump process 1 stopped.');
+    } else if (formMode == 2 && tcpdumpProcess2) {
+        console.warn('Stopping tcpdump process 2...');
+        await Neutralino.os.execCommand(`sudo kill -9 ${tcpdumpProcess2Pid}`);
+        await Neutralino.os.execCommand(`sudo pkill -P ${tcpdumpProcess2Pid}`);
+        tcpdumpProcess2 = null;
+        isTcpdumpRunning2 = false;
+        document.getElementById('tcpdumpButton2').textContent = 'Start Recording';
+        button.textContent = 'Start Recording';
+        console.warn('Tcpdump process 2 stopped.');
+    } else if (tcpdumpProcess) {
+        console.warn('Stopping tcpdump process...');
+        await Neutralino.os.execCommand(`sudo kill -9 ${tcpdumpProcessPid}`);
+        await Neutralino.os.execCommand(`sudo pkill -P ${tcpdumpProcessPid}`);
+        tcpdumpProcess = null;
+        isTcpdumpRunning = false;
+        document.getElementById('tcpdumpButton').textContent = 'Start Recording';
+        button.textContent = 'Start Recording';
+        console.warn('Tcpdump process stopped.');
+    }
+}
+/*
+async function stopTcpdump(formMode) {
     if (formMode == 1) {
         if (tcpdumpProcess1) {
             console.warn('stop')
@@ -846,7 +877,7 @@ async function stopTcpdump(formMode) {
             }
         }
     }
-}
+}*/
 
 /**
  * Checks if the selected network interface is a bridge (br0) and sets it up if necessary.
