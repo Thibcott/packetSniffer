@@ -51,7 +51,7 @@ async function setupBridge() {
                     'sudo ifconfig eth1 up',
                     'sudo ifconfig br0 up'
                 ];
-                
+
                 // execute the commands to set up the bridge
                 for (const command of commands) {
                     let result = await Neutralino.os.execCommand(command);
@@ -532,11 +532,11 @@ async function startTcpdump(formMode) {
                 // handle the output based on the action type
                 switch (evt.detail.action) {
                     case 'stdOut':
-                       
+
                         document.getElementById('outPutTextArea1').value += evt.detail.data;
                         break;
                     case 'stdErr':
-                
+
                         document.getElementById('outPutTextArea1').value += evt.detail.data;
                         break;
                     case 'exit':
@@ -691,15 +691,14 @@ async function startTcpdump(formMode) {
         if (filter) {
             command = `sudo tcpdump -i ${iface} ${filter} -w - | sudo tee ../backup/capture-${iface}_${timestamp}.pcap | sudo tee ${output}/capture-${iface}_${timestamp}.pcap | tcpdump -r -`;
         } else {
-            command = `sudo tcpdump -i ${iface} -w - | sudo tee ../backup/capture-${iface}_${timestamp}.pcap | sudo tee ${output}/capture-${iface}_${timestamp}.pcap | tcpdump -r -`;
+            command = `sudo tcpdump -i ${iface} -w - | sudo tee ../backup/capture-${iface}_${timestamp}.pcap | sudo tee ../capture/capture-${iface}_${timestamp}.pcap | tcpdump -r -`;
+
         }
 
-        // Start the tcpdump process
         tcpdumpProcess2 = await Neutralino.os.spawnProcess(command, { detached: true });
-
-        // Store the process ID for easier stopping
         tcpdumpProcess2Pid = tcpdumpProcess2.pid;
         console.log(`Tcpdump started with PID: ${tcpdumpProcess2Pid}`);
+
         document.getElementById('outPutTextArea').value += command + '>>>> \n';
 
         // set the button label to stop
@@ -789,19 +788,24 @@ async function stopTcpdump(formMode) {
     if (formMode == 1) {
         if (tcpdumpProcess1) {
             console.warn('stop')
-            await Neutralino.os.execCommand(`kill ${tcpdumpProcess1Pid}`);
+            await Neutralino.os.execCommand(`sudo kill -9 ${tcpdumpProcess1Pid}`);
+            await Neutralino.os.execCommand(`sudo pkill -P ${tcpdumpProcess1Pid}`);
+            await Neutralino.os.execCommand(`sudo pkill tee`);
+
             // send a kill command to stop the tcpdump process
             tcpdumpProcess1 = null;
             isTcpdumpRunning1 = false;
             console.log("tcpdump is running : ", isTcpdumpRunning1);
-            const button = document.getElementById('tcpdumpButton1');
+           
             button.textContent = 'Start Recording';
             console.warn('tcpdump process stopped');
         }
     } else if (formMode == 2) {
         if (tcpdumpProcess2) {
             console.warn('stop')
-            await Neutralino.os.execCommand(`kill ${tcpdumpProcess2Pid}`);
+            await Neutralino.os.execCommand(`sudo kill -9 ${tcpdumpProcess2Pid}`);
+            await Neutralino.os.execCommand(`sudo pkill -P ${tcpdumpProcess2Pid}`);
+            await Neutralino.os.execCommand(`sudo pkill tee`);
             // send a kill command to stop the tcpdump process
             tcpdumpProcess2 = null;
             isTcpdumpRunning2 = false;
@@ -814,8 +818,11 @@ async function stopTcpdump(formMode) {
         if (tcpdumpProcess) {
             console.warn('stop')
             showModalMessageBox(tcpdumpProcess.pid);
-            if (tcpdumpProcess && tcpdumpProcess.pid ) {
-                await Neutralino.os.execCommand(`sudo kill ${tcpdumpProcessPid}`);
+            if (tcpdumpProcess && tcpdumpProcess.pid) {
+                console.warn('Stopping tcpdump process...');
+                await Neutralino.os.execCommand(`sudo kill -9 ${tcpdumpProcessPid}`);
+                await Neutralino.os.execCommand(`sudo pkill -P ${tcpdumpProcessPid}`);
+                await Neutralino.os.execCommand(`sudo pkill tee`);
             } else {
                 await showModalMessageBox("No tcpdump process found to terminate.");
             }
@@ -1454,7 +1461,7 @@ async function getNTPconfig() {
                 .map(line => line.replace('Servers=', '').trim())
                 .join(' | '); // Join the servers with a pipe separator
 
-                console.log("NTP Servers:", ntpServers);
+            console.log("NTP Servers:", ntpServers);
 
             // Display the NTP servers in the paragraph element
             let ntpServerList = document.getElementById('ntpServerlist');
@@ -1515,7 +1522,8 @@ async function addNtpServer() {
         console.log(`NTP server ${ntpServer} added successfully.`);
         await getNTPconfig();
         document.getElementById('ntpServerInput') = ""; // Clear the input field
-    } catch (error) {        console.error("Error adding NTP server:", error);
+    } catch (error) {
+        console.error("Error adding NTP server:", error);
     }
 }
 
