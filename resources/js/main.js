@@ -797,7 +797,8 @@ async function stopTcpdump(formMode) {
     } else {
         if (tcpdumpProcess) {
             console.warn('stop')
-            if (tcpdumpProcess && tcpdumpProcess.pid) {
+            showModalMessageBox(tcpdumpProcess.pid);
+            if (tcpdumpProcess && tcpdumpProcess.pid ) {
                 await Neutralino.os.execCommand(`sudo pkill -f "tcpdump"`);
             } else {
                 showModalMessageBox("No tcpdump process found to terminate.");
