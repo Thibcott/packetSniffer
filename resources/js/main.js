@@ -1006,8 +1006,8 @@ async function copyFileToUserFolder(file) {
         let entry = await Neutralino.os.showFolderDialog('Select destination folder', {});
 
         if (entry) {
-            const sourcePath = Neutralino.filesystem.joinPaths('../backup', file);
-            const destinationPath = Neutralino.filesystem.joinPaths(entry, file);
+            const sourcePath = `../backup/${file}`;
+            const destinationPath = `${entry}/${file}`;
 
             try {
                 await Neutralino.filesystem.copy(sourcePath, destinationPath);
