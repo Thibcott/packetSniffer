@@ -503,11 +503,7 @@ async function startTcpdump(formMode) {
         }
 
         // Start the tcpdump process
-        tcpdumpProcess1 = await Neutralino.os.spawnProcess(command, { detached: true });
-
-        // Store the process ID for easier stopping
-        tcpdumpProcess1Pid = tcpdumpProcess1.pid;
-        console.log(`Tcpdump started with PID: ${tcpdumpProcess1Pid}`);
+        tcpdumpProcess1 = await Neutralino.os.spawnProcess(command);
         document.getElementById('outPutTextArea1').value += command + '>>>> \n';
 
         // set the button label to stop
@@ -532,11 +528,13 @@ async function startTcpdump(formMode) {
                 // handle the output based on the action type
                 switch (evt.detail.action) {
                     case 'stdOut':
-
+                        //console.log(evt.detail.data);
+                       
                         document.getElementById('outPutTextArea1').value += evt.detail.data;
                         break;
                     case 'stdErr':
-
+                        //console.error(evt.detail.data);
+                
                         document.getElementById('outPutTextArea1').value += evt.detail.data;
                         break;
                     case 'exit':
@@ -599,11 +597,7 @@ async function startTcpdump(formMode) {
         }
 
         // Start the tcpdump process
-        tcpdumpProcess2 = await Neutralino.os.spawnProcess(command, { detached: true });
-
-        // Store the process ID for easier stopping
-        tcpdumpProcess2Pid = tcpdumpProcess2.pid;
-        console.log(`Tcpdump started with PID: ${tcpdumpProcess2Pid}`);
+        tcpdumpProcess2 = await Neutralino.os.spawnProcess(command);
         document.getElementById('outPutTextArea2').value += command + '>>>> \n';
 
         // set the button label to stop
@@ -694,10 +688,9 @@ async function startTcpdump(formMode) {
             command = 'sudo tcpdump -i ' + iface + ' -w - | sudo tee ../backup/capture-' + iface + '_' + timestamp + '.pcap | sudo tee ' + output + '/capture-' + iface + '_' + timestamp + '.pcap | sudo tcpdump -C 10000 -r -';
         }
 
-        tcpdumpProcess2 = await Neutralino.os.spawnProcess(command, { detached: true });
-        tcpdumpProcess2Pid = tcpdumpProcess2.pid;
-        console.log(`Tcpdump started with PID: ${tcpdumpProcess2Pid}`);
 
+        // Start the tcpdump process
+        tcpdumpProcess = await Neutralino.os.spawnProcess(command);
         document.getElementById('outPutTextArea').value += command + '>>>> \n';
 
         // set the button label to stop
@@ -758,6 +751,7 @@ async function startTcpdump(formMode) {
     }
 
 }
+
 
 
 
