@@ -1322,12 +1322,25 @@ async function extractUSB() {
 async function updateApp() {
     try {
         // Fetch the latest commit hash from the remote repository
-        let remoteCommit = await Neutralino.os.execCommand('git ls-remote origin -h refs/heads/main');
-        let remoteHash = remoteCommit.stdOut.split('\t')[0];
+        let remoteCommit, remoteHash, localCommit, localHash;
 
-        // Fetch the latest commit hash from the local repository
-        let localCommit = await Neutralino.os.execCommand('git rev-parse HEAD');
-        let localHash = localCommit.stdOut.trim();
+        try {
+            remoteCommit = await Neutralino.os.execCommand('git ls-remote origin -h refs/heads/main');
+            remoteHash = remoteCommit.stdOut.split('\t')[0];
+        } catch (error) {
+            console.error("Error fetching remote commit hash. Ensure 'git' is installed and the repository is configured:", error);
+            await showModalMessageBox('Error', 'Unable to fetch remote updates. Please check your Git configuration.', 'OK');
+            return;
+        }
+
+        try {
+            localCommit = await Neutralino.os.execCommand('git rev-parse HEAD');
+            localHash = localCommit.stdOut.trim();
+        } catch (error) {
+            console.error("Error fetching local commit hash. Ensure this is a valid Git repository:", error);
+            await showModalMessageBox('Error', 'Unable to fetch local updates. Please check your Git configuration.', 'OK');
+            return;
+        }
 
         // Compare the hashes to determine if an update is needed
         if (remoteHash !== localHash) {
