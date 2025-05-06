@@ -773,7 +773,7 @@ async function stopTcpdump(formMode) {
     if (formMode == 1) {
         if (tcpdumpProcess1) {
             console.warn('stop')
-            await Neutralino.os.spawnProcess(`kill ${tcpdumpProcess1.pid}`);
+            await Neutralino.os.execCommand(`kill ${tcpdumpProcess1.pid}`);
             // send a kill command to stop the tcpdump process
             tcpdumpProcess1 = null;
             isTcpdumpRunning1 = false;
@@ -785,7 +785,7 @@ async function stopTcpdump(formMode) {
     } else if (formMode == 2) {
         if (tcpdumpProcess2) {
             console.warn('stop')
-            await Neutralino.os.spawnProcess(`kill ${tcpdumpProcess2.pid}`);
+            await Neutralino.os.execCommand(`kill ${tcpdumpProcess2.pid}`);
             // send a kill command to stop the tcpdump process
             tcpdumpProcess2 = null;
             isTcpdumpRunning2 = false;
@@ -797,7 +797,7 @@ async function stopTcpdump(formMode) {
     } else {
         if (tcpdumpProcess) {
             console.warn('stop')
-            await Neutralino.os.execCommand(`kill ${tcpdumpProcess.pid}`);
+            await Neutralino.os.execCommand('pkill tcpdump');
             // send a kill command to stop the tcpdump process
             tcpdumpProcess = null;
             isTcpdumpRunning = false;
@@ -1494,8 +1494,7 @@ async function addNtpServer() {
         console.log(`NTP server ${ntpServer} added successfully.`);
         await getNTPconfig();
         document.getElementById('ntpServerInput') = ""; // Clear the input field
-    } catch (error) {
-        console.error("Error adding NTP server:", error);
+    } catch (error) {        console.error("Error adding NTP server:", error);
     }
 }
 
